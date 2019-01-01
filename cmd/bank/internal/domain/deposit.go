@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/dogma-examples/cmd/bank/internal/messages"
+	"github.com/dogmatiq/examples/cmd/bank/internal/messages"
 )
 
 // DepositProcessHandler manages the process of depositing funds into an account.
