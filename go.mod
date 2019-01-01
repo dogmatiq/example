@@ -1,3 +1,3 @@
 module github.com/dogmatiq/dogma-examples
 
-require github.com/dogmatiq/dogma v0.0.0-20190101093956-48d31f156cb8 // indirect
+require github.com/dogmatiq/dogma v0.0.0-20190101110100-cf7be331c076
