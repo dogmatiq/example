@@ -1,4 +1,4 @@
-package domain
+package app
 
 import (
 	"github.com/dogmatiq/dogma"
@@ -11,23 +11,6 @@ import (
 // enforce a strict no-overdraw policy.
 var AccountHandler dogma.AggregateMessageHandler = accountHandler{}
 
-type account struct {
-	Balance uint64
-}
-
-func (a *account) ApplyEvent(m dogma.Message) {
-	switch x := m.(type) {
-	case messages.AccountCreditedForDeposit:
-		a.Balance += x.Amount
-	case messages.AccountCreditedForTransfer:
-		a.Balance += x.Amount
-	case messages.AccountDebitedForWithdrawal:
-		a.Balance -= x.Amount
-	case messages.AccountDebitedForTransfer:
-		a.Balance -= x.Amount
-	}
-}
-
 type accountHandler struct{}
 
 func (accountHandler) New() dogma.AggregateRoot {
@@ -35,6 +18,7 @@ func (accountHandler) New() dogma.AggregateRoot {
 }
 
 func (accountHandler) Configure(c dogma.AggregateConfigurer) {
+	c.Name("account")
 	c.RouteCommandType(messages.OpenAccount{})
 	c.RouteCommandType(messages.CreditAccountForDeposit{})
 	c.RouteCommandType(messages.CreditAccountForTransfer{})
@@ -138,4 +122,32 @@ func debitForTransfer(s dogma.AggregateCommandScope, m messages.DebitAccountForT
 			Amount:        m.Amount,
 		})
 	}
+}
+
+// account is the aggregate root for a bank account.
+type account struct {
+	// Balance is the current account balance, in cents.
+	Balance uint64
+}
+
+func (a *account) ApplyEvent(m dogma.Message) {
+	switch x := m.(type) {
+	case messages.AccountCreditedForDeposit:
+		a.Balance += x.Amount
+	case messages.AccountCreditedForTransfer:
+		a.Balance += x.Amount
+	case messages.AccountDebitedForWithdrawal:
+		a.Balance -= x.Amount
+	case messages.AccountDebitedForTransfer:
+		a.Balance -= x.Amount
+	}
+}
+
+func (a *account) IsEqual(r dogma.AggregateRoot) bool {
+	v, ok := r.(*account)
+	return ok && *a == *v
+}
+
+func (a account) Clone() dogma.AggregateRoot {
+	return &a
 }

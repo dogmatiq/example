@@ -1,4 +1,4 @@
-package domain
+package app
 
 import (
 	"github.com/dogmatiq/dogma"
@@ -12,10 +12,11 @@ import (
 var TransactionHandler dogma.AggregateMessageHandler = transactionHandler{}
 
 type transactionHandler struct {
-	dogma.StatelessAggregate
+	dogma.StatelessAggregateBehavior
 }
 
 func (transactionHandler) Configure(c dogma.AggregateConfigurer) {
+	c.Name("transaction")
 	c.RouteCommandType(messages.Deposit{})
 	c.RouteCommandType(messages.Withdraw{})
 	c.RouteCommandType(messages.Transfer{})

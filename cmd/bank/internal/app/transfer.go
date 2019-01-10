@@ -1,4 +1,4 @@
-package domain
+package app
 
 import (
 	"context"
@@ -10,12 +10,8 @@ import (
 // TransferProcessHandler manages the process of transferring funds between accounts.
 var TransferProcessHandler dogma.ProcessMessageHandler = transferProcessHandler{}
 
-type transfer struct {
-	ToAccountID string
-}
-
 type transferProcessHandler struct {
-	dogma.NoTimeouts
+	dogma.NoTimeoutBehavior
 }
 
 func (transferProcessHandler) New() dogma.ProcessRoot {
@@ -23,6 +19,7 @@ func (transferProcessHandler) New() dogma.ProcessRoot {
 }
 
 func (transferProcessHandler) Configure(c dogma.ProcessConfigurer) {
+	c.Name("transfer")
 	c.RouteEventType(messages.TransferStarted{})
 	c.RouteEventType(messages.AccountDebitedForTransfer{})
 	c.RouteEventType(messages.AccountCreditedForTransfer{})
@@ -79,4 +76,18 @@ func (transferProcessHandler) HandleEvent(
 	}
 
 	return nil
+}
+
+// transfer is the process root for a funds transfer.
+type transfer struct {
+	ToAccountID string
+}
+
+func (t *transfer) IsEqual(r dogma.ProcessRoot) bool {
+	v, ok := r.(*transfer)
+	return ok && *t == *v
+}
+
+func (t transfer) Clone() dogma.ProcessRoot {
+	return &t
 }

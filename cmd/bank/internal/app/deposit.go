@@ -1,4 +1,4 @@
-package domain
+package app
 
 import (
 	"context"
@@ -11,11 +11,12 @@ import (
 var DepositProcessHandler dogma.ProcessMessageHandler = depositProcessHandler{}
 
 type depositProcessHandler struct {
-	dogma.StatelessProcess
-	dogma.NoTimeouts
+	dogma.StatelessProcessBehavior
+	dogma.NoTimeoutBehavior
 }
 
 func (depositProcessHandler) Configure(c dogma.ProcessConfigurer) {
+	c.Name("deposit")
 	c.RouteEventType(messages.DepositStarted{})
 	c.RouteEventType(messages.AccountCreditedForDeposit{})
 }

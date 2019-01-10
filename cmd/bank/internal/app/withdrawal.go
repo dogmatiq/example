@@ -1,4 +1,4 @@
-package domain
+package app
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 var WithdrawalProcessHandler dogma.ProcessMessageHandler = withdrawalProcessHandler{}
 
 type withdrawalProcessHandler struct {
-	dogma.NoTimeouts
+	dogma.NoTimeoutBehavior
 }
 
 func (withdrawalProcessHandler) New() dogma.ProcessRoot {
@@ -19,6 +19,7 @@ func (withdrawalProcessHandler) New() dogma.ProcessRoot {
 }
 
 func (withdrawalProcessHandler) Configure(c dogma.ProcessConfigurer) {
+	c.Name("withdrawal")
 	c.RouteEventType(messages.WithdrawalStarted{})
 	c.RouteEventType(messages.AccountDebitedForWithdrawal{})
 	c.RouteEventType(messages.WithdrawalDeclined{})

@@ -1,2 +1,4 @@
 github.com/dogmatiq/dogma v0.0.0-20190101110100-cf7be331c076 h1:u1MBCoYF0NHnJBsntL9O7k8i0d4YIF6k/o+oR+Ok0SI=
 github.com/dogmatiq/dogma v0.0.0-20190101110100-cf7be331c076/go.mod h1:kzDxrkzdgrJattEUoLmoFdyHZtib4H5oa98VcewQEI8=
+github.com/dogmatiq/dogma v0.0.0-20190110022518-25bb3e4523dc h1:yk2rSPGwdclYNGYUzVZXoB7x4yF7+z7y0CXrAkljdW8=
+github.com/dogmatiq/dogma v0.0.0-20190110022518-25bb3e4523dc/go.mod h1:kzDxrkzdgrJattEUoLmoFdyHZtib4H5oa98VcewQEI8=
