@@ -7,6 +7,5 @@ import (
 )
 
 func main() {
-	a := app.New()
-	fmt.Println(a)
+	fmt.Println(app.App)
 }

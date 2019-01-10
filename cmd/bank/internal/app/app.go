@@ -4,9 +4,11 @@ import (
 	"github.com/dogmatiq/dogma"
 )
 
-// New returns a new Dogma app for the banking application.
-func New() dogma.App {
-	return dogma.App{
+// App is the Dogma application for the bank example.
+var App dogma.App
+
+func init() {
+	App = dogma.App{
 		Name: "bank",
 		Aggregates: []dogma.AggregateMessageHandler{
 			AccountHandler,
