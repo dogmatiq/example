@@ -13,7 +13,13 @@ type indenter struct {
 
 // NewIndenter returns a writer that write to w, indenting each line with the
 // prefix p.
+//
+// If p is empty, it defaults to four spaces.
 func NewIndenter(w io.Writer, p string) io.Writer {
+	if p == "" {
+		p = "    "
+	}
+
 	return &indenter{
 		w:      w,
 		prefix: []byte(p),

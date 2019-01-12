@@ -9,14 +9,14 @@ import (
 
 func TestIndenter(t *testing.T) {
 	b := &strings.Builder{}
-	w := NewIndenter(b, "  ")
+	w := NewIndenter(b, "")
 
 	n := MustWriteString(w, "fo")
 	n += MustWriteString(w, "o\nb")
 	n += MustWriteString(w, "ar\n")
 	n += MustWriteString(w, "baz")
 
-	expected := "  foo\n  bar\n  baz"
+	expected := "    foo\n    bar\n    baz"
 
 	result := b.String()
 	if result != expected {
