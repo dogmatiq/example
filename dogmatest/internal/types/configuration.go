@@ -69,11 +69,11 @@ func (cfg *Configuration) Classes() map[reflect.Type]MessageClass {
 	m := map[reflect.Type]MessageClass{}
 
 	for t := range cfg.commands {
-		m[t] = CommandClass
+		m[t] = Command
 	}
 
 	for t := range cfg.events {
-		m[t] = EventClass
+		m[t] = Event
 	}
 
 	return m

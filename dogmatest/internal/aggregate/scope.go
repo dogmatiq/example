@@ -51,7 +51,7 @@ func (s *scope) RecordEvent(m dogma.Message) {
 
 	s.events = append(
 		s.events,
-		s.command.NewChild(m, types.EventClass),
+		s.command.NewChild(m, types.Event),
 	)
 }
 

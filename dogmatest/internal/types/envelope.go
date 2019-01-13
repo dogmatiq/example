@@ -28,12 +28,12 @@ func (e Envelope) NewChild(m dogma.Message, c MessageClass) Envelope {
 }
 
 // MessageClass is an enumeration of the "classes" of message.
-type MessageClass bool
+type MessageClass string
 
 const (
-	// CommandClass is the class for command messages.
-	CommandClass MessageClass = true
+	// Command is the class for command messages.
+	Command MessageClass = "command"
 
-	// EventClass is the class for event messages.
-	EventClass MessageClass = false
+	// Event is the class for event messages.
+	Event MessageClass = "event"
 )

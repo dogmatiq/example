@@ -31,7 +31,7 @@ package app_test
 // 	When("the creditor has sufficient funds", func() {
 // 		It("moves funds from one account to another", func() {
 // 			engine.
-// 				ExecuteCommand(
+// 				TestCommand(
 // 					messages.Transfer{
 // 						TransactionID: "T001",
 // 						FromAccountID: "A001",

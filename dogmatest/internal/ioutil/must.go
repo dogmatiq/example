@@ -27,6 +27,17 @@ func MustWriteString(w io.Writer, s string) int {
 	return n
 }
 
+// MustWriteTo calls s.WriteTo(w), and panics if s.WriteTo() returns an error.
+func MustWriteTo(w io.Writer, s io.WriterTo) int64 {
+	n, err := s.WriteTo(w)
+
+	if err != nil {
+		panic(errorWrapper{err})
+	}
+
+	return n
+}
+
 // Recover recovers from a panic caused by one of the MustXXX() functions.
 //
 // The causal error is assigned to *err.

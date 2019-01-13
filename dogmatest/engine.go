@@ -1,7 +1,6 @@
 package dogmatest
 
 import (
-	"context"
 	"fmt"
 	"reflect"
 
@@ -10,17 +9,17 @@ import (
 	"github.com/dogmatiq/examples/dogmatest/internal/types"
 )
 
-type EngineOption func(*Engine)
-
-type MessageComparator func(dogma.Message, dogma.Message) bool
-
-func UseMessageComparator(c MessageComparator) EngineOption {
-	return func(e *Engine) {
-		e.isEqual = c
-	}
+// Engine is a Dogma engine used to test Dogma applications.
+type Engine struct {
+	controllers []types.Controller
+	classes     map[reflect.Type]types.MessageClass
+	routes      map[reflect.Type][]types.Controller
+	compare     MessageComparator
+	describe    MessageDescriber
 }
 
-func New(
+// NewEngine returns a new test engine for the given application.
+func NewEngine(
 	a dogma.App,
 	options ...EngineOption,
 ) *Engine {
@@ -35,11 +34,11 @@ func New(
 	}
 
 	e := &Engine{
-		classes: cfg.Classes(),
-		routes:  cfg.Routes(),
-		isEqual: func(a, b dogma.Message) bool {
-			return reflect.DeepEqual(a, b)
-		},
+		controllers: cfg.Controllers(),
+		classes:     cfg.Classes(),
+		routes:      cfg.Routes(),
+		compare:     DefaultMessageComparator,
+		describe:    DefaultMessageDescriber,
 	}
 
 	for _, o := range options {
@@ -49,38 +48,54 @@ func New(
 	return e
 }
 
-type Engine struct {
-	controllers []types.Controller
-	classes     map[reflect.Type]types.MessageClass
-	routes      map[reflect.Type][]types.Controller
-	isEqual     MessageComparator
-}
-
-func (e *Engine) Reset(commands ...dogma.Message) {
+// Reset clears the state of the engine, and then prepares the engine by
+// handling the given messages.
+func (e *Engine) Reset(messages ...dogma.Message) *Engine {
 	for _, c := range e.controllers {
 		c.Reset()
 	}
+
+	return e.Prepare(messages...)
 }
 
-func (e *Engine) ExecuteCommand(_ context.Context, m dogma.Message) error {
-	e.assertIsRoutableCommand(m)
-	e.do(m)
-	return nil
-}
+// Prepare handles the given messages, without capturing test results.
+//
+// It is used to place the application into a particular state before handling a
+// test message.
+func (e *Engine) Prepare(messages ...dogma.Message) *Engine {
+	queue := make([]types.Envelope, 0, len(messages))
 
-func (e *Engine) RecordEvent(_ context.Context, m dogma.Message) error {
-	e.assertIsRoutableEvent(m)
-	e.do(m)
-	return nil
-}
+	for _, m := range messages {
+		t := reflect.TypeOf(m)
+		cl, ok := e.classes[t]
 
-func (e *Engine) TestCommand(m dogma.Message) TestResult {
-	e.assertIsRoutableCommand(m)
+		if !ok {
+			panic(fmt.Sprintf("no route for events of type %s", t))
+		}
 
-	return TestResult{
-		Envelopes: e.do(m),
-		IsEqual:   e.isEqual,
+		queue = append(
+			queue,
+			types.NewEnvelope(m, cl),
+		)
 	}
+
+	e.do(queue, nil)
+
+	return e
+}
+
+// TestCommand captures test results describing how the application handles the
+// command m.
+func (e *Engine) TestCommand(t TestingT, m dogma.Message) TestResult {
+	e.assertIsRoutableCommand(m)
+	return e.test(t, m)
+}
+
+// TestEvent captures test results describing how the application handles the
+// event m.
+func (e *Engine) TestEvent(t TestingT, m dogma.Message) TestResult {
+	e.assertIsRoutableEvent(m)
+	return e.test(t, m)
 }
 
 func (e *Engine) assertIsRoutableCommand(m dogma.Message) {
@@ -91,7 +106,7 @@ func (e *Engine) assertIsRoutableCommand(m dogma.Message) {
 		panic(fmt.Sprintf("no route for commands of type %s", t))
 	}
 
-	if c == types.EventClass {
+	if c == types.Event {
 		panic(fmt.Sprintf("messages of type %s are events, not commands", t))
 	}
 }
@@ -104,107 +119,51 @@ func (e *Engine) assertIsRoutableEvent(m dogma.Message) {
 		panic(fmt.Sprintf("no route for events of type %s", t))
 	}
 
-	if c == types.CommandClass {
+	if c == types.Command {
 		panic(fmt.Sprintf("messages of type %s are commands, not events", t))
 	}
 }
 
-func (e *Engine) do(m dogma.Message) []types.Envelope {
-	queue := []types.Envelope{
-		types.NewEnvelope(m, types.CommandClass),
-	}
+func (e *Engine) do(
+	queue []types.Envelope,
+	fn func(types.Envelope),
+) {
+	for len(queue) > 0 {
+		env := queue[0]
+		queue = queue[1:]
 
-	for i := 0; i < len(queue); i++ {
-		env := queue[i]
 		t := reflect.TypeOf(env.Message)
-
 		for _, c := range e.routes[t] {
-			queue = append(
-				queue,
-				c.Handle(env)...,
-			)
-		}
-	}
+			output := c.Handle(env)
+			queue = append(queue, output...)
 
-	return queue[1:] // don't include the initial message in the results
-}
-
-type TestResult struct {
-	Envelopes []types.Envelope
-	IsEqual   MessageComparator
-}
-
-func (r TestResult) ExpectEvents(events ...dogma.Message) {
-	actual := r.filter(types.EventClass)
-
-next:
-	for _, m := range events {
-		for k, x := range actual {
-			if r.IsEqual(m, x) {
-				delete(actual, k)
-				continue next
+			if fn != nil {
+				for _, env := range output {
+					fn(env)
+				}
 			}
 		}
-
-		panic(fmt.Sprintf(
-			"an expected event was not recorded: %#v",
-			m,
-		))
 	}
 }
 
-func (r TestResult) ExpectExactEvents(events ...dogma.Message) {
-	actual := r.filter(types.EventClass)
-
-next:
-	for _, m := range events {
-		for id, x := range actual {
-			if r.IsEqual(m, x) {
-				delete(actual, id)
-				continue next
-			}
-		}
-
-		panic(fmt.Sprintf(
-			"an expected event was not recorded: %#v",
-			m,
-		))
+func (e *Engine) test(
+	t TestingT,
+	m dogma.Message,
+) TestResult {
+	tr := TestResult{
+		T:        t,
+		Input:    types.NewEnvelope(m, types.Command),
+		Output:   map[uint64]types.Envelope{},
+		Compare:  e.compare,
+		Describe: e.describe,
 	}
 
-	for _, x := range actual {
-		panic(fmt.Sprintf(
-			"an unexpected event was recorded: %#v",
-			x,
-		))
-	}
-}
+	e.do(
+		[]types.Envelope{tr.Input},
+		func(env types.Envelope) {
+			tr.Output[env.MessageID] = env
+		},
+	)
 
-func (r TestResult) ExpectNoEvents() {
-	r.ExpectExactEvents()
-}
-
-func (r TestResult) filter(c types.MessageClass) map[uint64]dogma.Message {
-	messages := make(map[uint64]dogma.Message, len(r.Envelopes))
-
-	for _, env := range r.Envelopes {
-		if env.Class == c {
-			messages[env.MessageID] = env.Message
-		}
-	}
-
-	return messages
-}
-
-func (r TestResult) has(m dogma.Message, c types.MessageClass) bool {
-	for _, env := range r.Envelopes {
-		if env.Class != c {
-			continue
-		}
-
-		if r.IsEqual(m, env.Message) {
-			return true
-		}
-	}
-
-	return false
+	return tr
 }
