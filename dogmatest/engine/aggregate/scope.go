@@ -1,15 +1,22 @@
 package aggregate
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/dogmatest/internal/types"
+	"github.com/dogmatiq/examples/dogmatest/engine"
+	"github.com/dogmatiq/examples/dogmatest/internal/ioutil"
 )
 
 type scope struct {
-	id      string
-	root    dogma.AggregateRoot
-	exists  bool
-	command *types.Envelope
+	id       string
+	name     string
+	root     dogma.AggregateRoot
+	exists   bool
+	command  *engine.Envelope
+	describe engine.MessageDescriber
+	logger   engine.Logger
 }
 
 func (s *scope) InstanceID() string {
@@ -22,6 +29,8 @@ func (s *scope) Create() bool {
 	}
 
 	s.exists = true
+	log(s.logger, s.name, s.id, "created")
+
 	return true
 }
 
@@ -31,6 +40,7 @@ func (s *scope) Destroy() {
 	}
 
 	s.exists = false
+	log(s.logger, s.name, s.id, "destroyed")
 }
 
 func (s *scope) Root() dogma.AggregateRoot {
@@ -47,9 +57,25 @@ func (s *scope) RecordEvent(m dogma.Message) {
 	}
 
 	s.root.ApplyEvent(m)
-	s.command.NewChild(m, types.Event)
+	s.command.NewChild(m, engine.Event)
+
+	log(
+		s.logger,
+		s.name,
+		s.id,
+		fmt.Sprintf(
+			"recorded '%s' event:\n\n%s\n",
+			reflect.TypeOf(m),
+			ioutil.Indent(s.describe(m), "| "),
+		),
+	)
 }
 
 func (s *scope) Log(f string, v ...interface{}) {
-	// TODO:
+	log(
+		s.logger,
+		s.name,
+		s.id,
+		"logged: "+fmt.Sprintf(f, v...),
+	)
 }

@@ -1,14 +1,18 @@
 package aggregate
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/dogmatest/internal/types"
+	"github.com/dogmatiq/examples/dogmatest/engine"
 )
 
 type controller struct {
 	name      string
 	handler   dogma.AggregateMessageHandler
 	instances map[string]dogma.AggregateRoot
+	describe  engine.MessageDescriber
 }
 
 func (c *controller) Name() string {
@@ -19,23 +23,38 @@ func (c *controller) Handler() interface{} {
 	return c.handler
 }
 
-func (c *controller) Handle(env *types.Envelope) {
+func (c *controller) Handle(
+	_ context.Context,
+	logger engine.Logger,
+	env *engine.Envelope,
+) error {
 	id := c.handler.RouteCommandToInstance(env.Message)
 	if id == "" {
-		panic("aggregate instances ID must not be empty")
+		return fmt.Errorf("aggregate '%s' instance ID must not be empty", c.name)
 	}
 
 	r, ok := c.instances[id]
 
-	if !ok {
+	if ok {
+		log(logger, c.name, id, "already exists")
+	} else {
+		log(logger, c.name, id, "does not exist")
+
 		r = c.handler.New()
+
+		if r == nil {
+			return fmt.Errorf("aggregate '%s' root must not be nil", c.name)
+		}
 	}
 
 	s := &scope{
-		id:      id,
-		root:    r,
-		exists:  ok,
-		command: env,
+		id:       id,
+		name:     c.name,
+		root:     r,
+		exists:   ok,
+		command:  env,
+		describe: c.describe,
+		logger:   logger,
 	}
 
 	c.handler.HandleCommand(s, env.Message)
@@ -48,6 +67,8 @@ func (c *controller) Handle(env *types.Envelope) {
 	} else {
 		delete(c.instances, id)
 	}
+
+	return nil
 }
 
 func (c *controller) Reset() {

@@ -1,4 +1,4 @@
-package types
+package engine
 
 import (
 	"github.com/dogmatiq/dogma"
@@ -52,14 +52,3 @@ func (e *Envelope) Walk(fn func(*Envelope) bool) bool {
 
 	return true
 }
-
-// MessageClass is an enumeration of the "classes" of message.
-type MessageClass string
-
-const (
-	// Command is the class for command messages.
-	Command MessageClass = "command"
-
-	// Event is the class for event messages.
-	Event MessageClass = "event"
-)

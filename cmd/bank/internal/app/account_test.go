@@ -16,9 +16,8 @@ func TestAccount_OpenAccount(t *testing.T) {
 	t.Run(
 		"it opens the account",
 		func(t *testing.T) {
-			engine.
-				Reset().
-				TestCommand(t, cmd).
+			Begin(t, engine).
+				TestCommand(cmd).
 				Expect(
 					Event(messages.AccountOpened{
 						AccountID: "A001",
@@ -31,9 +30,9 @@ func TestAccount_OpenAccount(t *testing.T) {
 	t.Run(
 		"it does not open an account that is already open",
 		func(t *testing.T) {
-			engine.
+			Begin(t, engine).
 				Reset(cmd).
-				TestCommand(t, cmd).
+				TestCommand(cmd).
 				Expect(
 					Not(
 						EventType(messages.AccountOpened{}),

@@ -6,7 +6,7 @@ import (
 	"reflect"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/dogmatest/internal/types"
+	"github.com/dogmatiq/examples/dogmatest/engine"
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
@@ -14,7 +14,7 @@ import (
 // given class.
 func messageMatcher(
 	m dogma.Message,
-	cl types.MessageClass,
+	cl engine.MessageClass,
 ) Matcher {
 	return func(tr TestResult) MatchResult {
 		t := reflect.TypeOf(m)
@@ -23,22 +23,22 @@ func messageMatcher(
 		}
 
 		switch cl {
-		case types.Command:
+		case engine.Command:
 			r.Title = fmt.Sprintf("execute specific '%s' command", t)
 			r.Message = "this command was not executed"
-		case types.Event:
+		case engine.Event:
 			r.Title = fmt.Sprintf("record specific '%s' event", t)
 			r.Message = "this event was not recorded"
 		}
 
 		var (
-			bestMatch *types.Envelope
+			bestMatch *engine.Envelope
 			bestSim   = unrelatedTypes
 			bestEqual bool
 		)
 
 		tr.Envelope.Walk(
-			func(env *types.Envelope) bool {
+			func(env *engine.Envelope) bool {
 				// look for an identical message
 				if tr.Compare(m, env.Message) {
 					// if it's the right message class, we've found our match
@@ -136,28 +136,28 @@ func messageMatcher(
 // as m, with the given class.
 func messageTypeMatcher(
 	m dogma.Message,
-	cl types.MessageClass,
+	cl engine.MessageClass,
 ) Matcher {
 	return func(tr TestResult) MatchResult {
 		t := reflect.TypeOf(m)
 		r := MatchResult{}
 
 		switch cl {
-		case types.Command:
+		case engine.Command:
 			r.Title = fmt.Sprintf("execute any '%s' command", t)
 			r.Message = "no commands of this type were executed"
-		case types.Event:
+		case engine.Event:
 			r.Title = fmt.Sprintf("record any '%s' event", t)
 			r.Message = "no events of this type were recorded"
 		}
 
 		var (
-			bestMatch *types.Envelope
+			bestMatch *engine.Envelope
 			bestSim   = unrelatedTypes
 		)
 
 		tr.Envelope.Walk(
-			func(env *types.Envelope) bool {
+			func(env *engine.Envelope) bool {
 				mt := reflect.TypeOf(env.Message)
 				sim := typeSimilarity(t, mt)
 
@@ -231,7 +231,7 @@ const (
 	unrelatedTypes uint64 = 0
 )
 
-// typeSimilarity returns the "similarity" between two related types.
+// typeSimilarity returns the "similarity" between two related engine.
 //
 // A similarity of sameType indicates the types are identical.
 // A similarity of unrelatedTypes indicates the that the types are not related at all.
@@ -273,7 +273,7 @@ func pointerDistance(p, t reflect.Type) (n uint64, ok bool) {
 // expected and actual message class are the same, or if they are different,
 // whether the actual message was a command or an event.
 func chooseHint(
-	expected, actual types.MessageClass,
+	expected, actual engine.MessageClass,
 	same, command, event string,
 ) string {
 	m := ""
@@ -281,9 +281,9 @@ func chooseHint(
 	switch actual {
 	case expected:
 		m = same
-	case types.Command:
+	case engine.Command:
 		m = command
-	case types.Event:
+	case engine.Event:
 		m = event
 	}
 

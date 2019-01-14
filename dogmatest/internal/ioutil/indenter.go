@@ -3,6 +3,7 @@ package ioutil
 import (
 	"bytes"
 	"io"
+	"strings"
 )
 
 type indenter struct {
@@ -24,6 +25,16 @@ func NewIndenter(w io.Writer, p string) io.Writer {
 		w:      w,
 		prefix: []byte(p),
 	}
+}
+
+// Indent returns s, indented using the prefix p.
+//
+// If p is empty, it defaults to four spaces.
+func Indent(s, p string) string {
+	var b strings.Builder
+	w := NewIndenter(&b, p)
+	MustWriteString(w, s)
+	return b.String()
 }
 
 func (w *indenter) Write(buf []byte) (n int, err error) {

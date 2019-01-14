@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/dogmatest/internal/types"
+	"github.com/dogmatiq/examples/dogmatest/engine"
 )
 
 // Matcher is a predicate function that checks a test result against some criteria.
@@ -13,25 +13,25 @@ type Matcher func(TestResult) MatchResult
 // Command is a matcher that passes only if a message equal to m is executed as
 // a command.
 func Command(m dogma.Message) Matcher {
-	return messageMatcher(m, types.Command)
+	return messageMatcher(m, engine.Command)
 }
 
 // CommandType is a matcher that passes only if a message of the same type as m is
 // executed as a command.
 func CommandType(m dogma.Message) Matcher {
-	return messageTypeMatcher(m, types.Command)
+	return messageTypeMatcher(m, engine.Command)
 }
 
 // Event is a matcher that passes only if a message equal to m is recorded as
 // an event.
 func Event(m dogma.Message) Matcher {
-	return messageMatcher(m, types.Event)
+	return messageMatcher(m, engine.Event)
 }
 
 // EventType is a matcher that passes only if a message of the same type as m is
 // recorded as an event.
 func EventType(m dogma.Message) Matcher {
-	return messageTypeMatcher(m, types.Event)
+	return messageTypeMatcher(m, engine.Event)
 }
 
 // All is matcher that passes only if all of the given sub-matchers pass.

@@ -1,21 +1,22 @@
 package dogmatest
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/dogmatest/internal/aggregate"
-	"github.com/dogmatiq/examples/dogmatest/internal/types"
+	"github.com/dogmatiq/examples/dogmatest/engine"
+	"github.com/dogmatiq/examples/dogmatest/engine/aggregate"
 )
 
 // Engine is a Dogma engine used to test Dogma applications.
 type Engine struct {
-	controllers []types.Controller
-	classes     map[reflect.Type]types.MessageClass
-	routes      map[reflect.Type][]types.Controller
-	compare     MessageComparator
-	describe    MessageDescriber
+	controllers []engine.Controller
+	classes     map[reflect.Type]engine.MessageClass
+	routes      map[reflect.Type][]engine.Controller
+	compare     engine.MessageComparator
+	describe    engine.MessageDescriber
 }
 
 // NewEngine returns a new test engine for the given application.
@@ -23,116 +24,125 @@ func NewEngine(
 	a dogma.App,
 	options ...EngineOption,
 ) *Engine {
-	cfg := &types.Configuration{}
+	cfg := &engine.Configuration{}
+
+	e := &Engine{
+		compare:  engine.DefaultMessageComparator,
+		describe: engine.DefaultMessageDescriber,
+	}
+
+	for _, opt := range options {
+		opt(e)
+	}
 
 	for _, h := range a.Aggregates {
 		c := &aggregate.Configurer{
-			Handler: h,
+			Handler:  h,
+			Describe: e.describe,
 		}
+
 		h.Configure(c)
 		c.Apply(cfg)
 	}
 
-	e := &Engine{
-		controllers: cfg.Controllers(),
-		classes:     cfg.Classes(),
-		routes:      cfg.Routes(),
-		compare:     DefaultMessageComparator,
-		describe:    DefaultMessageDescriber,
-	}
-
-	for _, o := range options {
-		o(e)
-	}
+	e.controllers = cfg.Controllers()
+	e.classes = cfg.Classes()
+	e.routes = cfg.Routes()
 
 	return e
 }
 
 // Reset clears the state of the engine, and then prepares the engine by
 // handling the given messages.
-func (e *Engine) Reset(messages ...dogma.Message) *Engine {
+//
+// This method should only be used outside the context of a test, that is, when
+// a *testing.T is not available. Otherwise, use e.Begin(t).Reset().
+func (e *Engine) Reset(ctx context.Context, messages ...dogma.Message) *Engine {
+	if err := e.reset(ctx, engine.SilentLogger, messages); err != nil {
+		panic(err)
+	}
+
+	return e
+}
+
+func (e *Engine) reset(
+	ctx context.Context,
+	logger engine.Logger,
+	messages []dogma.Message,
+) error {
 	for _, c := range e.controllers {
 		c.Reset()
 	}
 
-	return e.Prepare(messages...)
+	return e.prepare(ctx, logger, messages)
 }
 
 // Prepare handles the given messages, without capturing test results.
 //
 // It is used to place the application into a particular state before handling a
 // test message.
-func (e *Engine) Prepare(messages ...dogma.Message) *Engine {
-	queue := make([]*types.Envelope, 0, len(messages))
+//
+// This method should only be used outside the context of a test, that is, when
+// a *testing.T is not available. Otherwise, use e.Begin(t).Prepare().
+func (e *Engine) Prepare(ctx context.Context, messages ...dogma.Message) *Engine {
+	if err := e.prepare(ctx, engine.SilentLogger, messages); err != nil {
+		panic(err)
+	}
+
+	return e
+}
+
+func (e *Engine) prepare(
+	ctx context.Context,
+	logger engine.Logger,
+	messages []dogma.Message,
+) error {
+	queue := make([]*engine.Envelope, 0, len(messages))
 
 	for _, m := range messages {
 		t := reflect.TypeOf(m)
 		cl, ok := e.classes[t]
 
 		if !ok {
-			panic(fmt.Sprintf("no route for messages of type %s", t))
+			return fmt.Errorf("no route for messages of type %s", t)
 		}
 
 		queue = append(
 			queue,
-			types.NewEnvelope(m, cl),
+			engine.NewEnvelope(m, cl),
 		)
 	}
 
-	e.do(queue...)
-
-	return e
+	return e.process(ctx, logger, queue...)
 }
 
-// TestCommand captures test results describing how the application handles the
-// command m.
-func (e *Engine) TestCommand(t TestingT, m dogma.Message) TestResult {
-	e.assertIsRoutableCommand(m)
-
-	return e.test(
-		t,
-		types.NewEnvelope(m, types.Command),
-	)
-}
-
-// TestEvent captures test results describing how the application handles the
-// event m.
-func (e *Engine) TestEvent(t TestingT, m dogma.Message) TestResult {
-	e.assertIsRoutableEvent(m)
-
-	return e.test(
-		t,
-		types.NewEnvelope(m, types.Event),
-	)
-}
-
-func (e *Engine) assertIsRoutableCommand(m dogma.Message) {
+// isRoutable returns nil if m is routed to at least one handler as a message of
+// the given class.
+func (e *Engine) isRoutable(m dogma.Message, cl engine.MessageClass) error {
 	t := reflect.TypeOf(m)
-	c, ok := e.classes[t]
+	actual, ok := e.classes[t]
 
 	if !ok {
-		panic(fmt.Sprintf("no route for commands of type %s", t))
+		return fmt.Errorf("no route for messages of type %s", t)
 	}
 
-	if c == types.Event {
-		panic(fmt.Sprintf("messages of type %s are events, not commands", t))
+	switch actual {
+	case cl:
+		return nil
+	case engine.Command:
+		return fmt.Errorf("messages of type %s are commands, not events", t)
+	case engine.Event:
+		return fmt.Errorf("messages of type %s are events, not commands", t)
 	}
+
+	panic("internal error: unrecognised message class: " + actual)
 }
 
-func (e *Engine) assertIsRoutableEvent(m dogma.Message) {
-	t := reflect.TypeOf(m)
-	c, ok := e.classes[t]
-
-	if !ok {
-		panic(fmt.Sprintf("no route for events of type %s", t))
-	}
-
-	if c == types.Command {
-		panic(fmt.Sprintf("messages of type %s are commands, not events", t))
-	}
-}
-
-func (e *Engine) do(queue ...*types.Envelope) {
+func (e *Engine) process(
+	ctx context.Context,
+	logger engine.Logger,
+	queue ...*engine.Envelope,
+) error {
 	for len(queue) > 0 {
 		env := queue[0]
 		queue = queue[1:]
@@ -140,21 +150,13 @@ func (e *Engine) do(queue ...*types.Envelope) {
 		t := reflect.TypeOf(env.Message)
 
 		for _, c := range e.routes[t] {
-			c.Handle(env)
+			if err := c.Handle(ctx, logger, env); err != nil {
+				return err
+			}
+
 			queue = append(queue, env.Children...)
 		}
 	}
-}
 
-func (e *Engine) test(t TestingT, env *types.Envelope) TestResult {
-	tr := TestResult{
-		T:        t,
-		Envelope: env,
-		Compare:  e.compare,
-		Describe: e.describe,
-	}
-
-	e.do(tr.Envelope)
-
-	return tr
+	return nil
 }
