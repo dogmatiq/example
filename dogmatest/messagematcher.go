@@ -32,67 +32,98 @@ func messageMatcher(
 		}
 
 		var (
-			candidate types.Envelope
-			best      uint64
+			bestMatch *types.Envelope
+			bestSim   = unrelatedTypes
+			bestEqual bool
 		)
 
-		for _, env := range tr.Output {
-			if tr.Compare(m, env.Message) {
-				if env.Class == cl {
-					r.Passed = true
-					r.Message = ""
-				} else if env.Class == types.Command {
-					r.Hint = "an identical message was executed as a command, are you using the correct matcher?"
-				} else {
-					r.Hint = "an identical message was recorded as an event, are you using the correct matcher?"
+		tr.Envelope.Walk(
+			func(env *types.Envelope) bool {
+				// look for an identical message
+				if tr.Compare(m, env.Message) {
+					// if it's the right message class, we've found our match
+					if env.Class == cl {
+						r.Passed = true
+						r.Message = ""
+						return false
+					}
+
+					// otherwise, this will always be the best match, assuming we don't find an
+					// actual match
+					bestMatch = env
+					bestSim = sameTypes
+					bestEqual = true
+
+					return true
 				}
 
-				return r
-			}
+				// check to see if this message is of a similar type to our expected message
+				sim := typeSimilarity(
+					t,
+					reflect.TypeOf(env.Message),
+				)
 
-			sim := typeSimilarity(
-				t,
-				reflect.TypeOf(env.Message),
+				if sim > bestSim {
+					bestMatch = env
+					bestSim = sim
+				}
+
+				return true
+			},
+		)
+
+		// we found an exact match, nothing more to do
+		if r.Passed {
+			return r
+		}
+
+		// we found an equal message, but it was the wrong class
+		if bestEqual {
+			r.Hint = chooseHint(
+				cl,
+				bestMatch.Class,
+				"", // classes are guaranteed to differ, otherwise we passed
+				"This message was executed as a command, did you mean to use the Command() matcher instead of Event()?",
+				"This message was recorded as an event, did you mean to use the Event() matcher instead of Command()?",
 			)
 
-			if sim > best {
-				candidate = env
-				best = sim
-			}
-		}
-
-		switch best {
-		case 0:
+			// bail early so we don't build a diff
 			return r
-		case math.MaxUint64:
-			if candidate.Class == cl {
-				r.Hint = "is the message content correct?"
-			} else {
-				switch candidate.Class {
-				case types.Command:
-					r.Hint = "a similar message was executed as a command, are you using the correct matcher?"
-				case types.Event:
-					r.Hint = "a similar message was recorded as an event, are you using the correct matcher?"
-				}
-			}
-		default:
-			if candidate.Class == cl {
-				r.Hint = "is there a type mismatch?"
-			} else {
-				switch candidate.Class {
-				case types.Command:
-					r.Hint = "a message of a similar type was executed as a command, are you using the correct matcher?"
-				case types.Event:
-					r.Hint = "a message of a similar type was recorded as an event, are you using the correct matcher?"
-				}
-			}
 		}
 
+		switch bestSim {
+		case unrelatedTypes:
+			// we didn't find any message of a similar type
+			// bail early so we don't build a diff
+			return r
+
+		case sameTypes:
+			// we found a message of the same type with different content
+			r.Hint = chooseHint(
+				cl,
+				bestMatch.Class,
+				"Check the content of the message.",
+				"A similar message was executed as a command, did you mean to use the Command() matcher instead of Event()?",
+				"A similar message was recorded as an event, did you mean to use the Event() matcher instead of Command()?",
+			)
+
+		default:
+			// we found a message of a similar type, but not the same type
+			r.Hint = chooseHint(
+				cl,
+				bestMatch.Class,
+				"Check the type of the message.",
+				"A message of a similar type was executed as a command, did you mean to use the Command() matcher instead of Event()?",
+				"A message of a similar type was recorded as an event, did you mean to use the Event() matcher instead of Command()?",
+			)
+		}
+
+		// use a diff of the message description in the details field
 		diff := diffmatchpatch.New()
 		r.Details = diff.DiffPrettyText(
 			diff.DiffMain(
 				r.Details,
-				tr.Describe(candidate.Message),
+				tr.Describe(bestMatch.Message),
 				true,
 			),
 		)
@@ -121,54 +152,72 @@ func messageTypeMatcher(
 		}
 
 		var (
-			candidate types.Envelope
-			best      uint64
+			bestMatch *types.Envelope
+			bestSim   = unrelatedTypes
 		)
 
-		for _, env := range tr.Output {
-			mt := reflect.TypeOf(env.Message)
-			sim := typeSimilarity(t, mt)
+		tr.Envelope.Walk(
+			func(env *types.Envelope) bool {
+				mt := reflect.TypeOf(env.Message)
+				sim := typeSimilarity(t, mt)
 
-			if sim == math.MaxUint64 {
-				if env.Class == cl {
+				// look for a message of the expected type
+				// if it's the right message class, we've found our match
+				if sim == sameTypes && env.Class == cl {
 					r.Passed = true
 					r.Message = ""
-				} else if env.Class == types.Command {
-					r.Hint = "a message of this type was executed as a command, are you using the correct matcher?"
-				} else {
-					r.Hint = "a message of this type was recorded as an event, are you using the correct matcher?"
+					return false
 				}
 
-				return r
-			}
+				if sim > bestSim {
+					bestMatch = env
+					bestSim = sim
+				}
 
-			if sim > best {
-				candidate = env
-				best = sim
-			}
-		}
+				return true
+			},
+		)
 
-		if best == 0 {
+		// we found an exact match, nothing more to do
+		if r.Passed {
 			return r
 		}
 
-		if candidate.Class == cl {
-			r.Hint = "is there a type mismatch?"
-		} else {
-			switch candidate.Class {
-			case types.Command:
-				r.Hint = "a message of a similar type was executed as a command, are you using the correct matcher?"
-			case types.Event:
-				r.Hint = "a message of a similar type was recorded as an event, are you using the correct matcher?"
-			}
+		switch bestSim {
+		case unrelatedTypes:
+			// we didn't find any message of a similar type
+			// bail early so we don't build a diff
+			return r
+
+		case sameTypes:
+			r.Hint = chooseHint(
+				cl,
+				bestMatch.Class,
+				"", // classes are guaranteed to differ, otherwise we passed
+				"A message of this type was executed as a command, did you mean to use the CommandType() matcher instead of EventType()?",
+				"A message of this type was recorded as an event, did you mean to use the EventType() matcher instead of CommandType()?",
+			)
+
+			// bail early so we don't build a diff
+			return r
+
+		default:
+			// we found a message of a similar type, but not the same type
+			r.Hint = chooseHint(
+				cl,
+				bestMatch.Class,
+				"Check the type of the message.",
+				"A message of a similar type was executed as a command, did you mean to use the CommandType() matcher instead of EventType()?",
+				"A message of a similar type was recorded as an event, did you mean to use the EventType() matcher instead of CommandType()?",
+			)
 		}
 
+		// use a diff of the message type in the details field
 		diff := diffmatchpatch.New()
-
 		r.Details = diff.DiffPrettyText(
 			diff.DiffMain(
 				t.String(),
-				reflect.TypeOf(candidate.Message).String(),
+				reflect.TypeOf(bestMatch.Message).String(),
 				true,
 			),
 		)
@@ -177,12 +226,17 @@ func messageTypeMatcher(
 	}
 }
 
+const (
+	sameTypes      uint64 = math.MaxUint64
+	unrelatedTypes uint64 = 0
+)
+
 // typeSimilarity returns the "similarity" between two related types.
 //
-// A similarity of math.Uint64Max indicates the types are identical.
-// A similarity of 0 indicates the that the types are not related at all.
+// A similarity of sameType indicates the types are identical.
+// A similarity of unrelatedTypes indicates the that the types are not related at all.
 func typeSimilarity(a, b reflect.Type) (v uint64) {
-	v = math.MaxUint64
+	v = sameTypes
 
 	if a == b {
 		return v
@@ -196,7 +250,7 @@ func typeSimilarity(a, b reflect.Type) (v uint64) {
 		return v - n
 	}
 
-	return 0
+	return unrelatedTypes
 }
 
 // pointerDistance returns the "distance" from the pointer type p, to the
@@ -213,4 +267,29 @@ func pointerDistance(p, t reflect.Type) (n uint64, ok bool) {
 	}
 
 	return
+}
+
+// chooseHint returns a different string message depending on whether the
+// expected and actual message class are the same, or if they are different,
+// whether the actual message was a command or an event.
+func chooseHint(
+	expected, actual types.MessageClass,
+	same, command, event string,
+) string {
+	m := ""
+
+	switch actual {
+	case expected:
+		m = same
+	case types.Command:
+		m = command
+	case types.Event:
+		m = event
+	}
+
+	if m == "" {
+		panic("internal matcher error: no appropriate hint message")
+	}
+
+	return m
 }

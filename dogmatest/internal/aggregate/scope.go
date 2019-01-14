@@ -9,8 +9,7 @@ type scope struct {
 	id      string
 	root    dogma.AggregateRoot
 	exists  bool
-	command types.Envelope
-	events  []types.Envelope
+	command *types.Envelope
 }
 
 func (s *scope) InstanceID() string {
@@ -48,12 +47,9 @@ func (s *scope) RecordEvent(m dogma.Message) {
 	}
 
 	s.root.ApplyEvent(m)
-
-	s.events = append(
-		s.events,
-		s.command.NewChild(m, types.Event),
-	)
+	s.command.NewChild(m, types.Event)
 }
 
 func (s *scope) Log(f string, v ...interface{}) {
+	// TODO:
 }

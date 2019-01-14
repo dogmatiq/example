@@ -19,7 +19,7 @@ func (c *controller) Handler() interface{} {
 	return c.handler
 }
 
-func (c *controller) Handle(env types.Envelope) []types.Envelope {
+func (c *controller) Handle(env *types.Envelope) {
 	id := c.handler.RouteCommandToInstance(env.Message)
 	if id == "" {
 		panic("aggregate instances ID must not be empty")
@@ -48,8 +48,6 @@ func (c *controller) Handle(env types.Envelope) []types.Envelope {
 	} else {
 		delete(c.instances, id)
 	}
-
-	return s.events
 }
 
 func (c *controller) Reset() {

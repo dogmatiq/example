@@ -11,12 +11,8 @@ type TestResult struct {
 	// T is the *testing.T value, or equivalent under which the test was performed.
 	T TestingT
 
-	// Input is a message envelope that contains the message under test.
-	Input types.Envelope
-
-	// Output is a set of envelopes that were caused by the message under test,
-	// keyed by their message ID.
-	Output map[uint64]types.Envelope
+	// Envelope is the message envelope that contains the message under test.
+	Envelope *types.Envelope
 
 	// Compare is the comparator used to test messages for equality.
 	Compare MessageComparator
@@ -37,7 +33,6 @@ func (r TestResult) Expect(matchers ...Matcher) {
 		b.WriteString("expectation passed:\n")
 	} else {
 		b.WriteString("expectation failed:\n")
-
 	}
 
 	mr.WriteTo(&b)

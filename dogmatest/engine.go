@@ -63,14 +63,14 @@ func (e *Engine) Reset(messages ...dogma.Message) *Engine {
 // It is used to place the application into a particular state before handling a
 // test message.
 func (e *Engine) Prepare(messages ...dogma.Message) *Engine {
-	queue := make([]types.Envelope, 0, len(messages))
+	queue := make([]*types.Envelope, 0, len(messages))
 
 	for _, m := range messages {
 		t := reflect.TypeOf(m)
 		cl, ok := e.classes[t]
 
 		if !ok {
-			panic(fmt.Sprintf("no route for events of type %s", t))
+			panic(fmt.Sprintf("no route for messages of type %s", t))
 		}
 
 		queue = append(
@@ -79,7 +79,7 @@ func (e *Engine) Prepare(messages ...dogma.Message) *Engine {
 		)
 	}
 
-	e.do(queue, nil)
+	e.do(queue...)
 
 	return e
 }
@@ -88,14 +88,22 @@ func (e *Engine) Prepare(messages ...dogma.Message) *Engine {
 // command m.
 func (e *Engine) TestCommand(t TestingT, m dogma.Message) TestResult {
 	e.assertIsRoutableCommand(m)
-	return e.test(t, m)
+
+	return e.test(
+		t,
+		types.NewEnvelope(m, types.Command),
+	)
 }
 
 // TestEvent captures test results describing how the application handles the
 // event m.
 func (e *Engine) TestEvent(t TestingT, m dogma.Message) TestResult {
 	e.assertIsRoutableEvent(m)
-	return e.test(t, m)
+
+	return e.test(
+		t,
+		types.NewEnvelope(m, types.Event),
+	)
 }
 
 func (e *Engine) assertIsRoutableCommand(m dogma.Message) {
@@ -124,46 +132,29 @@ func (e *Engine) assertIsRoutableEvent(m dogma.Message) {
 	}
 }
 
-func (e *Engine) do(
-	queue []types.Envelope,
-	fn func(types.Envelope),
-) {
+func (e *Engine) do(queue ...*types.Envelope) {
 	for len(queue) > 0 {
 		env := queue[0]
 		queue = queue[1:]
 
 		t := reflect.TypeOf(env.Message)
-		for _, c := range e.routes[t] {
-			output := c.Handle(env)
-			queue = append(queue, output...)
 
-			if fn != nil {
-				for _, env := range output {
-					fn(env)
-				}
-			}
+		for _, c := range e.routes[t] {
+			c.Handle(env)
+			queue = append(queue, env.Children...)
 		}
 	}
 }
 
-func (e *Engine) test(
-	t TestingT,
-	m dogma.Message,
-) TestResult {
+func (e *Engine) test(t TestingT, env *types.Envelope) TestResult {
 	tr := TestResult{
 		T:        t,
-		Input:    types.NewEnvelope(m, types.Command),
-		Output:   map[uint64]types.Envelope{},
+		Envelope: env,
 		Compare:  e.compare,
 		Describe: e.describe,
 	}
 
-	e.do(
-		[]types.Envelope{tr.Input},
-		func(env types.Envelope) {
-			tr.Output[env.MessageID] = env
-		},
-	)
+	e.do(tr.Envelope)
 
 	return tr
 }

@@ -46,18 +46,16 @@ func (r *MatchResult) WriteTo(w io.Writer) (n int64, err error) {
 	{
 		dw := ioutil.NewIndenter(w, "  | ")
 
+		if r.Details != "" {
+			ioutil.MustWriteString(dw, "\n")
+			ioutil.MustWriteString(dw, strings.TrimSpace(r.Details))
+			ioutil.MustWriteString(dw, "\n")
+		}
+
 		if r.Hint != "" {
+			ioutil.MustWriteString(dw, "\n")
 			ioutil.MustWriteString(dw, "Hint: ")
 			ioutil.MustWriteString(dw, r.Hint)
-			ioutil.MustWriteString(dw, "\n")
-		}
-
-		if r.Hint != "" && r.Details != "" {
-			ioutil.MustWriteString(dw, "\n")
-		}
-
-		if r.Details != "" {
-			ioutil.MustWriteString(dw, strings.TrimSpace(r.Details))
 			ioutil.MustWriteString(dw, "\n")
 		}
 	}

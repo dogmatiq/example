@@ -1,30 +1,56 @@
 package types
 
 import (
-	"sync/atomic"
-
 	"github.com/dogmatiq/dogma"
 )
 
+// Envelope is a container for a message that is processed by the test engine.
 type Envelope struct {
-	MessageID     uint64
-	CausationID   uint64
-	CorrelationID uint64
-	Message       dogma.Message
-	Class         MessageClass
+	Message  dogma.Message
+	Class    MessageClass
+	Children []*Envelope
 }
 
-var messageID uint64 // atomic
-
-func NewEnvelope(m dogma.Message, c MessageClass) Envelope {
-	id := atomic.AddUint64(&messageID, 1)
-	e := Envelope{id, id, id, m, c}
-	return e
+// NewEnvelope constructs a new envelope containing the given message.
+func NewEnvelope(m dogma.Message, c MessageClass) *Envelope {
+	return &Envelope{
+		Message: m,
+		Class:   c,
+	}
 }
 
-func (e Envelope) NewChild(m dogma.Message, c MessageClass) Envelope {
-	id := atomic.AddUint64(&messageID, 1)
-	return Envelope{id, e.CausationID, e.CorrelationID, m, c}
+// NewChild constructs a new envelope as a child of e, indicating that m is
+// caused by e.Message.
+func (e *Envelope) NewChild(m dogma.Message, c MessageClass) *Envelope {
+	env := &Envelope{
+		Message: m,
+		Class:   c,
+	}
+
+	e.Children = append(e.Children, env)
+
+	return env
+}
+
+// Walk calls fn() for each of this envelope's children, and their children
+// recursively.
+//
+// fn is not called with e itself.
+//
+// If fn returns false, iteration stops. It returns true if iteration completes
+// fully.
+func (e *Envelope) Walk(fn func(*Envelope) bool) bool {
+	for _, env := range e.Children {
+		if !fn(env) {
+			return false
+		}
+
+		if !env.Walk(fn) {
+			return false
+		}
+	}
+
+	return true
 }
 
 // MessageClass is an enumeration of the "classes" of message.
