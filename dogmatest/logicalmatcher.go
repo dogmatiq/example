@@ -27,16 +27,13 @@ func logicalMatcher(
 
 		expect, pass := pred(n)
 
-		if pass {
-			r.Passed = true
-		} else {
-			r.Message = fmt.Sprintf(
-				"%d of %d sub-matchers passed, expected %s",
-				n,
-				len(matchers),
-				expect,
-			)
-		}
+		r.Passed = pass
+		r.Message = fmt.Sprintf(
+			"%d of %d sub-matchers passed, expected %s",
+			n,
+			len(matchers),
+			expect,
+		)
 
 		return r
 	}
