@@ -6,13 +6,14 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/examples/dogmatest/engine"
+	"github.com/dogmatiq/examples/dogmatest/render"
 )
 
 type controller struct {
 	name      string
 	handler   dogma.AggregateMessageHandler
+	renderer  render.Renderer
 	instances map[string]dogma.AggregateRoot
-	describe  engine.MessageDescriber
 }
 
 func (c *controller) Name() string {
@@ -53,7 +54,7 @@ func (c *controller) Handle(
 		root:     r,
 		exists:   ok,
 		command:  env,
-		describe: c.describe,
+		renderer: c.renderer,
 		logger:   logger,
 	}
 

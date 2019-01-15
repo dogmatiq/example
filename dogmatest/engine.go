@@ -6,8 +6,10 @@ import (
 	"reflect"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/examples/dogmatest/compare"
 	"github.com/dogmatiq/examples/dogmatest/engine"
 	"github.com/dogmatiq/examples/dogmatest/engine/aggregate"
+	"github.com/dogmatiq/examples/dogmatest/render"
 )
 
 // Engine is a Dogma engine used to test Dogma applications.
@@ -15,8 +17,8 @@ type Engine struct {
 	controllers []engine.Controller
 	classes     map[reflect.Type]engine.MessageClass
 	routes      map[reflect.Type][]engine.Controller
-	compare     engine.MessageComparator
-	describe    engine.MessageDescriber
+	comparator  compare.Comparator
+	renderer    render.Renderer
 }
 
 // NewEngine returns a new test engine for the given application.
@@ -27,8 +29,8 @@ func NewEngine(
 	cfg := &engine.Configuration{}
 
 	e := &Engine{
-		compare:  engine.DefaultMessageComparator,
-		describe: engine.DefaultMessageDescriber,
+		comparator: compare.DefaultComparator,
+		renderer:   render.DefaultRenderer,
 	}
 
 	for _, opt := range options {
@@ -38,7 +40,7 @@ func NewEngine(
 	for _, h := range a.Aggregates {
 		c := &aggregate.Configurer{
 			Handler:  h,
-			Describe: e.describe,
+			Renderer: e.renderer,
 		}
 
 		h.Configure(c)

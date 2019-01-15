@@ -1,22 +1,23 @@
 package dogmatest
 
-import "github.com/dogmatiq/examples/dogmatest/engine"
+import (
+	"github.com/dogmatiq/examples/dogmatest/compare"
+	"github.com/dogmatiq/examples/dogmatest/render"
+)
 
 // EngineOption is an option that configures the test engine.
 type EngineOption func(*Engine)
 
-// UseMessageComparator is an engine option that specifies the message
-// comparator to use.
-func UseMessageComparator(c engine.MessageComparator) EngineOption {
+// Comparator is an engine option that specifies the comparator to use.
+func Comparator(c compare.Comparator) EngineOption {
 	return func(e *Engine) {
-		e.compare = c
+		e.comparator = c
 	}
 }
 
-// UseMessageDescriber is an engine option that specifies the message
-// describer to use.
-func UseMessageDescriber(d engine.MessageDescriber) EngineOption {
+// Renderer is an engine option that specifies the renderer to use.
+func Renderer(r render.Renderer) EngineOption {
 	return func(e *Engine) {
-		e.describe = d
+		e.renderer = r
 	}
 }

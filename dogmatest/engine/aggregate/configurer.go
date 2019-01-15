@@ -6,12 +6,13 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/examples/dogmatest/engine"
+	"github.com/dogmatiq/examples/dogmatest/render"
 )
 
 // Configurer is the test engine's implementation of dogma.AggregateConfigurer.8
 type Configurer struct {
 	Handler  dogma.AggregateMessageHandler
-	Describe engine.MessageDescriber
+	Renderer render.Renderer
 
 	name     string
 	commands map[reflect.Type]struct{}
@@ -69,7 +70,7 @@ func (c *Configurer) Apply(cfg *engine.Configuration) {
 	ctrl := &controller{
 		name:     c.name,
 		handler:  c.Handler,
-		describe: c.Describe,
+		renderer: c.Renderer,
 	}
 
 	cfg.RegisterController(ctrl)

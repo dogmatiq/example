@@ -6,8 +6,9 @@ import (
 	"strings"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/examples/dogmatest/compare"
 	"github.com/dogmatiq/examples/dogmatest/engine"
-	"github.com/dogmatiq/examples/dogmatest/internal/ioutil"
+	"github.com/dogmatiq/examples/dogmatest/render"
 )
 
 // Test is an interface for testing a message.
@@ -83,17 +84,19 @@ func (t Test) TestEvent(m dogma.Message) TestResult {
 
 func (t Test) test(env *engine.Envelope) TestResult {
 	tr := TestResult{
-		T:        t.t,
-		Envelope: env,
-		Compare:  t.engine.compare,
-		Describe: t.engine.describe,
+		T:          t.t,
+		Envelope:   env,
+		Comparator: t.engine.comparator,
+		Renderer:   t.engine.renderer,
 	}
 
 	t.t.Logf(
-		"testing '%s' %s:\n\n%s\n",
+		"testing '%s' %s:\n\n%s\n\n",
 		reflect.TypeOf(env.Message),
 		env.Class,
-		ioutil.Indent(tr.Describe(env.Message), "| "),
+		render.IndentDetails(
+			tr.Renderer.RenderMessage(env.Message),
+		),
 	)
 
 	if err := t.engine.process(t.ctx, t.t, tr.Envelope); err != nil {
@@ -111,12 +114,11 @@ type TestResult struct {
 	// Envelope is the message envelope that contains the message under test.
 	Envelope *engine.Envelope
 
-	// Compare is the comparator used to test messages for equality.
-	Compare engine.MessageComparator
+	// Comparator is the comparator used to test for equality
+	Comparator compare.Comparator
 
-	// Describe is the describer used to render a human-readable representation of
-	// a message.
-	Describe engine.MessageDescriber
+	// Renderer is the renderer used to render values.
+	Renderer render.Renderer
 }
 
 // Expect runs the given set of matchers against this test result, and fails the

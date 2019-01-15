@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dogmatiq/examples/dogmatest/internal/ioutil"
+	"github.com/dogmatiq/examples/dogmatest/render"
 )
 
 // MatchResult represents the result of performing a match.
@@ -27,13 +28,15 @@ func (r *MatchResult) WriteTo(w io.Writer) (n int64, err error) {
 	defer ioutil.Recover(&err)
 
 	if r.Passed {
-		ioutil.MustWriteString(w, "\x1b[32m✓ ")
+		ioutil.MustWriteString(w, render.Green)
+		ioutil.MustWriteString(w, "✓ ")
 	} else {
-		ioutil.MustWriteString(w, "\x1b[31m✗ ")
+		ioutil.MustWriteString(w, render.Red)
+		ioutil.MustWriteString(w, "✗ ")
 	}
 
 	ioutil.MustWriteString(w, r.Title)
-	ioutil.MustWriteString(w, "\x1b[0m")
+	ioutil.MustWriteString(w, render.Reset)
 
 	if r.Message != "" {
 		ioutil.MustWriteString(w, " (")

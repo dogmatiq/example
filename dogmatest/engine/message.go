@@ -3,7 +3,6 @@ package engine
 import (
 	"reflect"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/dogmatiq/dogma"
 )
 
@@ -25,20 +24,4 @@ type MessageComparator func(dogma.Message, dogma.Message) bool
 // if the messages are deeply equal.
 func DefaultMessageComparator(a, b dogma.Message) bool {
 	return reflect.DeepEqual(a, b)
-}
-
-// MessageDescriber is a function that produces human-readable a description of m.
-type MessageDescriber func(m dogma.Message) string
-
-// DefaultMessageDescriber is the default message describer.
-func DefaultMessageDescriber(m dogma.Message) string {
-	return spewConfig.Sdump(m)
-}
-
-var spewConfig = spew.ConfigState{
-	Indent:                  "    ", // match the ioutil.Indenter default indent
-	DisableMethods:          true,
-	DisablePointerAddresses: true,
-	DisableCapacities:       true,
-	SortKeys:                true,
 }

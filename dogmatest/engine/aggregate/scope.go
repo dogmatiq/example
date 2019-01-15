@@ -6,7 +6,7 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/examples/dogmatest/engine"
-	"github.com/dogmatiq/examples/dogmatest/internal/ioutil"
+	"github.com/dogmatiq/examples/dogmatest/render"
 )
 
 type scope struct {
@@ -15,7 +15,7 @@ type scope struct {
 	root     dogma.AggregateRoot
 	exists   bool
 	command  *engine.Envelope
-	describe engine.MessageDescriber
+	renderer render.Renderer
 	logger   engine.Logger
 }
 
@@ -64,9 +64,11 @@ func (s *scope) RecordEvent(m dogma.Message) {
 		s.name,
 		s.id,
 		fmt.Sprintf(
-			"recorded '%s' event:\n\n%s\n",
+			"recorded '%s' event:\n\n%s\n\n",
 			reflect.TypeOf(m),
-			ioutil.Indent(s.describe(m), "| "),
+			render.IndentDetails(
+				s.renderer.RenderMessage(m),
+			),
 		),
 	)
 }

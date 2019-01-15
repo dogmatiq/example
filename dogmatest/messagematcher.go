@@ -7,7 +7,7 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/examples/dogmatest/engine"
-	"github.com/sergi/go-diff/diffmatchpatch"
+	"github.com/dogmatiq/examples/dogmatest/render"
 )
 
 // messageMatcher returns a matcher that matches messages equal to m, with the
@@ -19,7 +19,7 @@ func messageMatcher(
 	return func(tr TestResult) MatchResult {
 		t := reflect.TypeOf(m)
 		r := MatchResult{
-			Details: tr.Describe(m),
+			Details: tr.Renderer.RenderMessage(m),
 		}
 
 		switch cl {
@@ -40,7 +40,7 @@ func messageMatcher(
 		tr.Envelope.Walk(
 			func(env *engine.Envelope) bool {
 				// look for an identical message
-				if tr.Compare(m, env.Message) {
+				if tr.Comparator.CompareMessage(m, env.Message) {
 					// if it's the right message class, we've found our match
 					if env.Class == cl {
 						r.Passed = true
@@ -119,13 +119,9 @@ func messageMatcher(
 		}
 
 		// use a diff of the message description in the details field
-		diff := diffmatchpatch.New()
-		r.Details = diff.DiffPrettyText(
-			diff.DiffMain(
-				r.Details,
-				tr.Describe(bestMatch.Message),
-				true,
-			),
+		r.Details = render.Diff(
+			r.Details,
+			tr.Renderer.RenderMessage(bestMatch.Message),
 		)
 
 		return r
@@ -213,13 +209,9 @@ func messageTypeMatcher(
 		}
 
 		// use a diff of the message type in the details field
-		diff := diffmatchpatch.New()
-		r.Details = diff.DiffPrettyText(
-			diff.DiffMain(
-				t.String(),
-				reflect.TypeOf(bestMatch.Message).String(),
-				true,
-			),
+		r.Details = render.Diff(
+			t.String(),
+			reflect.TypeOf(bestMatch.Message).String(),
 		)
 
 		return r
