@@ -3,7 +3,6 @@ package compare
 import (
 	"reflect"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/dogmatiq/dogma"
 )
 
@@ -17,9 +16,7 @@ type Comparator interface {
 // DefaultComparator is the default Comparator implementation.
 var DefaultComparator Comparator = defaultComparator{}
 
-type defaultComparator struct {
-	spew spew.ConfigState
-}
+type defaultComparator struct{}
 
 func (r defaultComparator) CompareMessage(a, b dogma.Message) bool {
 	return reflect.DeepEqual(a, b)

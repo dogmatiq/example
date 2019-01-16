@@ -4,8 +4,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/dogmatiq/examples/dogmatest/internal/ioutil"
 	"github.com/dogmatiq/examples/dogmatest/render"
+	"github.com/dogmatiq/iago"
+	"github.com/dogmatiq/iago/indent"
 )
 
 // MatchResult represents the result of performing a match.
@@ -24,56 +25,58 @@ func (r *MatchResult) Append(c MatchResult) {
 }
 
 // WriteTo writes a human-readable report on the match result to w.
-func (r *MatchResult) WriteTo(w io.Writer) (n int64, err error) {
-	defer ioutil.Recover(&err)
+func (r *MatchResult) WriteTo(w io.Writer) (_ int64, err error) {
+	defer iago.Recover(&err)
+
+	n := 0
 
 	if r.Passed {
-		ioutil.MustWriteString(w, render.Green)
-		ioutil.MustWriteString(w, "✓ ")
+		n += iago.MustWriteString(w, render.Green)
+		n += iago.MustWriteString(w, "✓ ")
 	} else {
-		ioutil.MustWriteString(w, render.Red)
-		ioutil.MustWriteString(w, "✗ ")
+		n += iago.MustWriteString(w, render.Red)
+		n += iago.MustWriteString(w, "✗ ")
 	}
 
-	ioutil.MustWriteString(w, r.Title)
-	ioutil.MustWriteString(w, render.Reset)
+	n += iago.MustWriteString(w, r.Title)
+	n += iago.MustWriteString(w, render.Reset)
 
 	if r.Message != "" {
-		ioutil.MustWriteString(w, " (")
-		ioutil.MustWriteString(w, r.Message)
-		ioutil.MustWriteString(w, ")")
+		n += iago.MustWriteString(w, " (")
+		n += iago.MustWriteString(w, r.Message)
+		n += iago.MustWriteString(w, ")")
 	}
 
-	ioutil.MustWriteString(w, "\n")
+	iago.MustWriteString(w, "\n")
 	if r.Details != "" || r.Hint != "" {
-		ioutil.MustWriteString(w, "\n")
+		n += iago.MustWriteString(w, "\n")
 	}
 
 	{
-		dw := ioutil.NewIndenter(w, "  | ")
+		dw := indent.NewIndenter(w, []byte("  | "))
 
 		if r.Details != "" {
-			ioutil.MustWriteString(dw, strings.TrimSpace(r.Details))
-			ioutil.MustWriteString(dw, "\n")
+			n += iago.MustWriteString(dw, strings.TrimSpace(r.Details))
+			n += iago.MustWriteString(dw, "\n")
 		}
 
 		if r.Hint != "" {
 			if r.Details != "" {
-				ioutil.MustWriteString(dw, "\n")
+				n += iago.MustWriteString(dw, "\n")
 			}
 
-			ioutil.MustWriteString(dw, "Hint: ")
-			ioutil.MustWriteString(dw, r.Hint)
-			ioutil.MustWriteString(dw, "\n")
+			n += iago.MustWriteString(dw, "Hint: ")
+			n += iago.MustWriteString(dw, r.Hint)
+			n += iago.MustWriteString(dw, "\n")
 		}
 	}
 
 	if len(r.Children) > 0 {
-		cw := ioutil.NewIndenter(w, "")
+		cw := indent.NewIndenter(w, nil)
 		for _, rc := range r.Children {
-			n += ioutil.MustWriteTo(cw, &rc)
+			n += iago.MustWriteTo(cw, &rc)
 		}
 	}
 
-	return
+	return int64(n), nil
 }

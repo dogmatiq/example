@@ -1,7 +1,7 @@
 package render
 
 import (
-	"github.com/davecgh/go-spew/spew"
+	"github.com/dogmatiq/dapper"
 	"github.com/dogmatiq/dogma"
 )
 
@@ -17,18 +17,9 @@ type Renderer interface {
 }
 
 // DefaultRenderer is the default Renderer implementation
-var DefaultRenderer Renderer = defaultRenderer{
-	spew: spew.ConfigState{
-		Indent:                  NestedIndentPrefix,
-		DisableMethods:          true,
-		DisablePointerAddresses: true,
-		DisableCapacities:       true,
-		SortKeys:                true,
-	},
-}
+var DefaultRenderer Renderer = defaultRenderer{}
 
 type defaultRenderer struct {
-	spew spew.ConfigState
 }
 
 func (r defaultRenderer) RenderMessage(m dogma.Message) string {
@@ -60,5 +51,5 @@ func (r defaultRenderer) RenderProjectionMessageHandler(h dogma.ProjectionMessag
 }
 
 func (r defaultRenderer) render(v interface{}) string {
-	return pretty(v)
+	return dapper.Format(v)
 }

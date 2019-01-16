@@ -1,7 +1,7 @@
 package render
 
 import (
-	"github.com/dogmatiq/examples/dogmatest/internal/ioutil"
+	"github.com/dogmatiq/iago/indent"
 )
 
 const (
@@ -15,10 +15,10 @@ const (
 
 // IndentNested indents s using the NestedIndentPrefix.
 func IndentNested(s string) string {
-	return ioutil.Indent(s, NestedIndentPrefix)
+	return indent.String(s, NestedIndentPrefix)
 }
 
 // IndentDetails indents s using the DetailsIndent prefix.
 func IndentDetails(s string) string {
-	return ioutil.Indent(s, DetailsIndentPrefix)
+	return indent.String(s, DetailsIndentPrefix)
 }
