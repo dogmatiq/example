@@ -4,7 +4,7 @@ package messages
 type Deposit struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // DepositStarted is an event indicating that the process of depositing funds
@@ -12,7 +12,7 @@ type Deposit struct {
 type DepositStarted struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // CreditAccountForDeposit is a command that credits a bank account with
@@ -20,7 +20,7 @@ type DepositStarted struct {
 type CreditAccountForDeposit struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // AccountCreditedForDeposit is an event that indicates an account has been
@@ -28,5 +28,5 @@ type CreditAccountForDeposit struct {
 type AccountCreditedForDeposit struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }

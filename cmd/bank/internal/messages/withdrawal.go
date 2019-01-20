@@ -4,7 +4,7 @@ package messages
 type Withdraw struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // WithdrawalStarted is an event indicating that the process of withdrawing
@@ -12,7 +12,7 @@ type Withdraw struct {
 type WithdrawalStarted struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // DebitAccountForWithdrawal is a command that requests a bank account be
@@ -20,7 +20,7 @@ type WithdrawalStarted struct {
 type DebitAccountForWithdrawal struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // AccountDebitedForWithdrawal is an event that indicates an account has been
@@ -28,7 +28,7 @@ type DebitAccountForWithdrawal struct {
 type AccountDebitedForWithdrawal struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // WithdrawalDeclined is an event that indicates a requested withdrawal has been
@@ -36,5 +36,5 @@ type AccountDebitedForWithdrawal struct {
 type WithdrawalDeclined struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }

@@ -6,7 +6,7 @@ type Transfer struct {
 	TransactionID string
 	FromAccountID string
 	ToAccountID   string
-	Amount        uint64
+	Amount        int64
 }
 
 // TransferStarted is an event indicating that the process of transferring funds
@@ -15,7 +15,7 @@ type TransferStarted struct {
 	TransactionID string
 	FromAccountID string
 	ToAccountID   string
-	Amount        uint64
+	Amount        int64
 }
 
 // CreditAccountForTransfer is a command that credits a bank account with
@@ -23,7 +23,7 @@ type TransferStarted struct {
 type CreditAccountForTransfer struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // AccountCreditedForTransfer is an event that indicates an account has been
@@ -31,7 +31,7 @@ type CreditAccountForTransfer struct {
 type AccountCreditedForTransfer struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // DebitAccountForTransfer is a command that requests a bank account be debited
@@ -39,7 +39,7 @@ type AccountCreditedForTransfer struct {
 type DebitAccountForTransfer struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // AccountDebitedForTransfer is an event that indicates an account has been
@@ -47,7 +47,7 @@ type DebitAccountForTransfer struct {
 type AccountDebitedForTransfer struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }
 
 // TransferDeclined is an event that indicates a requested transfer has been
@@ -55,5 +55,5 @@ type AccountDebitedForTransfer struct {
 type TransferDeclined struct {
 	TransactionID string
 	AccountID     string
-	Amount        uint64
+	Amount        int64
 }

@@ -127,7 +127,7 @@ func debitForTransfer(s dogma.AggregateCommandScope, m messages.DebitAccountForT
 // account is the aggregate root for a bank account.
 type account struct {
 	// Balance is the current account balance, in cents.
-	Balance uint64
+	Balance int64
 }
 
 func (a *account) ApplyEvent(m dogma.Message) {
