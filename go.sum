@@ -5,8 +5,8 @@ github.com/dogmatiq/dapper v0.3.0 h1:xBD/brqNIj75p/EQD4gn20K7c24uLJKpwRSEcS5hxdg
 github.com/dogmatiq/dapper v0.3.0/go.mod h1:jmqlMjWRjHJDMz/9gtNlMYxJvuH8pu6tPmmX4cxetJk=
 github.com/dogmatiq/dogma v0.0.0-20190120100428-8b6934fcbec7 h1:6DKHmtGT1c+qzBRyauaTmf0Yj1nEQY4NO3Tb27EkErQ=
 github.com/dogmatiq/dogma v0.0.0-20190120100428-8b6934fcbec7/go.mod h1:kzDxrkzdgrJattEUoLmoFdyHZtib4H5oa98VcewQEI8=
-github.com/dogmatiq/dogmatest v0.0.0-20190120101042-80491e3e0468 h1:evtlQ3zkBZ05w2L1l7xaPwduzpClqjyHK9eDxMnHeqQ=
-github.com/dogmatiq/dogmatest v0.0.0-20190120101042-80491e3e0468/go.mod h1:rrpxUWONQBniToNyNKvNGNry2wsiZuVepR4TkXWmkJ8=
+github.com/dogmatiq/dogmatest v0.0.0-20190120111412-9c28fb6a97ef h1:by+8tvLL8MD+kKZgjdwxlXpbYdKEihAbu+lm+oKRkgM=
+github.com/dogmatiq/dogmatest v0.0.0-20190120111412-9c28fb6a97ef/go.mod h1:rrpxUWONQBniToNyNKvNGNry2wsiZuVepR4TkXWmkJ8=
 github.com/dogmatiq/iago v0.1.0 h1:rlm0vDX2Y09WsTwNqf41my0kjaesDIrLD5rGRSsksBk=
 github.com/dogmatiq/iago v0.1.0/go.mod h1:pFfZnnNmOS99/jQ4KzTw92sZXKqBVlYLLHpNk82F4jM=
 github.com/dogmatiq/iago v0.1.1-0.20190119001403-79da75e79c71 h1:ghSeFylCf+77OlQnVZaC3uJdynXkkCQwd9IHS1nISqs=
