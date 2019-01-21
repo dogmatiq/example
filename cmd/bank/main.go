@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
+	"github.com/dogmatiq/dapper"
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/dogmatest"
+	"github.com/dogmatiq/dogmatest/engine"
+	"github.com/dogmatiq/dogmatest/engine/fact"
 	"github.com/dogmatiq/examples/cmd/bank/internal/app"
 	"github.com/dogmatiq/examples/cmd/bank/internal/messages"
 )
@@ -40,10 +44,11 @@ func main() {
 		err := e.Dispatch(
 			context.Background(),
 			m,
-			// engine.Observe(func(f fact.Fact) {
-			// 	dapper.Print(f)
-			// 	fmt.Print("\n\n")
-			// }),
+			engine.WithObserver(func(f fact.Fact) {
+				dapper.Print(f)
+				fmt.Print("\n\n")
+			}),
+			engine.EnableHandlerType(engine.ProjectionType, true),
 		)
 		if err != nil {
 			panic(err)
