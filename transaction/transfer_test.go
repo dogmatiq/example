@@ -1,9 +1,9 @@
-package app_test
+package transaction_test
 
 // import (
-// 	. "github.com/dogmatiq/examples/cmd/bank/internal/app"
-// 	"github.com/dogmatiq/examples/cmd/bank/internal/messages"
-// 	"github.com/dogmatiq/examples/dogmatest"
+// 	. "github.com/dogmatiq/example/cmd/bank/internal/app"
+// 	"github.com/dogmatiq/example/cmd/bank/internal/messages"
+// 	"github.com/dogmatiq/example/dogmatest"
 // 	. "github.com/onsi/ginkgo"
 // )
 

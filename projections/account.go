@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/cmd/bank/internal/messages"
+	"github.com/dogmatiq/example/messages"
 )
 
 // AccountProjectionHandler is a projection that builds a report of accounts and

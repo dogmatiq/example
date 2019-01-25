@@ -7,13 +7,13 @@ import (
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/dogmatest"
 	"github.com/dogmatiq/dogmatest/engine"
-	"github.com/dogmatiq/examples/cmd/bank/internal/app"
-	"github.com/dogmatiq/examples/cmd/bank/internal/messages"
+	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/example/messages"
 )
 
 func main() {
-	a := app.App{}
-	e := dogmatest.NewEngine(a.Dogma())
+	app := &example.App{}
+	en := dogmatest.NewEngine(app)
 
 	messages := []dogma.Message{
 		messages.OpenAccount{
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	for _, m := range messages {
-		err := e.Dispatch(
+		err := en.Dispatch(
 			context.Background(),
 			m,
 			// engine.WithObserver(
@@ -54,7 +54,7 @@ func main() {
 		}
 	}
 
-	if err := a.GenerateAccountCSV(os.Stdout); err != nil {
+	if err := app.GenerateAccountCSV(os.Stdout); err != nil {
 		panic(err)
 	}
 }

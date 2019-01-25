@@ -1,27 +1,29 @@
-package app
+package transaction
 
 import (
 	"context"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/cmd/bank/internal/messages"
+	"github.com/dogmatiq/example/messages"
 )
 
-// DepositProcessHandler manages the process of depositing funds into an account.
-var DepositProcessHandler dogma.ProcessMessageHandler = depositProcessHandler{}
-
-type depositProcessHandler struct {
+// DepositProcess is manages the process of depositing funds into an account.
+type DepositProcess struct {
 	dogma.StatelessProcessBehavior
 	dogma.NoTimeoutBehavior
 }
 
-func (depositProcessHandler) Configure(c dogma.ProcessConfigurer) {
+// Configure configures the behavior of the engine as it relates to this
+// handler.
+func (DepositProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("deposit")
 	c.RouteEventType(messages.DepositStarted{})
 	c.RouteEventType(messages.AccountCreditedForDeposit{})
 }
 
-func (depositProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
+// RouteEventToInstance returns the ID of the process instance that is targetted
+// by m.
+func (DepositProcess) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
 	switch x := m.(type) {
 	case messages.DepositStarted:
 		return x.TransactionID, true, nil
@@ -32,7 +34,8 @@ func (depositProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Mes
 	}
 }
 
-func (depositProcessHandler) HandleEvent(_ context.Context, s dogma.ProcessEventScope, m dogma.Message) error {
+// HandleEvent handles an event message that has been routed to this handler.
+func (DepositProcess) HandleEvent(_ context.Context, s dogma.ProcessEventScope, m dogma.Message) error {
 	switch x := m.(type) {
 	case messages.DepositStarted:
 		s.Begin()

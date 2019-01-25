@@ -1,23 +1,43 @@
-package app
+package account
 
 import (
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/examples/cmd/bank/internal/messages"
+	"github.com/dogmatiq/example/messages"
 )
 
-// AccountHandler implements the domain logic for a bank account.
+// account is the aggregate root for a bank account.
+type account struct {
+	// Balance is the current account balance, in cents.
+	Balance int64
+}
+
+func (a *account) ApplyEvent(m dogma.Message) {
+	switch x := m.(type) {
+	case messages.AccountCreditedForDeposit:
+		a.Balance += x.Amount
+	case messages.AccountCreditedForTransfer:
+		a.Balance += x.Amount
+	case messages.AccountDebitedForWithdrawal:
+		a.Balance -= x.Amount
+	case messages.AccountDebitedForTransfer:
+		a.Balance -= x.Amount
+	}
+}
+
+// Aggregate implements the business logic for a bank account.
 //
 // It centralizes all transactions that are applied to an account in order to
 // enforce a strict no-overdraw policy.
-var AccountHandler dogma.AggregateMessageHandler = accountHandler{}
+type Aggregate struct{}
 
-type accountHandler struct{}
-
-func (accountHandler) New() dogma.AggregateRoot {
+// New returns a new account instance.
+func (Aggregate) New() dogma.AggregateRoot {
 	return &account{}
 }
 
-func (accountHandler) Configure(c dogma.AggregateConfigurer) {
+// Configure configures the behavior of the engine as it relates to this
+// handler.
+func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("account")
 	c.RouteCommandType(messages.OpenAccount{})
 	c.RouteCommandType(messages.CreditAccountForDeposit{})
@@ -26,7 +46,9 @@ func (accountHandler) Configure(c dogma.AggregateConfigurer) {
 	c.RouteCommandType(messages.DebitAccountForTransfer{})
 }
 
-func (accountHandler) RouteCommandToInstance(m dogma.Message) string {
+// RouteCommandToInstance returns the ID of the aggregate instance that is
+// targetted by m.
+func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case messages.OpenAccount:
 		return x.AccountID
@@ -43,7 +65,9 @@ func (accountHandler) RouteCommandToInstance(m dogma.Message) string {
 	}
 }
 
-func (accountHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+// HandleCommand handles a command message that has been routed to this
+// handler.
+func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case messages.OpenAccount:
 		openAccount(s, x)
@@ -122,32 +146,4 @@ func debitForTransfer(s dogma.AggregateCommandScope, m messages.DebitAccountForT
 			Amount:        m.Amount,
 		})
 	}
-}
-
-// account is the aggregate root for a bank account.
-type account struct {
-	// Balance is the current account balance, in cents.
-	Balance int64
-}
-
-func (a *account) ApplyEvent(m dogma.Message) {
-	switch x := m.(type) {
-	case messages.AccountCreditedForDeposit:
-		a.Balance += x.Amount
-	case messages.AccountCreditedForTransfer:
-		a.Balance += x.Amount
-	case messages.AccountDebitedForWithdrawal:
-		a.Balance -= x.Amount
-	case messages.AccountDebitedForTransfer:
-		a.Balance -= x.Amount
-	}
-}
-
-func (a *account) IsEqual(r dogma.AggregateRoot) bool {
-	v, ok := r.(*account)
-	return ok && *a == *v
-}
-
-func (a account) Clone() dogma.AggregateRoot {
-	return &a
 }
