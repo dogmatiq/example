@@ -5,15 +5,24 @@ import (
 	"os"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/dogmatest"
 	"github.com/dogmatiq/dogmatest/engine"
+	"github.com/dogmatiq/enginekit/config"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages"
 )
 
 func main() {
 	app := &example.App{}
-	en := dogmatest.NewEngine(app)
+
+	cfg, err := config.NewApplicationConfig(app)
+	if err != nil {
+		panic(err)
+	}
+
+	en, err := engine.New(cfg)
+	if err != nil {
+		panic(err)
+	}
 
 	messages := []dogma.Message{
 		messages.OpenAccount{
@@ -47,7 +56,7 @@ func main() {
 			// 		fmt.Print("\n\n")
 			// 	}),
 			// ),
-			engine.EnableHandlerType(engine.ProjectionType, true),
+			engine.EnableHandlerType(engine.ProjectionHandlerType, true),
 		)
 		if err != nil {
 			panic(err)
