@@ -38,13 +38,7 @@ func TestAccount_OpenAccount(t *testing.T) {
 					dogmatest.ExpectEvent(
 						messages.AccountOpened{
 							AccountID: "A001",
-							Name:      "Bob Jonesx",
-						},
-					),
-					dogmatest.ExpectEvent(
-						messages.AccountOpened{
-							AccountID: "A001",
-							Name:      "Bob Joney",
+							Name:      "Bob Jones",
 						},
 					),
 				)
