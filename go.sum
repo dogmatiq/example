@@ -7,6 +7,7 @@ github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb h1:errWGpsy/NbPdOZI
 github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb/go.mod h1:kzDxrkzdgrJattEUoLmoFdyHZtib4H5oa98VcewQEI8=
 github.com/dogmatiq/dogmatest v0.0.0-20190125064548-fe6b9f6a0290 h1:B5hjKw5tvYoflgbn+0jiwvt93QERVYB6ygv2qPJqQVE=
 github.com/dogmatiq/dogmatest v0.0.0-20190125064548-fe6b9f6a0290/go.mod h1:fGhYdb8mILD3TrZ4TZTN4Uhw/1yYBMxd2ccHzpBF0cc=
+github.com/dogmatiq/dogmatest v0.0.0-20190125082658-3353fb00a22d h1:XQ0RMxO2eK226onsMAIliEbmVrV/NflbfJJGagdk9kw=
 github.com/dogmatiq/enginekit v0.0.0-20190125064235-540de5af7fce h1:DmCebFN+kAYB88bCFxWdOADy62AEJ8Q+qy2h7ik8M+g=
 github.com/dogmatiq/enginekit v0.0.0-20190125064235-540de5af7fce/go.mod h1:A9DvZuGzpLwR5Nejx7OrBsUD04XlH3TbPP/RQPY6KEw=
 github.com/dogmatiq/iago v0.1.0 h1:rlm0vDX2Y09WsTwNqf41my0kjaesDIrLD5rGRSsksBk=

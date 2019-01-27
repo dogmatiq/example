@@ -7,6 +7,7 @@ import (
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/dogmatest"
 	"github.com/dogmatiq/dogmatest/engine"
+	"github.com/dogmatiq/enginekit/handler"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages"
 )
@@ -41,13 +42,13 @@ func main() {
 		err := en.Dispatch(
 			context.Background(),
 			m,
-			// engine.WithObserver(
+			// enginekit.WithObserver(
 			// 	fact.ObserverFunc(func(f fact.Fact) {
 			// 		dapper.Print(f)
 			// 		fmt.Print("\n\n")
 			// 	}),
 			// ),
-			engine.EnableHandlerType(engine.ProjectionType, true),
+			engine.EnableHandlerType(handler.ProjectionType, true),
 		)
 		if err != nil {
 			panic(err)
