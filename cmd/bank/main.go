@@ -42,7 +42,7 @@ func main() {
 		err := en.Dispatch(
 			context.Background(),
 			m,
-			// enginekit.WithObserver(
+			// engine.WithObserver(
 			// 	fact.ObserverFunc(func(f fact.Fact) {
 			// 		dapper.Print(f)
 			// 		fmt.Print("\n\n")
