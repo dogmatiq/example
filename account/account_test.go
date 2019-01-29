@@ -1,15 +1,11 @@
 package account_test
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/dogmatiq/dapper"
-	"github.com/dogmatiq/dogmatest/engine"
-	"github.com/dogmatiq/dogmatest/engine/fact"
-	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/example/internal/testrunner"
 
-	"github.com/dogmatiq/dogmatest"
+	. "github.com/dogmatiq/dogmatest"
 	"github.com/dogmatiq/example/messages"
 )
 
@@ -22,20 +18,12 @@ func TestAccount_OpenAccount(t *testing.T) {
 	t.Run(
 		"it opens the account",
 		func(t *testing.T) {
-			dogmatest.
-				New(&example.App{}).
-				Begin(
-					t,
-					engine.WithObserver(
-						fact.ObserverFunc(func(f fact.Fact) {
-							dapper.Print(f)
-							fmt.Print("\n\n")
-						}),
-					),
-				).
+			testrunner.
+				Runner.
+				Begin(t).
 				ExecuteCommand(
 					cmd,
-					dogmatest.ExpectEvent(
+					EventRecorded(
 						messages.AccountOpened{
 							AccountID: "A001",
 							Name:      "Bob Jones",
@@ -48,14 +36,16 @@ func TestAccount_OpenAccount(t *testing.T) {
 	t.Run(
 		"it does not open an account that is already open",
 		func(t *testing.T) {
-			// Begin(t, engine).
-			// 	Reset(cmd).
-			// 	TestCommand(cmd).
-			// 	Expect(
-			// 		Not(
-			// 			EventType(messages.AccountOpened{}),
-			// 		),
-			// 	)
+			testrunner.
+				Runner.
+				Begin(t).
+				Setup(cmd).
+				ExecuteCommand(
+					cmd,
+					NoneOf(
+						EventTypeRecorded(messages.AccountOpened{}),
+					),
+				)
 		},
 	)
 }
