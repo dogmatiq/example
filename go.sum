@@ -5,8 +5,8 @@ github.com/dogmatiq/dapper v0.3.1 h1:1s8F36lKCd+TPUj2CMarnNyftctqp//XQAc68KhRG0Q
 github.com/dogmatiq/dapper v0.3.1/go.mod h1:UYFIxCd9CKedqo9fbUFUhMDI7WsSy0kYPdB40NlkKlU=
 github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb h1:errWGpsy/NbPdOZIxLoB+EgXNEXLmVnhFu2KMI0INYk=
 github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb/go.mod h1:kzDxrkzdgrJattEUoLmoFdyHZtib4H5oa98VcewQEI8=
-github.com/dogmatiq/dogmatest v0.0.0-20190129011057-a3455c288165 h1:qi/nDDbCd8gF+Ks/xbl6tM9mLonWB9BD2k+Cyg5G6JY=
-github.com/dogmatiq/dogmatest v0.0.0-20190129011057-a3455c288165/go.mod h1:IUmYIojlAukYWYkyF7LgIWFghn5FLvQ0dxZHZem8A/s=
+github.com/dogmatiq/dogmatest v0.0.0-20190129124430-aa54d74aec83 h1:069ct+SkstGDz6HQdc14RmYBAgpXHoZvyW4Nv2ralfw=
+github.com/dogmatiq/dogmatest v0.0.0-20190129124430-aa54d74aec83/go.mod h1:IUmYIojlAukYWYkyF7LgIWFghn5FLvQ0dxZHZem8A/s=
 github.com/dogmatiq/enginekit v0.0.0-20190125064235-540de5af7fce h1:DmCebFN+kAYB88bCFxWdOADy62AEJ8Q+qy2h7ik8M+g=
 github.com/dogmatiq/enginekit v0.0.0-20190125064235-540de5af7fce/go.mod h1:A9DvZuGzpLwR5Nejx7OrBsUD04XlH3TbPP/RQPY6KEw=
 github.com/dogmatiq/iago v0.3.0 h1:dARv0U6ynTibSmDEd32ATyXqgoAVdPgsdN7iWdauTHY=
@@ -49,6 +49,8 @@ golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJ
 golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190124100055-b90733256f2e h1:3GIlrlVLfkoipSReOMNAgApI0ajnalyLa/EZHHca/XI=
 golang.org/x/sys v0.0.0-20190124100055-b90733256f2e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20190129075346-302c3dd5f1cc h1:WiYx1rIFmx8c0mXAFtv5D/mHyKe1+jmuP7PViuwqwuQ=
+golang.org/x/sys v0.0.0-20190129075346-302c3dd5f1cc/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/text v0.3.0 h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
