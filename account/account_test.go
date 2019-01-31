@@ -3,9 +3,8 @@ package account_test
 import (
 	"testing"
 
+	. "github.com/dogmatiq/dogmatest/assert"
 	"github.com/dogmatiq/example/internal/testrunner"
-
-	. "github.com/dogmatiq/dogmatest"
 	"github.com/dogmatiq/example/messages"
 )
 
