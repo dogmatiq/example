@@ -56,7 +56,7 @@ func main() {
 			// 		fmt.Print("\n\n")
 			// 	}),
 			// ),
-			engine.EnableHandlerType(engine.ProjectionHandlerType, true),
+			engine.EnableProjections(true),
 		)
 		if err != nil {
 			panic(err)
