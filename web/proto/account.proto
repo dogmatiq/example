@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package  = "github.com/dogmatiq/example/web/proto";
+
+// Account is the GRPC service.
+service Account {
+    // OpenAccount is a service handler to process OpenAccountRequest.
+    rpc OpenAccount(OpenAccountRequest) returns (OpenAccountResponse) {}
+}
+
+// OpenAccountRequest is the request initiated by the client to open an account.
+message OpenAccountRequest {
+    string account_id = 1;
+    string name = 2;
+}
+
+// OpenAccountRequest is the request initiated by the client to open an account.
+message OpenAccountResponse {
+    string account_id = 1;
+    string name = 2;
+}
