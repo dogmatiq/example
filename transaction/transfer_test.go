@@ -11,7 +11,7 @@ import (
 func TestTransferProcess_SufficientFunds(t *testing.T) {
 	testrunner.Runner.
 		Begin(t).
-		Setup(
+		Prepare(
 			messages.OpenAccount{
 				AccountID: "A001",
 				Name:      "Anna",
@@ -55,7 +55,7 @@ func TestTransferProcess_SufficientFunds(t *testing.T) {
 func TestTransferProcess_InsufficientFunds(t *testing.T) {
 	testrunner.Runner.
 		Begin(t).
-		Setup(
+		Prepare(
 			messages.OpenAccount{
 				AccountID: "A001",
 				Name:      "Anna",

@@ -39,7 +39,7 @@ func TestAccount_OpenAccount(t *testing.T) {
 
 			testrunner.Runner.
 				Begin(t).
-				Setup(cmd).
+				Prepare(cmd).
 				ExecuteCommand(
 					cmd,
 					NoneOf(
