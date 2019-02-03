@@ -5,10 +5,12 @@ github.com/dogmatiq/dapper v0.3.1 h1:1s8F36lKCd+TPUj2CMarnNyftctqp//XQAc68KhRG0Q
 github.com/dogmatiq/dapper v0.3.1/go.mod h1:UYFIxCd9CKedqo9fbUFUhMDI7WsSy0kYPdB40NlkKlU=
 github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb h1:errWGpsy/NbPdOZIxLoB+EgXNEXLmVnhFu2KMI0INYk=
 github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb/go.mod h1:kzDxrkzdgrJattEUoLmoFdyHZtib4H5oa98VcewQEI8=
-github.com/dogmatiq/dogmatest v0.0.0-20190202224208-8eacdd568cdd h1:FirPIN3f8IjbUl6crIa22F5eNzxwX+1QauMKGuIbvdU=
-github.com/dogmatiq/dogmatest v0.0.0-20190202224208-8eacdd568cdd/go.mod h1:AquixCp5ukVlKYjWq+4s2A2cl57tAZYJNz5uuxHxc4A=
+github.com/dogmatiq/dogmatest v0.0.0-20190203012247-d90ed479d14d h1:dquIPESLGrbAgTZM9wFXRLygxioFWfNuyOMzMTxVyQE=
+github.com/dogmatiq/dogmatest v0.0.0-20190203012247-d90ed479d14d/go.mod h1:AquixCp5ukVlKYjWq+4s2A2cl57tAZYJNz5uuxHxc4A=
 github.com/dogmatiq/enginekit v0.0.0-20190202211951-7cf8d3355289 h1:ktNGPfTeh8k6XqDjMWu41lFkcXv2HyG+e2bFME1aMtc=
 github.com/dogmatiq/enginekit v0.0.0-20190202211951-7cf8d3355289/go.mod h1:GNi+jdzHuGyhToSO4A/su5JYF1Qm+feUKUY7wdw4PwE=
+github.com/dogmatiq/enginekit v0.0.0-20190202235034-7cf79259fbd2 h1:XaprjvTgjTdoaatBwFRRMehnzRQvlf5VIJKKRD3TqWU=
+github.com/dogmatiq/enginekit v0.0.0-20190202235034-7cf79259fbd2/go.mod h1:GNi+jdzHuGyhToSO4A/su5JYF1Qm+feUKUY7wdw4PwE=
 github.com/dogmatiq/iago v0.3.0 h1:dARv0U6ynTibSmDEd32ATyXqgoAVdPgsdN7iWdauTHY=
 github.com/dogmatiq/iago v0.3.0/go.mod h1:fishMWBtzYcjgis6d873VTv9kFm/wHYLOzOyO9ECBDc=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
