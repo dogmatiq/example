@@ -5,29 +5,30 @@ import (
 
 	. "github.com/dogmatiq/dogmatest/assert"
 	"github.com/dogmatiq/example/internal/testrunner"
-	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/messages/events"
 )
 
 func TestTransferProcess_SufficientFunds(t *testing.T) {
 	testrunner.Runner.
 		Begin(t).
 		Prepare(
-			messages.OpenAccount{
+			commands.OpenAccount{
 				AccountID: "A001",
 				Name:      "Anna",
 			},
-			messages.OpenAccount{
+			commands.OpenAccount{
 				AccountID: "A002",
 				Name:      "Bob",
 			},
-			messages.Deposit{
+			commands.Deposit{
 				TransactionID: "D001",
 				AccountID:     "A001",
 				Amount:        500,
 			},
 		).
 		ExecuteCommand(
-			messages.Transfer{
+			commands.Transfer{
 				TransactionID: "T001",
 				FromAccountID: "A001",
 				ToAccountID:   "A002",
@@ -35,14 +36,14 @@ func TestTransferProcess_SufficientFunds(t *testing.T) {
 			},
 			AllOf(
 				EventRecorded(
-					messages.AccountDebitedForTransfer{
+					events.AccountDebitedForTransfer{
 						TransactionID: "T001",
 						AccountID:     "A001",
 						Amount:        100,
 					},
 				),
 				EventRecorded(
-					messages.AccountCreditedForTransfer{
+					events.AccountCreditedForTransfer{
 						TransactionID: "T001",
 						AccountID:     "A002",
 						Amount:        100,
@@ -56,22 +57,22 @@ func TestTransferProcess_InsufficientFunds(t *testing.T) {
 	testrunner.Runner.
 		Begin(t).
 		Prepare(
-			messages.OpenAccount{
+			commands.OpenAccount{
 				AccountID: "A001",
 				Name:      "Anna",
 			},
-			messages.OpenAccount{
+			commands.OpenAccount{
 				AccountID: "A002",
 				Name:      "Bob",
 			},
-			messages.Deposit{
+			commands.Deposit{
 				TransactionID: "D001",
 				AccountID:     "A001",
 				Amount:        500,
 			},
 		).
 		ExecuteCommand(
-			messages.Transfer{
+			commands.Transfer{
 				TransactionID: "T001",
 				FromAccountID: "A001",
 				ToAccountID:   "A002",
@@ -79,15 +80,15 @@ func TestTransferProcess_InsufficientFunds(t *testing.T) {
 			},
 			AllOf(
 				EventRecorded(
-					messages.TransferDeclined{
+					events.TransferDeclined{
 						TransactionID: "T001",
 						AccountID:     "A001",
 						Amount:        1000,
 					},
 				),
 				NoneOf(
-					EventTypeRecorded(messages.AccountDebitedForTransfer{}),
-					EventTypeRecorded(messages.AccountCreditedForTransfer{}),
+					EventTypeRecorded(events.AccountDebitedForTransfer{}),
+					EventTypeRecorded(events.AccountCreditedForTransfer{}),
 				),
 			),
 		)

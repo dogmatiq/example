@@ -5,7 +5,8 @@ import (
 
 	. "github.com/dogmatiq/dogmatest/assert"
 	"github.com/dogmatiq/example/internal/testrunner"
-	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/messages/events"
 )
 
 func TestAccount_OpenAccount(t *testing.T) {
@@ -15,12 +16,12 @@ func TestAccount_OpenAccount(t *testing.T) {
 			testrunner.Runner.
 				Begin(t).
 				ExecuteCommand(
-					messages.OpenAccount{
+					commands.OpenAccount{
 						AccountID: "A001",
 						Name:      "Bob Jones",
 					},
 					EventRecorded(
-						messages.AccountOpened{
+						events.AccountOpened{
 							AccountID: "A001",
 							Name:      "Bob Jones",
 						},
@@ -32,7 +33,7 @@ func TestAccount_OpenAccount(t *testing.T) {
 	t.Run(
 		"it does not open an account that is already open",
 		func(t *testing.T) {
-			cmd := messages.OpenAccount{
+			cmd := commands.OpenAccount{
 				AccountID: "A001",
 				Name:      "Bob Jones",
 			}
@@ -43,7 +44,7 @@ func TestAccount_OpenAccount(t *testing.T) {
 				ExecuteCommand(
 					cmd,
 					NoneOf(
-						EventTypeRecorded(messages.AccountOpened{}),
+						EventTypeRecorded(events.AccountOpened{}),
 					),
 				)
 		},
