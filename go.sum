@@ -7,12 +7,12 @@ github.com/dogmatiq/dapper v0.3.1 h1:1s8F36lKCd+TPUj2CMarnNyftctqp//XQAc68KhRG0Q
 github.com/dogmatiq/dapper v0.3.1/go.mod h1:UYFIxCd9CKedqo9fbUFUhMDI7WsSy0kYPdB40NlkKlU=
 github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb h1:errWGpsy/NbPdOZIxLoB+EgXNEXLmVnhFu2KMI0INYk=
 github.com/dogmatiq/dogma v0.0.0-20190125031156-7aa035456afb/go.mod h1:kzDxrkzdgrJattEUoLmoFdyHZtib4H5oa98VcewQEI8=
-github.com/dogmatiq/dogmatest v0.0.0-20190201051008-9353905c0391 h1:BGQmbXAYm1ZFlp7eF6+uK0QDPEaBLGrfq4TNetnT2I0=
-github.com/dogmatiq/dogmatest v0.0.0-20190201051008-9353905c0391/go.mod h1:68sbhrkLI719Ex19ZO3wgzeBexYunGOd0+yIWlug13k=
-github.com/dogmatiq/enginekit v0.0.0-20190130234730-a07e2b8a259b h1:Wkvj3zUgluE3Ps0a7kOWATSvnoWqiD4oKP3PbPgV4VQ=
-github.com/dogmatiq/enginekit v0.0.0-20190130234730-a07e2b8a259b/go.mod h1:A9DvZuGzpLwR5Nejx7OrBsUD04XlH3TbPP/RQPY6KEw=
+github.com/dogmatiq/enginekit v0.0.0-20190202235034-7cf79259fbd2 h1:XaprjvTgjTdoaatBwFRRMehnzRQvlf5VIJKKRD3TqWU=
+github.com/dogmatiq/enginekit v0.0.0-20190202235034-7cf79259fbd2/go.mod h1:GNi+jdzHuGyhToSO4A/su5JYF1Qm+feUKUY7wdw4PwE=
 github.com/dogmatiq/iago v0.3.0 h1:dARv0U6ynTibSmDEd32ATyXqgoAVdPgsdN7iWdauTHY=
 github.com/dogmatiq/iago v0.3.0/go.mod h1:fishMWBtzYcjgis6d873VTv9kFm/wHYLOzOyO9ECBDc=
+github.com/dogmatiq/testkit v0.0.0-20190204045815-c8c43943f07d h1:Lz5HvKVcwlj8ChxrkHikja3mSdOq8DQ/EoIOzFazIpM=
+github.com/dogmatiq/testkit v0.0.0-20190204045815-c8c43943f07d/go.mod h1:H1n/S2s8l/E44J1Grt8DN3GNCU5ruiYKfkNk8B89EsA=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
@@ -66,6 +66,10 @@ golang.org/x/sys v0.0.0-20180830151530-49385e6e1522/go.mod h1:STP8DvDyc/dI5b8T5h
 golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190124100055-b90733256f2e h1:3GIlrlVLfkoipSReOMNAgApI0ajnalyLa/EZHHca/XI=
 golang.org/x/sys v0.0.0-20190124100055-b90733256f2e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20190201152629-afcc84fd7533 h1:bLfqnzrpeG4usq5OvMCrwTdmMJ6aTmlCuo1eKl0mhkI=
+golang.org/x/sys v0.0.0-20190201152629-afcc84fd7533/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20190203050204-7ae0202eb74c h1:YeMXU0KQqExdpG959DFhAhfpY8myIsnfqj8lhNFRzzE=
+golang.org/x/sys v0.0.0-20190203050204-7ae0202eb74c/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/text v0.3.0 h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/tools v0.0.0-20180828015842-6cd1fcedba52/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=

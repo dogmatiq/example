@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/events"
 )
 
 // AccountProjectionHandler is a projection that builds a report of accounts and
@@ -33,11 +33,11 @@ type record struct {
 // Configure configs the engine for this projection.
 func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.Name("account-projection")
-	c.RouteEventType(messages.AccountOpened{})
-	c.RouteEventType(messages.AccountCreditedForDeposit{})
-	c.RouteEventType(messages.AccountDebitedForWithdrawal{})
-	c.RouteEventType(messages.AccountCreditedForTransfer{})
-	c.RouteEventType(messages.AccountDebitedForTransfer{})
+	c.RouteEventType(events.AccountOpened{})
+	c.RouteEventType(events.AccountCreditedForDeposit{})
+	c.RouteEventType(events.AccountDebitedForWithdrawal{})
+	c.RouteEventType(events.AccountCreditedForTransfer{})
+	c.RouteEventType(events.AccountDebitedForTransfer{})
 }
 
 // GenerateCSV writes a CSV report of all accounts to w.
@@ -105,26 +105,26 @@ func (h *AccountProjectionHandler) HandleEvent(
 	defer h.m.Unlock()
 
 	switch x := m.(type) {
-	case messages.AccountOpened:
+	case events.AccountOpened:
 		r := h.get(x.AccountID)
 		r.Name = x.Name
 
-	case messages.AccountCreditedForDeposit:
+	case events.AccountCreditedForDeposit:
 		r := h.get(x.AccountID)
 		r.DepositsIn += x.Amount
 		r.CurrentBalance += x.Amount
 
-	case messages.AccountDebitedForWithdrawal:
+	case events.AccountDebitedForWithdrawal:
 		r := h.get(x.AccountID)
 		r.WithdrawalsOut += x.Amount
 		r.CurrentBalance -= x.Amount
 
-	case messages.AccountCreditedForTransfer:
+	case events.AccountCreditedForTransfer:
 		r := h.get(x.AccountID)
 		r.TransfersIn += x.Amount
 		r.CurrentBalance += x.Amount
 
-	case messages.AccountDebitedForTransfer:
+	case events.AccountDebitedForTransfer:
 		r := h.get(x.AccountID)
 		r.TransfersOut += x.Amount
 		r.CurrentBalance -= x.Amount

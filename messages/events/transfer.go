@@ -1,13 +1,4 @@
-package messages
-
-// Transfer is a command requesting that funds be transferred from one bank
-// account to another.
-type Transfer struct {
-	TransactionID string
-	FromAccountID string
-	ToAccountID   string
-	Amount        int64
-}
+package events
 
 // TransferStarted is an event indicating that the process of transferring funds
 // from one account to another has begun.
@@ -18,25 +9,9 @@ type TransferStarted struct {
 	Amount        int64
 }
 
-// CreditAccountForTransfer is a command that credits a bank account with
-// transferred funds.
-type CreditAccountForTransfer struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
-}
-
 // AccountCreditedForTransfer is an event that indicates an account has been
 // credited with funds from a transfer.
 type AccountCreditedForTransfer struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
-}
-
-// DebitAccountForTransfer is a command that requests a bank account be debited
-// for a transfer.
-type DebitAccountForTransfer struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64

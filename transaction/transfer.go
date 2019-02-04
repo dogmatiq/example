@@ -4,7 +4,8 @@ import (
 	"context"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/messages/events"
 )
 
 // transfer is the process root for a funds transfer.
@@ -26,23 +27,23 @@ func (TransferProcess) New() dogma.ProcessRoot {
 // handler.
 func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("transfer")
-	c.RouteEventType(messages.TransferStarted{})
-	c.RouteEventType(messages.AccountDebitedForTransfer{})
-	c.RouteEventType(messages.AccountCreditedForTransfer{})
-	c.RouteEventType(messages.TransferDeclined{})
+	c.RouteEventType(events.TransferStarted{})
+	c.RouteEventType(events.AccountDebitedForTransfer{})
+	c.RouteEventType(events.AccountCreditedForTransfer{})
+	c.RouteEventType(events.TransferDeclined{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
 // by m.
 func (TransferProcess) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
 	switch x := m.(type) {
-	case messages.TransferStarted:
+	case events.TransferStarted:
 		return x.TransactionID, true, nil
-	case messages.AccountDebitedForTransfer:
+	case events.AccountDebitedForTransfer:
 		return x.TransactionID, true, nil
-	case messages.AccountCreditedForTransfer:
+	case events.AccountCreditedForTransfer:
 		return x.TransactionID, true, nil
-	case messages.TransferDeclined:
+	case events.TransferDeclined:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -56,28 +57,28 @@ func (TransferProcess) HandleEvent(
 	m dogma.Message,
 ) error {
 	switch x := m.(type) {
-	case messages.TransferStarted:
+	case events.TransferStarted:
 		s.Begin()
 
 		xfer := s.Root().(*transfer)
 		xfer.ToAccountID = x.ToAccountID
 
-		s.ExecuteCommand(messages.DebitAccountForTransfer{
+		s.ExecuteCommand(commands.DebitAccountForTransfer{
 			TransactionID: x.TransactionID,
 			AccountID:     x.FromAccountID,
 			Amount:        x.Amount,
 		})
 
-	case messages.AccountDebitedForTransfer:
+	case events.AccountDebitedForTransfer:
 		xfer := s.Root().(*transfer)
 
-		s.ExecuteCommand(messages.CreditAccountForTransfer{
+		s.ExecuteCommand(commands.CreditAccountForTransfer{
 			TransactionID: x.TransactionID,
 			AccountID:     xfer.ToAccountID,
 			Amount:        x.Amount,
 		})
 
-	case messages.AccountCreditedForTransfer, messages.TransferDeclined:
+	case events.AccountCreditedForTransfer, events.TransferDeclined:
 		s.End()
 
 	default:

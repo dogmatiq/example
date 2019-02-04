@@ -2,7 +2,8 @@ package account
 
 import (
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/messages/events"
 )
 
 // account is the aggregate root for a bank account.
@@ -13,13 +14,13 @@ type account struct {
 
 func (a *account) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
-	case messages.AccountCreditedForDeposit:
+	case events.AccountCreditedForDeposit:
 		a.Balance += x.Amount
-	case messages.AccountCreditedForTransfer:
+	case events.AccountCreditedForTransfer:
 		a.Balance += x.Amount
-	case messages.AccountDebitedForWithdrawal:
+	case events.AccountDebitedForWithdrawal:
 		a.Balance -= x.Amount
-	case messages.AccountDebitedForTransfer:
+	case events.AccountDebitedForTransfer:
 		a.Balance -= x.Amount
 	}
 }
@@ -39,26 +40,26 @@ func (Aggregate) New() dogma.AggregateRoot {
 // handler.
 func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("account")
-	c.RouteCommandType(messages.OpenAccount{})
-	c.RouteCommandType(messages.CreditAccountForDeposit{})
-	c.RouteCommandType(messages.CreditAccountForTransfer{})
-	c.RouteCommandType(messages.DebitAccountForWithdrawal{})
-	c.RouteCommandType(messages.DebitAccountForTransfer{})
+	c.RouteCommandType(commands.OpenAccount{})
+	c.RouteCommandType(commands.CreditAccountForDeposit{})
+	c.RouteCommandType(commands.CreditAccountForTransfer{})
+	c.RouteCommandType(commands.DebitAccountForWithdrawal{})
+	c.RouteCommandType(commands.DebitAccountForTransfer{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
 func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
-	case messages.OpenAccount:
+	case commands.OpenAccount:
 		return x.AccountID
-	case messages.CreditAccountForDeposit:
+	case commands.CreditAccountForDeposit:
 		return x.AccountID
-	case messages.CreditAccountForTransfer:
+	case commands.CreditAccountForTransfer:
 		return x.AccountID
-	case messages.DebitAccountForWithdrawal:
+	case commands.DebitAccountForWithdrawal:
 		return x.AccountID
-	case messages.DebitAccountForTransfer:
+	case commands.DebitAccountForTransfer:
 		return x.AccountID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -69,60 +70,60 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 // handler.
 func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
-	case messages.OpenAccount:
+	case commands.OpenAccount:
 		openAccount(s, x)
-	case messages.CreditAccountForDeposit:
+	case commands.CreditAccountForDeposit:
 		creditForDeposit(s, x)
-	case messages.CreditAccountForTransfer:
+	case commands.CreditAccountForTransfer:
 		creditForTransfer(s, x)
-	case messages.DebitAccountForWithdrawal:
+	case commands.DebitAccountForWithdrawal:
 		debitForWithdrawal(s, x)
-	case messages.DebitAccountForTransfer:
+	case commands.DebitAccountForTransfer:
 		debitForTransfer(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
 }
 
-func openAccount(s dogma.AggregateCommandScope, m messages.OpenAccount) {
+func openAccount(s dogma.AggregateCommandScope, m commands.OpenAccount) {
 	if !s.Create() {
 		s.Log("account has already been opened")
 		return
 	}
 
-	s.RecordEvent(messages.AccountOpened{
+	s.RecordEvent(events.AccountOpened{
 		AccountID: m.AccountID,
 		Name:      m.Name,
 	})
 }
 
-func creditForDeposit(s dogma.AggregateCommandScope, m messages.CreditAccountForDeposit) {
-	s.RecordEvent(messages.AccountCreditedForDeposit{
+func creditForDeposit(s dogma.AggregateCommandScope, m commands.CreditAccountForDeposit) {
+	s.RecordEvent(events.AccountCreditedForDeposit{
 		TransactionID: m.TransactionID,
 		AccountID:     m.AccountID,
 		Amount:        m.Amount,
 	})
 }
 
-func creditForTransfer(s dogma.AggregateCommandScope, m messages.CreditAccountForTransfer) {
-	s.RecordEvent(messages.AccountCreditedForTransfer{
+func creditForTransfer(s dogma.AggregateCommandScope, m commands.CreditAccountForTransfer) {
+	s.RecordEvent(events.AccountCreditedForTransfer{
 		TransactionID: m.TransactionID,
 		AccountID:     m.AccountID,
 		Amount:        m.Amount,
 	})
 }
 
-func debitForWithdrawal(s dogma.AggregateCommandScope, m messages.DebitAccountForWithdrawal) {
+func debitForWithdrawal(s dogma.AggregateCommandScope, m commands.DebitAccountForWithdrawal) {
 	a := s.Root().(*account)
 
 	if a.Balance >= m.Amount {
-		s.RecordEvent(messages.AccountDebitedForWithdrawal{
+		s.RecordEvent(events.AccountDebitedForWithdrawal{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
 		})
 	} else {
-		s.RecordEvent(messages.WithdrawalDeclined{
+		s.RecordEvent(events.WithdrawalDeclined{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
@@ -130,17 +131,17 @@ func debitForWithdrawal(s dogma.AggregateCommandScope, m messages.DebitAccountFo
 	}
 }
 
-func debitForTransfer(s dogma.AggregateCommandScope, m messages.DebitAccountForTransfer) {
+func debitForTransfer(s dogma.AggregateCommandScope, m commands.DebitAccountForTransfer) {
 	a := s.Root().(*account)
 
 	if a.Balance >= m.Amount {
-		s.RecordEvent(messages.AccountDebitedForTransfer{
+		s.RecordEvent(events.AccountDebitedForTransfer{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
 		})
 	} else {
-		s.RecordEvent(messages.TransferDeclined{
+		s.RecordEvent(events.TransferDeclined{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
