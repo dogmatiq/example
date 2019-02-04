@@ -2,7 +2,8 @@ package transaction
 
 import (
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/messages/events"
 )
 
 // Aggregate implements the business logic for a transaction of any
@@ -17,20 +18,20 @@ type Aggregate struct {
 // handler.
 func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("transaction")
-	c.RouteCommandType(messages.Deposit{})
-	c.RouteCommandType(messages.Withdraw{})
-	c.RouteCommandType(messages.Transfer{})
+	c.RouteCommandType(commands.Deposit{})
+	c.RouteCommandType(commands.Withdraw{})
+	c.RouteCommandType(commands.Transfer{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
 func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
-	case messages.Deposit:
+	case commands.Deposit:
 		return x.TransactionID
-	case messages.Withdraw:
+	case commands.Withdraw:
 		return x.TransactionID
-	case messages.Transfer:
+	case commands.Transfer:
 		return x.TransactionID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -46,22 +47,22 @@ func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	}
 
 	switch x := m.(type) {
-	case messages.Deposit:
-		s.RecordEvent(messages.DepositStarted{
+	case commands.Deposit:
+		s.RecordEvent(events.DepositStarted{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
-	case messages.Withdraw:
-		s.RecordEvent(messages.WithdrawalStarted{
+	case commands.Withdraw:
+		s.RecordEvent(events.WithdrawalStarted{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
-	case messages.Transfer:
-		s.RecordEvent(messages.TransferStarted{
+	case commands.Transfer:
+		s.RecordEvent(events.TransferStarted{
 			TransactionID: x.TransactionID,
 			FromAccountID: x.FromAccountID,
 			ToAccountID:   x.ToAccountID,

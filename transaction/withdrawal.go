@@ -4,7 +4,8 @@ import (
 	"context"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/messages/events"
 )
 
 // WithdrawalProcess manages the process of withdrawing funds from an account.
@@ -17,20 +18,20 @@ type WithdrawalProcess struct {
 // handler.
 func (WithdrawalProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("withdrawal")
-	c.RouteEventType(messages.WithdrawalStarted{})
-	c.RouteEventType(messages.AccountDebitedForWithdrawal{})
-	c.RouteEventType(messages.WithdrawalDeclined{})
+	c.RouteEventType(events.WithdrawalStarted{})
+	c.RouteEventType(events.AccountDebitedForWithdrawal{})
+	c.RouteEventType(events.WithdrawalDeclined{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
 // by m.
 func (WithdrawalProcess) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
 	switch x := m.(type) {
-	case messages.WithdrawalStarted:
+	case events.WithdrawalStarted:
 		return x.TransactionID, true, nil
-	case messages.AccountDebitedForWithdrawal:
+	case events.AccountDebitedForWithdrawal:
 		return x.TransactionID, true, nil
-	case messages.WithdrawalDeclined:
+	case events.WithdrawalDeclined:
 		return x.TransactionID, true, nil
 	default:
 		return "", false, nil
@@ -44,15 +45,15 @@ func (WithdrawalProcess) HandleEvent(
 	m dogma.Message,
 ) error {
 	switch x := m.(type) {
-	case messages.WithdrawalStarted:
+	case events.WithdrawalStarted:
 		s.Begin()
-		s.ExecuteCommand(messages.DebitAccountForWithdrawal{
+		s.ExecuteCommand(commands.DebitAccountForWithdrawal{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
-	case messages.AccountDebitedForWithdrawal, messages.WithdrawalDeclined:
+	case events.AccountDebitedForWithdrawal, events.WithdrawalDeclined:
 		s.End()
 
 	default:
