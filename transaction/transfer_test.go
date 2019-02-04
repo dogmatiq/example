@@ -3,10 +3,10 @@ package transaction_test
 import (
 	"testing"
 
-	. "github.com/dogmatiq/dogmatest/assert"
 	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
+	. "github.com/dogmatiq/testkit/assert"
 )
 
 func TestTransferProcess_SufficientFunds(t *testing.T) {
