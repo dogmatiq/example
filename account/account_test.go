@@ -3,9 +3,9 @@ package account_test
 import (
 	"testing"
 
-	. "github.com/dogmatiq/dogmatest/assert"
 	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages"
+	. "github.com/dogmatiq/testkit/assert"
 )
 
 func TestAccount_OpenAccount(t *testing.T) {

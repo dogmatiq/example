@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/dogmatest/engine"
 	"github.com/dogmatiq/enginekit/config"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/testkit/engine"
 )
 
 func main() {

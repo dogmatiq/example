@@ -1,9 +1,9 @@
 package testrunner
 
 import (
-	"github.com/dogmatiq/dogmatest"
 	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/testkit"
 )
 
 // Runner is a test runner for the example app.
-var Runner = dogmatest.New(&example.App{})
+var Runner = testkit.New(&example.App{})
