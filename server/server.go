@@ -8,8 +8,8 @@ import (
 
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 
-	"github.com/dogmatiq/dogmatest/engine"
-	"github.com/dogmatiq/example/web/proto"
+	"github.com/dogmatiq/example/proto"
+	"github.com/dogmatiq/testkit/engine"
 )
 
 // Server covers all the methods required to expose the API that uses dogmatest
@@ -57,7 +57,7 @@ func (s *server) HTTPServer( /* TO-DO: consider options here */ ) *http.Server {
 					return
 				}
 				// otherwise serve the static content
-				http.FileServer(http.Dir("web/assets/js/dist")).ServeHTTP(resp, req)
+				http.FileServer(http.Dir("www/dist")).ServeHTTP(resp, req)
 			}),
 	}
 }

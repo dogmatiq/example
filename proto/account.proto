@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package proto;
 
-option go_package  = "github.com/dogmatiq/example/web/proto";
+option go_package  = "github.com/dogmatiq/example/proto";
 
 // Account is the GRPC service.
 service Account {

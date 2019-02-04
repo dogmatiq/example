@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 
-	"github.com/dogmatiq/dogmatest/engine"
-	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/web/proto"
+	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/proto"
+	"github.com/dogmatiq/testkit/engine"
 )
 
 // accountServer is an unexposed type that implements proto.AccountServer
@@ -19,19 +19,12 @@ func (s *accountServer) OpenAccount(
 	ctx context.Context,
 	req *proto.OpenAccountRequest,
 ) (*proto.OpenAccountResponse, error) {
-	if err := s.en.Dispatch(
+	if err := s.en.ExecuteCommand(
 		context.Background(),
-		messages.OpenAccount{
+		commands.OpenAccount{
 			AccountID: req.AccountId,
 			Name:      req.Name,
 		},
-		// engine.WithObserver(
-		// 	fact.ObserverFunc(func(f fact.Fact) {
-		// 		dapper.Print(f)
-		// 		fmt.Print("\n\n")
-		// 	}),
-		// ),
-		engine.EnableProjections(true),
 	); err != nil {
 		return nil, err
 	}

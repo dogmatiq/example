@@ -4,10 +4,10 @@ import (
 	"log"
 	"net"
 
-	"github.com/dogmatiq/dogmatest/engine"
+	"github.com/dogmatiq/testkit/engine"
 	"github.com/dogmatiq/enginekit/config"
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/web/server"
+	"github.com/dogmatiq/example/server"
 	"google.golang.org/grpc"
 )
 
