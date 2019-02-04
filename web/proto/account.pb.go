@@ -36,7 +36,7 @@ func (m *OpenAccountRequest) Reset()         { *m = OpenAccountRequest{} }
 func (m *OpenAccountRequest) String() string { return proto.CompactTextString(m) }
 func (*OpenAccountRequest) ProtoMessage()    {}
 func (*OpenAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_account_6d7585a32729bd2d, []int{0}
+	return fileDescriptor_account_86b7d01159370ffb, []int{0}
 }
 func (m *OpenAccountRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OpenAccountRequest.Unmarshal(m, b)
@@ -83,7 +83,7 @@ func (m *OpenAccountResponse) Reset()         { *m = OpenAccountResponse{} }
 func (m *OpenAccountResponse) String() string { return proto.CompactTextString(m) }
 func (*OpenAccountResponse) ProtoMessage()    {}
 func (*OpenAccountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_account_6d7585a32729bd2d, []int{1}
+	return fileDescriptor_account_86b7d01159370ffb, []int{1}
 }
 func (m *OpenAccountResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OpenAccountResponse.Unmarshal(m, b)
@@ -196,9 +196,9 @@ var _Account_serviceDesc = grpc.ServiceDesc{
 	Metadata: "web/proto/account.proto",
 }
 
-func init() { proto.RegisterFile("web/proto/account.proto", fileDescriptor_account_6d7585a32729bd2d) }
+func init() { proto.RegisterFile("web/proto/account.proto", fileDescriptor_account_86b7d01159370ffb) }
 
-var fileDescriptor_account_6d7585a32729bd2d = []byte{
+var fileDescriptor_account_86b7d01159370ffb = []byte{
 	// 184 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x2f, 0x4f, 0x4d, 0xd2,
 	0x2f, 0x28, 0xca, 0x2f, 0xc9, 0xd7, 0x4f, 0x4c, 0x4e, 0xce, 0x2f, 0xcd, 0x2b, 0xd1, 0x03, 0xf3,

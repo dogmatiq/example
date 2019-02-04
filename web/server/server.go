@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"google.golang.org/grpc"
+
+	"github.com/improbable-eng/grpc-web/go/grpcweb"
 
 	"github.com/dogmatiq/dogmatest/engine"
 	"github.com/dogmatiq/example/web/proto"
@@ -34,7 +35,6 @@ func NewServer(srv *grpc.Server, en *engine.Engine) Server {
 
 	// register all gRPC servers below
 	proto.RegisterAccountServer(srv, s)
-
 	s.grpcSvr = srv
 	return s
 }
@@ -51,7 +51,13 @@ func (s *server) HTTPServer( /* TO-DO: consider options here */ ) *http.Server {
 				resp http.ResponseWriter,
 				req *http.Request,
 			) {
-				wrapped.ServeHTTP(resp, req)
+				if wrapped.IsGrpcWebRequest(req) {
+					// handle gRPC request
+					wrapped.ServeHTTP(resp, req)
+					return
+				}
+				// otherwise serve the static content
+				http.FileServer(http.Dir("web/assets/js/dist")).ServeHTTP(resp, req)
 			}),
 	}
 }
