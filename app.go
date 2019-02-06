@@ -5,7 +5,7 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/account"
-	"github.com/dogmatiq/example/debitpolicy.go"
+	"github.com/dogmatiq/example/debitpolicy"
 	"github.com/dogmatiq/example/projections"
 	"github.com/dogmatiq/example/transaction"
 )
