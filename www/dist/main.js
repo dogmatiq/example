@@ -172,7 +172,7 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const {OpenAccountRequest, OpenAccountResponse} = __webpack_require__(/*! ./pb/account_pb.js */ \"./src/pb/account_pb.js\");\nconst {AccountClient} = __webpack_require__(/*! ./pb/account_grpc_web_pb */ \"./src/pb/account_grpc_web_pb.js\");\n\n\nvar client = new AccountClient('http://localhost:9900');\n\nvar request = new OpenAccountRequest();\nrequest.setAccountId(\"fake-account-id\");\nrequest.setName(\"fake-account-name\");\n\nclient.openAccount(request, {}, (err, response) => {\n    console.log(response)\n});\n\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("const {OpenAccountRequest, OpenAccountResponse} = __webpack_require__(/*! ./pb/account_pb.js */ \"./src/pb/account_pb.js\");\nconst {AccountClient} = __webpack_require__(/*! ./pb/account_grpc_web_pb */ \"./src/pb/account_grpc_web_pb.js\");\n\n\nvar client = new AccountClient('http://localhost:9900');\n\nvar request = new OpenAccountRequest();\nrequest.setAccountId(\"fake-account-id\");\nrequest.setName(\"fake-account-name\");\n\nclient.openAccount(request, {}, (err, response) => {\n    console.log(response);\n});\n\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ }),
 

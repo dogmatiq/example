@@ -9,5 +9,5 @@ request.setAccountId("fake-account-id");
 request.setName("fake-account-name");
 
 client.openAccount(request, {}, (err, response) => {
-    console.log(response)
+    console.log(response);
 });

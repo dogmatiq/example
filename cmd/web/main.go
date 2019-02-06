@@ -9,6 +9,7 @@ import (
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/server"
 	"google.golang.org/grpc"
+	"github.com/mwitkow/grpc-proxy/proxy"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := buildGrpcProxyServer()
 	svr := server.NewServer(grpcServer, en).HTTPServer()
 
 	ln, err := net.Listen("tcp", ":9900")
@@ -34,4 +35,24 @@ func main() {
 
 	log.Printf("about to listen for gRPC call on: %v", ln.Addr())
 	log.Fatal(svr.Serve(ln))
+}
+
+
+func buildGrpcProxyServer() *grpc.Server {
+	// gRPC proxy logic.
+	backendConn := dialBackendOrFail()
+	director := func(ctx context.Context, fullMethodName string)
+						(context.Context, *grpc.ClientConn, error) {
+		md, _ := metadata.FromIncomingContext(ctx)
+		outCtx, _ := context.WithCancel(ctx)
+		mdCopy := md.Copy()
+		delete(mdCopy, "user-agent")
+		outCtx = metadata.NewOutgoingContext(outCtx, mdCopy)
+		return outCtx, backendConn, nil
+	}
+
+	return grpc.NewServer(
+		grpc.CustomCodec(proxy.Codec()), // needed for proxy to function.
+		grpc.UnknownServiceHandler(proxy.TransparentHandler(director)),
+	)
 }

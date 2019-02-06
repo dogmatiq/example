@@ -42,7 +42,19 @@ func NewServer(srv *grpc.Server, en *engine.Engine) Server {
 // HTTPServer returns an instance of HTTP server that is capable of
 // conveying requests to gRPC servers over gRPC-Web spec.
 func (s *server) HTTPServer( /* TO-DO: consider options here */ ) *http.Server {
-	wrapped := grpcweb.WrapServer(s.grpcSvr)
+
+
+
+
+
+
+
+	options := []grpcweb.Option{
+		// gRPC-Web compatibility layer with CORS configured to accept on every request
+		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
+	}
+
+	wrapped := grpcweb.WrapServer(s.grpcSvr, options...)
 	return &http.Server{
 		WriteTimeout: 10 * time.Second, // TO-DO:  replace hard-coded values with options
 		ReadTimeout:  10 * time.Second, // TO-DO:  replace hard-coded values with options
