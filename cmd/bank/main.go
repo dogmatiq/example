@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/enginekit/config"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit/engine"
@@ -14,12 +13,7 @@ import (
 func main() {
 	app := &example.App{}
 
-	cfg, err := config.NewApplicationConfig(app)
-	if err != nil {
-		panic(err)
-	}
-
-	en, err := engine.New(cfg)
+	en, err := engine.New(&example.App{})
 	if err != nil {
 		panic(err)
 	}
