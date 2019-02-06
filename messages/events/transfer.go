@@ -25,9 +25,9 @@ type AccountDebitedForTransfer struct {
 	Amount        int64
 }
 
-// TransferDeclined is an event that indicates a requested transfer has been
-// declined due to insufficient funds.
-type TransferDeclined struct {
+// TransferDeclinedDueToInsufficientFunds is an event that indicates a requested
+// transfer has been declined due to insufficient funds.
+type TransferDeclinedDueToInsufficientFunds struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64

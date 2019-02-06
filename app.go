@@ -5,6 +5,7 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/account"
+	"github.com/dogmatiq/example/debitpolicy.go"
 	"github.com/dogmatiq/example/projections"
 	"github.com/dogmatiq/example/transaction"
 )
@@ -12,6 +13,7 @@ import (
 // App is an implementation of dogma.Application for the bank example.
 type App struct {
 	accountAggregate     account.Aggregate
+	debitPolicyAggregate debitpolicy.Aggregate
 	transactionAggregate transaction.Aggregate
 	depositProcess       transaction.DepositProcess
 	withdrawalProcess    transaction.WithdrawalProcess
@@ -23,6 +25,7 @@ type App struct {
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.Name("bank")
 	c.RegisterAggregate(a.accountAggregate)
+	c.RegisterAggregate(a.debitPolicyAggregate)
 	c.RegisterAggregate(a.transactionAggregate)
 	c.RegisterProcess(a.depositProcess)
 	c.RegisterProcess(a.withdrawalProcess)

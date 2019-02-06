@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"context"
+	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages/commands"
@@ -28,9 +29,11 @@ func (TransferProcess) New() dogma.ProcessRoot {
 func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("transfer")
 	c.RouteEventType(events.TransferStarted{})
+	c.RouteEventType(events.TransferApprovedByDebitPolicy{})
 	c.RouteEventType(events.AccountDebitedForTransfer{})
 	c.RouteEventType(events.AccountCreditedForTransfer{})
-	c.RouteEventType(events.TransferDeclined{})
+	c.RouteEventType(events.TransferDeclinedDueToInsufficientFunds{})
+	c.RouteEventType(events.TransferDeclinedByDebitPolicy{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -39,11 +42,15 @@ func (TransferProcess) RouteEventToInstance(_ context.Context, m dogma.Message) 
 	switch x := m.(type) {
 	case events.TransferStarted:
 		return x.TransactionID, true, nil
+	case events.TransferApprovedByDebitPolicy:
+		return x.TransactionID, true, nil
 	case events.AccountDebitedForTransfer:
 		return x.TransactionID, true, nil
 	case events.AccountCreditedForTransfer:
 		return x.TransactionID, true, nil
-	case events.TransferDeclined:
+	case events.TransferDeclinedDueToInsufficientFunds:
+		return x.TransactionID, true, nil
+	case events.TransferDeclinedByDebitPolicy:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -63,9 +70,17 @@ func (TransferProcess) HandleEvent(
 		xfer := s.Root().(*transfer)
 		xfer.ToAccountID = x.ToAccountID
 
-		s.ExecuteCommand(commands.DebitAccountForTransfer{
+		s.ExecuteCommand(commands.CheckTransferAllowedByDebitPolicy{
+			Timestamp:     time.Now(),
 			TransactionID: x.TransactionID,
 			AccountID:     x.FromAccountID,
+			Amount:        x.Amount,
+		})
+
+	case events.TransferApprovedByDebitPolicy:
+		s.ExecuteCommand(commands.DebitAccountForTransfer{
+			TransactionID: x.TransactionID,
+			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
@@ -78,7 +93,9 @@ func (TransferProcess) HandleEvent(
 			Amount:        x.Amount,
 		})
 
-	case events.AccountCreditedForTransfer, events.TransferDeclined:
+	case events.AccountCreditedForTransfer,
+		events.TransferDeclinedDueToInsufficientFunds,
+		events.TransferDeclinedByDebitPolicy:
 		s.End()
 
 	default:
