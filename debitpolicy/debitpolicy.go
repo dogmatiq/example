@@ -58,10 +58,6 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 
 // HandleCommand handles a command message that has bene routed to this handler.
 func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
-	if s.Create() {
-		s.Log("debit policy created")
-	}
-
 	switch x := m.(type) {
 	case commands.CheckWithdrawalAllowedByDebitPolicy:
 		checkWithdrawalAllowed(s, x)
@@ -73,6 +69,8 @@ func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 }
 
 func checkWithdrawalAllowed(s dogma.AggregateCommandScope, m commands.CheckWithdrawalAllowedByDebitPolicy) {
+	s.Create()
+
 	p := s.Root().(*debitpolicy)
 
 	if p.DebitAmount+m.Amount <= debitLimitPerPeriod {
@@ -91,6 +89,8 @@ func checkWithdrawalAllowed(s dogma.AggregateCommandScope, m commands.CheckWithd
 }
 
 func checkTransferAllowed(s dogma.AggregateCommandScope, m commands.CheckTransferAllowedByDebitPolicy) {
+	s.Create()
+
 	p := s.Root().(*debitpolicy)
 
 	if p.DebitAmount+m.Amount <= debitLimitPerPeriod {
