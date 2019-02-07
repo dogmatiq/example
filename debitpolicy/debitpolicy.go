@@ -109,7 +109,7 @@ func checkTransferAllowed(s dogma.AggregateCommandScope, m commands.CheckTransfe
 }
 
 func makeInstanceID(t time.Time, accountID string) string {
-	return fmt.Sprintf("%d%d%d-%s", t.Year(), t.Month(), t.Day(), accountID)
+	return fmt.Sprintf("%04d%02d%02d-%s", t.Year(), t.Month(), t.Day(), accountID)
 }
 
 const debitLimitPerPeriod = 9000
