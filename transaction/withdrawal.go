@@ -20,7 +20,7 @@ func (WithdrawalProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("withdrawal")
 	c.RouteEventType(events.WithdrawalStarted{})
 	c.RouteEventType(events.AccountDebitedForWithdrawal{})
-	c.RouteEventType(events.WithdrawalDeclined{})
+	c.RouteEventType(events.WithdrawalDeclinedDueToInsufficientFunds{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -31,7 +31,7 @@ func (WithdrawalProcess) RouteEventToInstance(_ context.Context, m dogma.Message
 		return x.TransactionID, true, nil
 	case events.AccountDebitedForWithdrawal:
 		return x.TransactionID, true, nil
-	case events.WithdrawalDeclined:
+	case events.WithdrawalDeclinedDueToInsufficientFunds:
 		return x.TransactionID, true, nil
 	default:
 		return "", false, nil
@@ -53,7 +53,8 @@ func (WithdrawalProcess) HandleEvent(
 			Amount:        x.Amount,
 		})
 
-	case events.AccountDebitedForWithdrawal, events.WithdrawalDeclined:
+	case events.AccountDebitedForWithdrawal,
+		events.WithdrawalDeclinedDueToInsufficientFunds:
 		s.End()
 
 	default:
