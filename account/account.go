@@ -66,7 +66,7 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 	}
 }
 
-// HandleCommand handles a command message that has been routed to this // handler.
+// HandleCommand handles a command message that has been routed to this handler.
 func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.OpenAccount:
