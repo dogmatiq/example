@@ -8,6 +8,7 @@ option go_package  = "github.com/dogmatiq/example/proto";
 service Account {
     // OpenAccount is a service handler to process OpenAccountRequest.
     rpc OpenAccount(OpenAccountRequest) returns (OpenAccountResponse) {}
+    rpc TestStreaming(TestStreamingRequest) returns (stream TestStreamingResponse) {}
 }
 
 // OpenAccountRequest is the request initiated by the client to open an account.
@@ -20,4 +21,12 @@ message OpenAccountRequest {
 message OpenAccountResponse {
     string account_id = 1;
     string name = 2;
+}
+
+message TestStreamingRequest {
+
+}
+
+message TestStreamingResponse{
+    string message = 1;
 }

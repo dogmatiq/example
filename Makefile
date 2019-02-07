@@ -9,6 +9,7 @@ artifacts/make/%.mk:
 
 JS_PB_DIR=www/src/pb
 %.pb.go: %.proto
+	@mkdir -p $(@D)
 	protoc --go_out=paths=source_relative,plugins=grpc:. $(@D)/*.proto
 	@mkdir -p $(JS_PB_DIR)
 	protoc 	--proto_path=$(@D) \

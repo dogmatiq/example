@@ -42,34 +42,30 @@ func NewServer(srv *grpc.Server, en *engine.Engine) Server {
 // HTTPServer returns an instance of HTTP server that is capable of
 // conveying requests to gRPC servers over gRPC-Web spec.
 func (s *server) HTTPServer( /* TO-DO: consider options here */ ) *http.Server {
-
-
-
-
-
-
-
-	options := []grpcweb.Option{
-		// gRPC-Web compatibility layer with CORS configured to accept on every request
-		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
-	}
-
-	wrapped := grpcweb.WrapServer(s.grpcSvr, options...)
+	wrapped := grpcweb.WrapServer(s.grpcSvr)
 	return &http.Server{
-		WriteTimeout: 10 * time.Second, // TO-DO:  replace hard-coded values with options
-		ReadTimeout:  10 * time.Second, // TO-DO:  replace hard-coded values with options
+		// TO-DO:  replace hard-coded values with options
+		ReadTimeout: 0 * time.Second,
+		// TO-DO:  replace hard-coded values with options
+		WriteTimeout: 0 * time.Second,
 		Handler: http.HandlerFunc(
 			func(
 				resp http.ResponseWriter,
 				req *http.Request,
 			) {
 				if wrapped.IsGrpcWebRequest(req) {
-					// handle gRPC request
+					// set the response content type to whatever JS gRPC client
+					// original content type was; see issue
+					// https://github.com/improbable-eng/grpc-web/issues/162 for
+					// details.
+					// if ct := req.Header.Get("Content-Type"); ct != "" {
+					// 	resp.Header().Set("Content-Type", ct)
+					// }
 					wrapped.ServeHTTP(resp, req)
-					return
+				} else {
+					// otherwise serve the static content
+					http.FileServer(http.Dir("www/dist")).ServeHTTP(resp, req)
 				}
-				// otherwise serve the static content
-				http.FileServer(http.Dir("www/dist")).ServeHTTP(resp, req)
 			}),
 	}
 }

@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/proto"
@@ -33,4 +35,20 @@ func (s *accountServer) OpenAccount(
 		AccountId: req.AccountId,
 		Name:      req.Name,
 	}, nil
+}
+
+func (s *accountServer) TestStreaming(
+	req *proto.TestStreamingRequest,
+	out proto.Account_TestStreamingServer,
+) error {
+	now := time.Now()
+	for {
+		since := time.Since(now).Round(time.Second)
+		if err := out.Send(&proto.TestStreamingResponse{
+			Message: fmt.Sprintf("The stream has been opened for %v", since),
+		}); err != nil {
+			return err
+		}
+		<-time.After(time.Second * 1)
+	}
 }

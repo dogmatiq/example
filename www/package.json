@@ -2,7 +2,7 @@
   "name": "grpc-web-commonjs-example",
   "dependencies": {
     "google-protobuf": "^3.6.1",
-    "grpc-web": "latest"
+    "grpc-web": "^1.0.3"
   },
   "devDependencies": {
     "terser": "^3.14.1",

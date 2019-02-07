@@ -128,5 +128,55 @@ proto.proto.AccountPromiseClient.prototype.openAccount =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.TestStreamingRequest,
+ *   !proto.proto.TestStreamingResponse>}
+ */
+const methodInfo_Account_TestStreaming = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.proto.TestStreamingResponse,
+  /** @param {!proto.proto.TestStreamingRequest} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.TestStreamingResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.TestStreamingRequest} request The request proto
+ * @param {!Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.TestStreamingResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.AccountClient.prototype.testStreaming =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.Account/TestStreaming',
+      request,
+      metadata,
+      methodInfo_Account_TestStreaming);
+};
+
+
+/**
+ * @param {!proto.proto.TestStreamingRequest} request The request proto
+ * @param {!Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.TestStreamingResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.AccountPromiseClient.prototype.testStreaming =
+    function(request, metadata) {
+  return this.delegateClient_.client_.serverStreaming(this.delegateClient_.hostname_ +
+      '/proto.Account/TestStreaming',
+      request,
+      metadata,
+      methodInfo_Account_TestStreaming);
+};
+
+
 module.exports = proto.proto;
 
