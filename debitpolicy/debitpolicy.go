@@ -48,9 +48,9 @@ func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.CheckWithdrawalAllowedByDebitPolicy:
-		return makeInstanceID(x.Timestamp, x.AccountID)
+		return makeInstanceID(x.TransactionTimestamp, x.AccountID)
 	case commands.CheckTransferAllowedByDebitPolicy:
-		return makeInstanceID(x.Timestamp, x.AccountID)
+		return makeInstanceID(x.TransactionTimestamp, x.AccountID)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
