@@ -66,8 +66,7 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 	}
 }
 
-// HandleCommand handles a command message that has been routed to this
-// handler.
+// HandleCommand handles a command message that has been routed to this handler.
 func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.OpenAccount:
@@ -123,7 +122,7 @@ func debitForWithdrawal(s dogma.AggregateCommandScope, m commands.DebitAccountFo
 			Amount:        m.Amount,
 		})
 	} else {
-		s.RecordEvent(events.WithdrawalDeclined{
+		s.RecordEvent(events.WithdrawalDeclinedDueToInsufficientFunds{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
@@ -141,7 +140,7 @@ func debitForTransfer(s dogma.AggregateCommandScope, m commands.DebitAccountForT
 			Amount:        m.Amount,
 		})
 	} else {
-		s.RecordEvent(events.TransferDeclined{
+		s.RecordEvent(events.TransferDeclinedDueToInsufficientFunds{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
