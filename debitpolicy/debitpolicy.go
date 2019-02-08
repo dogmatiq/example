@@ -73,7 +73,7 @@ func checkWithdrawalAllowed(s dogma.AggregateCommandScope, m commands.CheckWithd
 
 	p := s.Root().(*debitpolicy)
 
-	if p.DebitAmount+m.Amount <= debitLimitPerPeriod {
+	if p.isAmountWithinLimit(m.Amount) {
 		s.RecordEvent(events.WithdrawalApprovedByDebitPolicy{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
@@ -93,7 +93,7 @@ func checkTransferAllowed(s dogma.AggregateCommandScope, m commands.CheckTransfe
 
 	p := s.Root().(*debitpolicy)
 
-	if p.DebitAmount+m.Amount <= debitLimitPerPeriod {
+	if p.isAmountWithinLimit(m.Amount) {
 		s.RecordEvent(events.TransferApprovedByDebitPolicy{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
@@ -109,7 +109,11 @@ func checkTransferAllowed(s dogma.AggregateCommandScope, m commands.CheckTransfe
 }
 
 func makeInstanceID(t time.Time, accountID string) string {
-	return fmt.Sprintf("%04d%02d%02d-%s", t.Year(), t.Month(), t.Day(), accountID)
+	return fmt.Sprintf("%04d-%02d-%02d:%s", t.Year(), t.Month(), t.Day(), accountID)
 }
 
-const debitLimitPerPeriod = 9000
+func (p *debitpolicy) isAmountWithinLimit(amount int64) bool {
+	return p.DebitAmount+amount <= dailyDebitLimit
+}
+
+const dailyDebitLimit = 9000
