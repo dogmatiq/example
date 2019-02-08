@@ -55,10 +55,10 @@ func (WithdrawalProcess) HandleEvent(
 	case events.WithdrawalStarted:
 		s.Begin()
 		s.ExecuteCommand(commands.CheckWithdrawalAllowedByDebitPolicy{
-			Timestamp:     time.Now(),
-			TransactionID: x.TransactionID,
-			AccountID:     x.AccountID,
-			Amount:        x.Amount,
+			TransactionTimestamp: time.Now(),
+			TransactionID:        x.TransactionID,
+			AccountID:            x.AccountID,
+			Amount:               x.Amount,
 		})
 
 	case events.WithdrawalApprovedByDebitPolicy:

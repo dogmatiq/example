@@ -24,8 +24,7 @@ func (TransferProcess) New() dogma.ProcessRoot {
 	return &transfer{}
 }
 
-// Configure configures the behavior of the engine as it relates to this
-// handler.
+// Configure configures the behavior of the engine as it relates to this handler.
 func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("transfer")
 	c.RouteEventType(events.TransferStarted{})
@@ -71,10 +70,10 @@ func (TransferProcess) HandleEvent(
 		xfer.ToAccountID = x.ToAccountID
 
 		s.ExecuteCommand(commands.CheckTransferAllowedByDebitPolicy{
-			Timestamp:     time.Now(),
-			TransactionID: x.TransactionID,
-			AccountID:     x.FromAccountID,
-			Amount:        x.Amount,
+			TransactionTimestamp: time.Now(),
+			TransactionID:        x.TransactionID,
+			AccountID:            x.FromAccountID,
+			Amount:               x.Amount,
 		})
 
 	case events.TransferApprovedByDebitPolicy:
