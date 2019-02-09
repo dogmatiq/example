@@ -16,9 +16,9 @@ type AccountDebitedForWithdrawal struct {
 	Amount        int64
 }
 
-// WithdrawalDeclined is an event that indicates a requested withdrawal has been
-// declined due to insufficient funds.
-type WithdrawalDeclined struct {
+// WithdrawalDeclinedDueToInsufficientFunds is an event that indicates a
+// requested withdrawal has been declined due to insufficient funds.
+type WithdrawalDeclinedDueToInsufficientFunds struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64

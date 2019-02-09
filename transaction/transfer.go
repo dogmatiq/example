@@ -23,14 +23,13 @@ func (TransferProcess) New() dogma.ProcessRoot {
 	return &transfer{}
 }
 
-// Configure configures the behavior of the engine as it relates to this
-// handler.
+// Configure configures the behavior of the engine as it relates to this handler.
 func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("transfer")
 	c.RouteEventType(events.TransferStarted{})
 	c.RouteEventType(events.AccountDebitedForTransfer{})
 	c.RouteEventType(events.AccountCreditedForTransfer{})
-	c.RouteEventType(events.TransferDeclined{})
+	c.RouteEventType(events.TransferDeclinedDueToInsufficientFunds{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -43,7 +42,7 @@ func (TransferProcess) RouteEventToInstance(_ context.Context, m dogma.Message) 
 		return x.TransactionID, true, nil
 	case events.AccountCreditedForTransfer:
 		return x.TransactionID, true, nil
-	case events.TransferDeclined:
+	case events.TransferDeclinedDueToInsufficientFunds:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -78,7 +77,8 @@ func (TransferProcess) HandleEvent(
 			Amount:        x.Amount,
 		})
 
-	case events.AccountCreditedForTransfer, events.TransferDeclined:
+	case events.AccountCreditedForTransfer,
+		events.TransferDeclinedDueToInsufficientFunds:
 		s.End()
 
 	default:
