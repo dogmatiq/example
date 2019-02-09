@@ -10,24 +10,28 @@ import (
 	"github.com/dogmatiq/testkit/engine"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
+	"github.com/dogmatiq/example/proto"
 )
 
 func main() {
-
 	en, err := engine.New(&example.App{})
 	if err != nil {
 		panic(err)
 	}
-
-	grpcServer := grpc.NewServer()
+	// set a global groc logger
 	grpclog.SetLogger(log.New(os.Stderr, "grpc: ", log.LstdFlags))
-	svr := server.NewServer(grpcServer, en).HTTPServer()
+
+	svr:= server.NewServer(en)
+	grpcSvr :=  grpc.NewServer()
+
+	proto.RegisterAccountServer(grpcSvr, svr)
+	httpSvr := gRPC2HTTP(grpcSvr)
 
 	ln, err := net.Listen("tcp", ":9900")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Printf("about to listen for gRPC call on: %v", ln.Addr())
-	log.Fatal(svr.Serve(ln))
+	log.Printf("listening on %v", ln.Addr())
+	log.Fatal(httpSvr.Serve(ln))
 }
