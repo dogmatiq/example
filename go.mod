@@ -7,7 +7,6 @@ require (
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/improbable-eng/grpc-web v0.0.0-20190205122814-56d0d4c8da5b
 	github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223 // indirect
-	github.com/mwitkow/grpc-proxy v0.0.0-20181017164139-0f1106ef9c76
 	github.com/rs/cors v1.6.0 // indirect
 	golang.org/x/net v0.0.0-20190125091013-d26f9f9a57f3
 	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2 // indirect
