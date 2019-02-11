@@ -20,5 +20,6 @@ JS_PB_DIR=www/src/pb
 www/node_modules:
 	cd www; npm install
 
-www/dist/main.js: www/src/index.js www/node_modules $(PB_FILES)
-	cd www; npx webpack --mode=development $(notdir $(<D))/$(<F)
+CLIENTSIDEFILES= $(shell find www/src \( -name "*.js" -or -name "*.jsx" -or -name "*.html" -or -name "*.css" \))
+www/dist/main.js: $(CLIENTSIDEFILES) www/node_modules
+	cd www; npx webpack
