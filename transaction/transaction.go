@@ -21,6 +21,8 @@ func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 	c.RouteCommandType(commands.Deposit{})
 	c.RouteCommandType(commands.Withdraw{})
 	c.RouteCommandType(commands.Transfer{})
+	c.RouteCommandType(commands.MarkWithdrawalDeclinedDueToDailyDebitLimit{})
+	c.RouteCommandType(commands.MarkTransferDeclinedDueToDailyDebitLimit{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
@@ -32,6 +34,10 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 	case commands.Withdraw:
 		return x.TransactionID
 	case commands.Transfer:
+		return x.TransactionID
+	case commands.MarkWithdrawalDeclinedDueToDailyDebitLimit:
+		return x.TransactionID
+	case commands.MarkTransferDeclinedDueToDailyDebitLimit:
 		return x.TransactionID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -55,16 +61,32 @@ func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 
 	case commands.Withdraw:
 		s.RecordEvent(events.WithdrawalStarted{
+			TransactionID:        x.TransactionID,
+			AccountID:            x.AccountID,
+			Amount:               x.Amount,
+			TransactionTimestamp: x.TransactionTimestamp,
+		})
+
+	case commands.Transfer:
+		s.RecordEvent(events.TransferStarted{
+			TransactionID:        x.TransactionID,
+			FromAccountID:        x.FromAccountID,
+			ToAccountID:          x.ToAccountID,
+			Amount:               x.Amount,
+			TransactionTimestamp: x.TransactionTimestamp,
+		})
+
+	case commands.MarkWithdrawalDeclinedDueToDailyDebitLimit:
+		s.RecordEvent(events.WithdrawalDeclinedDueToDailyDebitLimit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
-	case commands.Transfer:
-		s.RecordEvent(events.TransferStarted{
+	case commands.MarkTransferDeclinedDueToDailyDebitLimit:
+		s.RecordEvent(events.TransferDeclinedDueToDailyDebitLimit{
 			TransactionID: x.TransactionID,
-			FromAccountID: x.FromAccountID,
-			ToAccountID:   x.ToAccountID,
+			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 

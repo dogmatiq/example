@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"context"
-	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages/commands"
@@ -20,10 +19,10 @@ type WithdrawalProcess struct {
 func (WithdrawalProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("withdrawal")
 	c.RouteEventType(events.WithdrawalStarted{})
-	c.RouteEventType(events.WithdrawalApprovedByDebitPolicy{})
 	c.RouteEventType(events.AccountDebitedForWithdrawal{})
 	c.RouteEventType(events.WithdrawalDeclinedDueToInsufficientFunds{})
-	c.RouteEventType(events.WithdrawalDeclinedByDebitPolicy{})
+	c.RouteEventType(events.DailyDebitAmountConsumed{})
+	c.RouteEventType(events.DailyDebitAmountConsumtionRejected{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -32,13 +31,13 @@ func (WithdrawalProcess) RouteEventToInstance(_ context.Context, m dogma.Message
 	switch x := m.(type) {
 	case events.WithdrawalStarted:
 		return x.TransactionID, true, nil
-	case events.WithdrawalApprovedByDebitPolicy:
-		return x.TransactionID, true, nil
 	case events.AccountDebitedForWithdrawal:
 		return x.TransactionID, true, nil
 	case events.WithdrawalDeclinedDueToInsufficientFunds:
 		return x.TransactionID, true, nil
-	case events.WithdrawalDeclinedByDebitPolicy:
+	case events.DailyDebitAmountConsumed:
+		return x.TransactionID, true, nil
+	case events.DailyDebitAmountConsumtionRejected:
 		return x.TransactionID, true, nil
 	default:
 		return "", false, nil
@@ -53,24 +52,44 @@ func (WithdrawalProcess) HandleEvent(
 ) error {
 	switch x := m.(type) {
 	case events.WithdrawalStarted:
+		s.Log("***NOT THIS WITHDRAWAL HANDLER! events.WithdrawalStarted***")
 		s.Begin()
-		s.ExecuteCommand(commands.CheckWithdrawalAllowedByDebitPolicy{
-			TransactionTimestamp: time.Now(),
+		s.ExecuteCommand(commands.ConsumeDailyDebitAmount{
 			TransactionID:        x.TransactionID,
 			AccountID:            x.AccountID,
 			Amount:               x.Amount,
+			TransactionTimestamp: x.TransactionTimestamp,
 		})
 
-	case events.WithdrawalApprovedByDebitPolicy:
-		s.ExecuteCommand(commands.DebitAccountForWithdrawal{
+	case events.DailyDebitAmountConsumtionRejected:
+		s.Log("***NOT THIS WITHDRAWAL HANDLER! events.DailyDebitAmountConsumtionRejected***")
+		s.ExecuteCommand(commands.MarkWithdrawalDeclinedDueToDailyDebitLimit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
+		s.End()
 
-	case events.AccountDebitedForWithdrawal,
-		events.WithdrawalDeclinedDueToInsufficientFunds,
-		events.WithdrawalDeclinedByDebitPolicy:
+	case events.DailyDebitAmountConsumed:
+		s.Log("***NOT THIS WITHDRAWAL HANDLER! events.DailyDebitAmountConsumed***")
+		// TODO(KM): Disabled this for debugging the Transfer test.
+		// s.ExecuteCommand(commands.DebitAccountForWithdrawal{
+		// 	TransactionID:        x.TransactionID,
+		// 	AccountID:            x.AccountID,
+		// 	Amount:               x.Amount,
+		// 	TransactionTimestamp: x.TransactionTimestamp,
+		// })
+
+	case events.WithdrawalDeclinedDueToInsufficientFunds:
+		s.ExecuteCommand(commands.RestoreDailyDebitAmount{
+			TransactionID:        x.TransactionID,
+			AccountID:            x.AccountID,
+			Amount:               x.Amount,
+			TransactionTimestamp: x.TransactionTimestamp,
+		})
+		s.End()
+
+	case events.AccountDebitedForWithdrawal:
 		s.End()
 
 	default:

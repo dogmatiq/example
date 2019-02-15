@@ -2,6 +2,7 @@ package transaction_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages/commands"
@@ -10,6 +11,8 @@ import (
 )
 
 func TestTransferProcess_SufficientFunds(t *testing.T) {
+	timestamp := time.Now()
+
 	testrunner.Runner.
 		Begin(t).
 		Prepare(
@@ -29,22 +32,24 @@ func TestTransferProcess_SufficientFunds(t *testing.T) {
 		).
 		ExecuteCommand(
 			commands.Transfer{
-				TransactionID: "T001",
-				FromAccountID: "A001",
-				ToAccountID:   "A002",
-				Amount:        100,
+				TransactionID:        "T002",
+				FromAccountID:        "A001",
+				ToAccountID:          "A002",
+				Amount:               100,
+				TransactionTimestamp: timestamp,
 			},
 			AllOf(
 				EventRecorded(
 					events.AccountDebitedForTransfer{
-						TransactionID: "T001",
-						AccountID:     "A001",
-						Amount:        100,
+						TransactionID:        "T002",
+						AccountID:            "A001",
+						Amount:               100,
+						TransactionTimestamp: timestamp,
 					},
 				),
 				EventRecorded(
 					events.AccountCreditedForTransfer{
-						TransactionID: "T001",
+						TransactionID: "T002",
 						AccountID:     "A002",
 						Amount:        100,
 					},
@@ -54,6 +59,8 @@ func TestTransferProcess_SufficientFunds(t *testing.T) {
 }
 
 func TestTransferProcess_InsufficientFunds(t *testing.T) {
+	timestamp := time.Now()
+
 	testrunner.Runner.
 		Begin(t).
 		Prepare(
@@ -73,15 +80,16 @@ func TestTransferProcess_InsufficientFunds(t *testing.T) {
 		).
 		ExecuteCommand(
 			commands.Transfer{
-				TransactionID: "T001",
-				FromAccountID: "A001",
-				ToAccountID:   "A002",
-				Amount:        1000,
+				TransactionID:        "T003",
+				FromAccountID:        "A001",
+				ToAccountID:          "A002",
+				Amount:               1000,
+				TransactionTimestamp: timestamp,
 			},
 			AllOf(
 				EventRecorded(
 					events.TransferDeclinedDueToInsufficientFunds{
-						TransactionID: "T001",
+						TransactionID: "T003",
 						AccountID:     "A001",
 						Amount:        1000,
 					},

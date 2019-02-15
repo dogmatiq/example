@@ -117,15 +117,17 @@ func debitForWithdrawal(s dogma.AggregateCommandScope, m commands.DebitAccountFo
 
 	if a.Balance >= m.Amount {
 		s.RecordEvent(events.AccountDebitedForWithdrawal{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			Amount:        m.Amount,
+			TransactionID:        m.TransactionID,
+			AccountID:            m.AccountID,
+			Amount:               m.Amount,
+			TransactionTimestamp: m.TransactionTimestamp,
 		})
 	} else {
 		s.RecordEvent(events.WithdrawalDeclinedDueToInsufficientFunds{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			Amount:        m.Amount,
+			TransactionID:        m.TransactionID,
+			AccountID:            m.AccountID,
+			Amount:               m.Amount,
+			TransactionTimestamp: m.TransactionTimestamp,
 		})
 	}
 }
@@ -135,15 +137,17 @@ func debitForTransfer(s dogma.AggregateCommandScope, m commands.DebitAccountForT
 
 	if a.Balance >= m.Amount {
 		s.RecordEvent(events.AccountDebitedForTransfer{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			Amount:        m.Amount,
+			TransactionID:        m.TransactionID,
+			AccountID:            m.AccountID,
+			Amount:               m.Amount,
+			TransactionTimestamp: m.TransactionTimestamp,
 		})
 	} else {
 		s.RecordEvent(events.TransferDeclinedDueToInsufficientFunds{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			Amount:        m.Amount,
+			TransactionID:        m.TransactionID,
+			AccountID:            m.AccountID,
+			Amount:               m.Amount,
+			TransactionTimestamp: m.TransactionTimestamp,
 		})
 	}
 }

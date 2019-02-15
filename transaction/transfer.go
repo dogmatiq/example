@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"context"
-	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages/commands"
@@ -28,11 +27,11 @@ func (TransferProcess) New() dogma.ProcessRoot {
 func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("transfer")
 	c.RouteEventType(events.TransferStarted{})
-	c.RouteEventType(events.TransferApprovedByDebitPolicy{})
 	c.RouteEventType(events.AccountDebitedForTransfer{})
 	c.RouteEventType(events.AccountCreditedForTransfer{})
 	c.RouteEventType(events.TransferDeclinedDueToInsufficientFunds{})
-	c.RouteEventType(events.TransferDeclinedByDebitPolicy{})
+	c.RouteEventType(events.DailyDebitAmountConsumed{})
+	c.RouteEventType(events.DailyDebitAmountConsumtionRejected{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -41,15 +40,15 @@ func (TransferProcess) RouteEventToInstance(_ context.Context, m dogma.Message) 
 	switch x := m.(type) {
 	case events.TransferStarted:
 		return x.TransactionID, true, nil
-	case events.TransferApprovedByDebitPolicy:
-		return x.TransactionID, true, nil
 	case events.AccountDebitedForTransfer:
 		return x.TransactionID, true, nil
 	case events.AccountCreditedForTransfer:
 		return x.TransactionID, true, nil
 	case events.TransferDeclinedDueToInsufficientFunds:
 		return x.TransactionID, true, nil
-	case events.TransferDeclinedByDebitPolicy:
+	case events.DailyDebitAmountConsumed:
+		return x.TransactionID, true, nil
+	case events.DailyDebitAmountConsumtionRejected:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -69,18 +68,27 @@ func (TransferProcess) HandleEvent(
 		xfer := s.Root().(*transfer)
 		xfer.ToAccountID = x.ToAccountID
 
-		s.ExecuteCommand(commands.CheckTransferAllowedByDebitPolicy{
-			TransactionTimestamp: time.Now(),
+		s.ExecuteCommand(commands.ConsumeDailyDebitAmount{
 			TransactionID:        x.TransactionID,
 			AccountID:            x.FromAccountID,
 			Amount:               x.Amount,
+			TransactionTimestamp: x.TransactionTimestamp,
 		})
 
-	case events.TransferApprovedByDebitPolicy:
-		s.ExecuteCommand(commands.DebitAccountForTransfer{
+	case events.DailyDebitAmountConsumtionRejected:
+		s.ExecuteCommand(commands.MarkTransferDeclinedDueToDailyDebitLimit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
+		})
+		s.End()
+
+	case events.DailyDebitAmountConsumed:
+		s.ExecuteCommand(commands.DebitAccountForTransfer{
+			TransactionID:        x.TransactionID,
+			AccountID:            x.AccountID,
+			Amount:               x.Amount,
+			TransactionTimestamp: x.TransactionTimestamp,
 		})
 
 	case events.AccountDebitedForTransfer:
@@ -92,9 +100,16 @@ func (TransferProcess) HandleEvent(
 			Amount:        x.Amount,
 		})
 
-	case events.AccountCreditedForTransfer,
-		events.TransferDeclinedDueToInsufficientFunds,
-		events.TransferDeclinedByDebitPolicy:
+	case events.TransferDeclinedDueToInsufficientFunds:
+		s.ExecuteCommand(commands.RestoreDailyDebitAmount{
+			TransactionID:        x.TransactionID,
+			AccountID:            x.AccountID,
+			Amount:               x.Amount,
+			TransactionTimestamp: x.TransactionTimestamp,
+		})
+		s.End()
+
+	case events.AccountCreditedForTransfer:
 		s.End()
 
 	default:

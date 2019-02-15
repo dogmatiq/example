@@ -1,12 +1,15 @@
 package commands
 
+import "time"
+
 // Transfer is a command requesting that funds be transferred from one bank
 // account to another.
 type Transfer struct {
-	TransactionID string
-	FromAccountID string
-	ToAccountID   string
-	Amount        int64
+	TransactionID        string
+	FromAccountID        string
+	ToAccountID          string
+	Amount               int64
+	TransactionTimestamp time.Time
 }
 
 // CreditAccountForTransfer is a command that credits a bank account with
@@ -20,7 +23,8 @@ type CreditAccountForTransfer struct {
 // DebitAccountForTransfer is a command that requests a bank account be debited
 // for a transfer.
 type DebitAccountForTransfer struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
+	TransactionID        string
+	AccountID            string
+	Amount               int64
+	TransactionTimestamp time.Time
 }
