@@ -23,13 +23,6 @@ func gRPC2HTTP(srv *grpc.Server) *http.Server {
 				req *http.Request,
 			) {
 				if wrapped.IsGrpcWebRequest(req) {
-					// set the response content type to whatever JS gRPC client
-					// original content type was; see issue
-					// https://github.com/improbable-eng/grpc-web/issues/334 for
-					// details.
-					if ct := req.Header.Get("Content-Type"); ct != "" {
-						resp.Header().Set("Content-Type", ct)
-					}
 					wrapped.ServeHTTP(resp, req)
 				} else {
 					// otherwise serve the static content
