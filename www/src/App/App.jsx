@@ -1,5 +1,4 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Box, Button, Heading, Grommet } from 'grommet';
 import { Notification } from 'grommet-icons';
@@ -52,7 +51,7 @@ class App extends React.Component {
             <Grommet theme={theme}>
                 <Box fill>
                     <AppBar>
-                        <Heading level='3' margin='none'>Dogma Banking Example</Heading>
+                        <Heading level='3' margin='none'>Dogma 2 Banking Example</Heading>
                         <Button icon={<Notification />} onClick={() => { }} />
                     </AppBar>
                     <Router history={history}>
