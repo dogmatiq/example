@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createRouteNodeSelector } from 'redux-router5';
 import { startsWithSegment } from 'router5-helpers';
+import NotFoundScreen from '../screens/NotFound';
 
 function Root({ route }) {
     // const { params, name } = route;
@@ -15,11 +16,7 @@ function Root({ route }) {
     //     return <Contact params={ params } />;
     // }
 
-    return (
-        <p>Hello!</p>
-    )
-
-    return null
+    return (<NotFoundScreen/>)
 }
 
 export default connect(createRouteNodeSelector(''))(Root);

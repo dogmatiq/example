@@ -1,12 +1,15 @@
 import createRouter from 'router5'
-// import browserPlugin from 'router5-plugin-browser';
+import browserPlugin from 'router5-plugin-browser';
 
 
-export function configureRouter() {
-    const router = createRouter([], { allowNotFound: true })
-    // .usePlugin(
-    //     browserPlugin()
-    // )
-    router.start()
+export default function configureRouter() {
+    const router = createRouter([], { allowNotFound: true})
+        // Plugins
+        router.usePlugin(
+            browserPlugin({
+               useHash: true
+            })
+        )
     return router
 }
+
