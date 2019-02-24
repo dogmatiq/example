@@ -21,7 +21,9 @@ module.exports = {
         template: './src/index.html'
     })],
     devServer: {
-        historyApiFallback: true
+        overlay: true,
+        compress: true,
+        port: 9900
     },
     externals: {
         // global app config object
