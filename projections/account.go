@@ -33,11 +33,12 @@ type record struct {
 // Configure configs the engine for this projection.
 func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.Name("account-projection")
-	c.RouteEventType(events.AccountOpened{})
-	c.RouteEventType(events.AccountCreditedForDeposit{})
-	c.RouteEventType(events.AccountDebitedForWithdrawal{})
-	c.RouteEventType(events.AccountCreditedForTransfer{})
-	c.RouteEventType(events.AccountDebitedForTransfer{})
+
+	c.ConsumesEventType(events.AccountOpened{})
+	c.ConsumesEventType(events.AccountCreditedForDeposit{})
+	c.ConsumesEventType(events.AccountDebitedForWithdrawal{})
+	c.ConsumesEventType(events.AccountCreditedForTransfer{})
+	c.ConsumesEventType(events.AccountDebitedForTransfer{})
 }
 
 // GenerateCSV writes a CSV report of all accounts to w.
