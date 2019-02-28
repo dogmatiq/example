@@ -18,8 +18,11 @@ type DepositProcess struct {
 // handler.
 func (DepositProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("deposit")
-	c.RouteEventType(events.DepositStarted{})
-	c.RouteEventType(events.AccountCreditedForDeposit{})
+
+	c.ConsumesEventType(events.DepositStarted{})
+	c.ConsumesEventType(events.AccountCreditedForDeposit{})
+
+	c.ProducesCommandType(commands.CreditAccountForDeposit{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted

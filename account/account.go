@@ -40,11 +40,20 @@ func (Aggregate) New() dogma.AggregateRoot {
 // handler.
 func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("account")
-	c.RouteCommandType(commands.OpenAccount{})
-	c.RouteCommandType(commands.CreditAccountForDeposit{})
-	c.RouteCommandType(commands.CreditAccountForTransfer{})
-	c.RouteCommandType(commands.DebitAccountForWithdrawal{})
-	c.RouteCommandType(commands.DebitAccountForTransfer{})
+
+	c.ConsumesCommandType(commands.OpenAccount{})
+	c.ConsumesCommandType(commands.CreditAccountForDeposit{})
+	c.ConsumesCommandType(commands.CreditAccountForTransfer{})
+	c.ConsumesCommandType(commands.DebitAccountForWithdrawal{})
+	c.ConsumesCommandType(commands.DebitAccountForTransfer{})
+
+	c.ProducesEventType(events.AccountOpened{})
+	c.ProducesEventType(events.AccountCreditedForDeposit{})
+	c.ProducesEventType(events.AccountCreditedForTransfer{})
+	c.ProducesEventType(events.AccountDebitedForWithdrawal{})
+	c.ProducesEventType(events.WithdrawalDeclinedDueToInsufficientFunds{})
+	c.ProducesEventType(events.AccountDebitedForTransfer{})
+	c.ProducesEventType(events.TransferDeclinedDueToInsufficientFunds{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
