@@ -2,19 +2,27 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createRouteNodeSelector } from 'redux-router5';
 import { startsWithSegment } from 'router5-helpers';
+import Login from '../screens/Login';
+import Home from '../screens/Home';
 import NotFoundScreen from '../screens/NotFound';
 
 function Root({ route }) {
-    // const { params, name } = route;
+    const isAuthenticated = false
+    const { params, name } = route;
+
     const testRoute = startsWithSegment(name);
 
-    // if (testRoute('home')) {
-    //     return <Home params={ params } />;
-    // } else if (testRoute('about')) {
-    //     return <About params={ params } />;
-    // } else if (testRoute('contact')) {
-    //     return <Contact params={ params } />;
-    // }
+    if (params.requireAuth && !isAuthenticated ) {
+        return <Login params={ params } />;
+    }
+
+    if (testRoute('login')) {
+        return <Login params={ params } />;
+    }
+
+    if (testRoute('home')) {
+        return <Home params={ params } />;
+    }
 
     return (<NotFoundScreen/>)
 }

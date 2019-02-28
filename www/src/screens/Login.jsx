@@ -1,16 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Box, Button, FormField, TextInput } from 'grommet';
-import { FormNext } from "grommet-icons";
+import { LinkNext } from "grommet-icons";
+import { userActions } from '../actions';
 
-import { userActions } from '../_actions';
-
-class LoginPage extends React.Component {
+class Login extends React.Component {
     constructor(props) {
         super(props);
-
-        // reset login status
-        this.props.dispatch(userActions.logout());
 
         this.state = {
             username: '',
@@ -30,33 +26,32 @@ class LoginPage extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
 
-        this.setState({ submitted: true });
-        const { username, password } = this.state;
-        const { dispatch } = this.props;
-        if (username && password) {
-            dispatch(userActions.login(username, password));
-        }
+        this.setState({ submitted: true }, ()=>{
+            const { username, password } = this.state;
+            const { dispatch } = this.props;
+            if (username && password) {
+                dispatch(userActions.login(username, password));
+            }
+        });
     }
 
     render() {
-        const { loggingIn } = this.props;
-        const { username, password, submitted } = this.state;
         return (
             <Box pad="large" align="center">
-                <form onSubmit={event => event.preventDefault()}>
+                <form onSubmit={this.handleSubmit}>
                     <Box>
                         <FormField label="Name">
-                            <TextInput />
+                            <TextInput onChange={this.handleChange} name="username"/>
                         </FormField>
                         <FormField label="Password">
-                            <TextInput type="password" />
+                            <TextInput type="password" onChange={this.handleChange} name="password"/>
                         </FormField>
                         <Button
-                            icon={<FormNext />}
+                            icon={<LinkNext />}
                             type="submit"
-                            reverse="true"
-                            label="Login"
+                            reverse={true}
                             primary={true}
+                            label="Login"
                         />
                     </Box>
                 </form>
@@ -66,11 +61,7 @@ class LoginPage extends React.Component {
 }
 
 function mapStateToProps(state) {
-    const { loggingIn } = state.authentication;
-    return {
-        loggingIn
-    };
+    return state;
 }
 
-const connectedLoginPage = connect(mapStateToProps)(LoginPage);
-export { connectedLoginPage as LoginPage };
+export default connect(mapStateToProps)(Login);

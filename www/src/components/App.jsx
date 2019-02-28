@@ -40,9 +40,8 @@ export default connect(state => ({
     theme: {
         global: {
             font: {
-                family: 'Roboto',
-                size: '14px',
-                height: '20px',
+                family: 'Helvetica',
+                size: '14px'
             },
         },
     }
