@@ -2,14 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Box, Button, FormField, TextInput } from 'grommet';
 import { LinkNext } from "grommet-icons";
-import { userActions } from '../actions';
+import { customerActions } from '../actions';
 
 class Login extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            username: '',
+            customer: '',
             password: '',
             submitted: false
         };
@@ -27,10 +27,10 @@ class Login extends React.Component {
         e.preventDefault();
 
         this.setState({ submitted: true }, ()=>{
-            const { username, password } = this.state;
+            const { customer, password } = this.state;
             const { dispatch } = this.props;
-            if (username && password) {
-                dispatch(userActions.login(username, password));
+            if (customer && password) {
+                dispatch(customerActions.login(customer, password));
             }
         });
     }
@@ -41,9 +41,9 @@ class Login extends React.Component {
                 <form onSubmit={this.handleSubmit}>
                     <Box>
                         <FormField label="Name">
-                            <TextInput onChange={this.handleChange} name="username"/>
+                            <TextInput onChange={this.handleChange} name="customer"/>
                         </FormField>
-                        <FormField label="Password">
+                        <FormField label="Password" required>
                             <TextInput type="password" onChange={this.handleChange} name="password"/>
                         </FormField>
                         <Button

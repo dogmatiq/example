@@ -1,4 +1,5 @@
-const path = require('path');
+var path = require('path');
+var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -17,19 +18,18 @@ module.exports = {
             }
         ]
     },
-    plugins: [new HtmlWebpackPlugin({
-        template: './src/index.html'
-    })],
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './src/index.html'
+        }),
+        new webpack.DefinePlugin({
+            'GPRCWEB_SERVER': JSON.stringify('http://localhost:8080')
+        })
+    ],
     devServer: {
         historyApiFallback: true,
         overlay: true,
         compress: true,
         port: 9900
-    },
-    externals: {
-        // global app config object
-        config: JSON.stringify({
-            apiUrl: 'http://localhost:9900'
-        })
     }
 }
