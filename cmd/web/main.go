@@ -22,12 +22,12 @@ func main() {
 	grpclog.SetLogger(log.New(os.Stderr, "grpc: ", log.LstdFlags))
 
 	svr := server.NewServer(en)
-	grpcSvr := grpc.NewServer()
+	gs := grpc.NewServer()
 
-	proto.RegisterAccountServer(grpcSvr, svr)
-	proto.RegisterCustomerServer(grpcSvr, svr)
+	proto.RegisterAccountServer(gs, svr)
+	proto.RegisterCustomerServer(gs, svr)
 
-	httpSvr := gRPC2HTTP(grpcSvr)
+	hs := TogRPCWeb(gs)
 
 	ln, err := net.Listen("tcp", ":8080")
 	if err != nil {
@@ -35,5 +35,5 @@ func main() {
 	}
 
 	log.Printf("listening on %v", ln.Addr())
-	log.Fatal(httpSvr.Serve(ln))
+	log.Fatal(hs.Serve(ln))
 }

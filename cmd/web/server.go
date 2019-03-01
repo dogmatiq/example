@@ -8,9 +8,9 @@ import (
 	"google.golang.org/grpc"
 )
 
-// gRPC2HTTP returns an instance of HTTP server that is capable of
-// conveying requests to gRPC servers over gRPC-Web spec.
-func gRPC2HTTP(srv *grpc.Server) *http.Server {
+// TogRPCWeb returns an instance of HTTP server that is capable of
+// conveying requests to gRPC servers over gRPC-Web protocol.
+func TogRPCWeb(srv *grpc.Server) *http.Server {
 	wrapped := grpcweb.WrapServer(
 		srv,
 		grpcweb.WithOriginFunc(
