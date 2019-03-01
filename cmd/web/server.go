@@ -11,7 +11,14 @@ import (
 // gRPC2HTTP returns an instance of HTTP server that is capable of
 // conveying requests to gRPC servers over gRPC-Web spec.
 func gRPC2HTTP(srv *grpc.Server) *http.Server {
-	wrapped := grpcweb.WrapServer(srv)
+	wrapped := grpcweb.WrapServer(
+		srv,
+		grpcweb.WithOriginFunc(
+			func(origin string) bool {
+				return true
+			},
+		),
+	)
 	return &http.Server{
 		// TO-DO:  replace hard-coded values with options
 		ReadTimeout: 0 * time.Second,
@@ -22,12 +29,7 @@ func gRPC2HTTP(srv *grpc.Server) *http.Server {
 				resp http.ResponseWriter,
 				req *http.Request,
 			) {
-				if wrapped.IsGrpcWebRequest(req) {
-					wrapped.ServeHTTP(resp, req)
-				} else {
-					// otherwise serve the static content
-					http.FileServer(http.Dir("www/dist")).ServeHTTP(resp, req)
-				}
+				wrapped.ServeHTTP(resp, req)
 			}),
 	}
 }
