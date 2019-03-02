@@ -1,16 +1,16 @@
-import { userConst } from '../constants';
+import { customerConst } from '../constants';
 
 export function auth(state = {}, action) {
   switch (action.type) {
-    case userConst.USER_LOGIN:
+    case customerConst.CUSTOMER_LOGIN:
       return {
         loading: true
       };
-    case userConst.USER_LOGIN_SUCCESS:
+    case customerConst.CUSTOMER_LOGIN_SUCCESS:
       return {
-        user: action.user
+        name: action.name
       };
-    case userConst.USER_LOGIN_FAILURE:
+    case customerConst.CUSTOMER_LOGIN_FAILURE:
       return {
         error: action.error
       };

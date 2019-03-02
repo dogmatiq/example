@@ -1,33 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Box, Button, Heading, Grommet } from 'grommet';
-import { Notification } from 'grommet-icons';
+import { Box, Grommet } from 'grommet';
+import { grommet } from "grommet/themes";
+import Header from './Header';
 import Root from './Root';
 
 
-const AppBar = (props) => (
-    <Box
-        tag='header'
-        direction='row'
-        align='center'
-        justify='between'
-        background='brand'
-        pad={{ left: 'medium', right: 'small', vertical: 'small' }}
-        elevation='medium'
-        style={{ zIndex: '1' }}
-        {...props}
-    />
-);
-
 function App(props) {
-    const { router, theme } = props
+    const { router } = props
     return (
-        <Grommet theme={theme}>
+        <Grommet theme={grommet}>
             <Box fill>
-                <AppBar>
-                    <Heading level='3' margin='none'>Dogma Banking Example</Heading>
-                    <Button icon={<Notification />} onClick={() => { console.log(arguments)}} />
-                </AppBar>
+                <Header/>
                 <Root router={router}></Root>
             </Box>
         </Grommet>
@@ -37,12 +21,4 @@ function App(props) {
 export default connect(state => ({
     store: state.store,
     router: state.router,
-    theme: {
-        global: {
-            font: {
-                family: 'Helvetica',
-                size: '14px'
-            },
-        },
-    }
 }))(App)

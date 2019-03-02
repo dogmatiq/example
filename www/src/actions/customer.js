@@ -1,8 +1,8 @@
-import { userConst }  from '../constants';
+import { customerConst }  from '../constants';
 
-const request = (name)=> { return { type: userConst.USER_LOGIN, name} }
-const success = (name, id)=> { return { type: userConst.USER_LOGIN_SUCCESS, name, id} }
-const failure = (error)=> { return { type: userConst.USER_LOGIN_FAILURE, error } }
+const request = (name)=> ({ type: customerConst.CUSTOMER_LOGIN, name})
+const success = (name, id)=> ({ type: customerConst.CUSTOMER_LOGIN_SUCCESS, name, id})
+const failure = (error)=> ({ type: customerConst.CUSTOMER_LOGIN_FAILURE, error })
 
 
 function login(name, password) {
