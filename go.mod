@@ -1,5 +1,7 @@
 module github.com/dogmatiq/example
 
+go 1.12
+
 require (
 	github.com/dogmatiq/dogma v0.3.0
 	github.com/dogmatiq/graphkit v0.0.0-20190303221255-3d350c82d54e
