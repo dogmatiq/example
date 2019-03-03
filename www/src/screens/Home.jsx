@@ -20,8 +20,6 @@ class Home extends React.Component {
     }
 }
 
-function mapStateToProps(state) {
-   return state
-}
-
-export default connect(mapStateToProps)(Home);
+export default connect(
+    (state)=>({state})
+    )(Home);

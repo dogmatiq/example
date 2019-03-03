@@ -1,7 +1,8 @@
 import { customerConst }  from '../constants';
+import { actions as routerActions } from 'redux-router5'
 
 const request = (name)=> ({ type: customerConst.CUSTOMER_LOGIN, name})
-const success = (name, id)=> ({ type: customerConst.CUSTOMER_LOGIN_SUCCESS, name, id})
+const success = (id)=> ({ type: customerConst.CUSTOMER_LOGIN_SUCCESS, id})
 const failure = (error)=> ({ type: customerConst.CUSTOMER_LOGIN_FAILURE, error })
 
 
@@ -11,9 +12,9 @@ function login(name, password) {
         services.customer.login(name, password)
             .then(resp => {
                 dispatch(success(
-                    resp.getCustomerName(),
                     resp.getCustomerId(),
                 ));
+                dispatch(routerActions.navigateTo("home"))
             })
             .catch(error => {
                 dispatch(failure(error));

@@ -1,18 +1,23 @@
 import { customerConst } from '../constants';
 
-export function auth(state = {}, action) {
+export function customer(state = {}, action) {
   switch (action.type) {
     case customerConst.CUSTOMER_LOGIN:
       return {
-        loading: true
+        loading: true,
+        authenticated: false
       };
     case customerConst.CUSTOMER_LOGIN_SUCCESS:
       return {
-        name: action.name
+        loading: false,
+        id: action.id,
+        authenticated: true,
       };
     case customerConst.CUSTOMER_LOGIN_FAILURE:
       return {
-        error: action.error
+        loading: false,
+        error: action.error,
+        authenticated: false
       };
     default:
       return state

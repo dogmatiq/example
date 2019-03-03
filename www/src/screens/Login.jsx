@@ -7,21 +7,14 @@ import { customerActions } from '../actions';
 class Login extends React.Component {
     constructor(props) {
         super(props);
-        this.handleSubmit = this.handleSubmit.bind(this)
-    }
-
-    handleSubmit(data) {
-        const { dispatch } = this.props;
-        const { customer, password } = data;
-        console.log(arguments)
-        dispatch(customerActions.login(customer, password));
     }
 
     render() {
+        const {handleSubmit} = this.props;
         return (
             <Box fill align="center" justify="center" pad="large">
                 <Box width="medium">
-                    <Form onSubmit={({ value }) => this.handleSubmit(value)}>
+                    <Form onSubmit={({ value }) => handleSubmit(value)}>
                         <FormField
                             label="Name"
                             name="customer"
@@ -49,4 +42,15 @@ class Login extends React.Component {
     }
 }
 
-export default connect(state => ({state}))(Login)
+export default connect(
+    state => ({
+        loading: state.customer.loading,
+        error: state.customer.error
+    }),
+    (dispatch) => ({
+        handleSubmit: (data) => {
+            const { customer, password } = data;
+            dispatch(customerActions.login(customer, password));
+        }
+    })
+    )(Login);
