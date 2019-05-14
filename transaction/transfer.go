@@ -26,12 +26,18 @@ func (TransferProcess) New() dogma.ProcessRoot {
 // Configure configures the behavior of the engine as it relates to this handler.
 func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("transfer")
-	c.RouteEventType(events.TransferStarted{})
-	c.RouteEventType(events.AccountDebitedForTransfer{})
-	c.RouteEventType(events.AccountCreditedForTransfer{})
-	c.RouteEventType(events.TransferDeclinedDueToInsufficientFunds{})
-	c.RouteEventType(events.DailyDebitAmountConsumed{})
-	c.RouteEventType(events.DailyDebitAmountConsumtionRejected{})
+
+	c.ConsumesEventType(events.TransferStarted{})
+	c.ConsumesEventType(events.AccountDebitedForTransfer{})
+	c.ConsumesEventType(events.AccountCreditedForTransfer{})
+	c.ConsumesEventType(events.TransferDeclinedDueToInsufficientFunds{})
+	c.ConsumesEventType(events.DailyDebitAmountConsumed{})
+	c.ConsumesEventType(events.DailyDebitAmountConsumtionRejected{})
+
+	c.ProducesCommandType(commands.CreditAccountForTransfer{})
+	c.ProducesCommandType(commands.DebitAccountForTransfer{})
+	c.ProducesCommandType(commands.MarkTransferDeclinedDueToDailyDebitLimit{})
+	c.ProducesCommandType(commands.RestoreDailyDebitAmount{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted

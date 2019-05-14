@@ -18,11 +18,18 @@ type Aggregate struct {
 // handler.
 func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("transaction")
-	c.RouteCommandType(commands.Deposit{})
-	c.RouteCommandType(commands.Withdraw{})
-	c.RouteCommandType(commands.Transfer{})
-	c.RouteCommandType(commands.MarkWithdrawalDeclinedDueToDailyDebitLimit{})
-	c.RouteCommandType(commands.MarkTransferDeclinedDueToDailyDebitLimit{})
+
+	c.ConsumesCommandType(commands.Deposit{})
+	c.ConsumesCommandType(commands.Withdraw{})
+	c.ConsumesCommandType(commands.Transfer{})
+	c.ConsumesCommandType(commands.MarkWithdrawalDeclinedDueToDailyDebitLimit{})
+	c.ConsumesCommandType(commands.MarkTransferDeclinedDueToDailyDebitLimit{})
+
+	c.ProducesEventType(events.DepositStarted{})
+	c.ProducesEventType(events.WithdrawalStarted{})
+	c.ProducesEventType(events.TransferStarted{})
+	c.ProducesEventType((events.WithdrawalDeclinedDueToDailyDebitLimit{})
+	c.ProducesEventType((events.TransferDeclinedDueToDailyDebitLimit{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is

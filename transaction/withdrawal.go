@@ -18,11 +18,17 @@ type WithdrawalProcess struct {
 // handler.
 func (WithdrawalProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("withdrawal")
-	c.RouteEventType(events.WithdrawalStarted{})
-	c.RouteEventType(events.AccountDebitedForWithdrawal{})
-	c.RouteEventType(events.WithdrawalDeclinedDueToInsufficientFunds{})
-	c.RouteEventType(events.DailyDebitAmountConsumed{})
-	c.RouteEventType(events.DailyDebitAmountConsumtionRejected{})
+
+	c.ConsumesEventType(events.WithdrawalStarted{})
+	c.ConsumesEventType(events.AccountDebitedForWithdrawal{})
+	c.ConsumesEventType(events.WithdrawalDeclinedDueToInsufficientFunds{})
+	c.ConsumesEventType(events.DailyDebitAmountConsumed{})
+	c.ConsumesEventType(events.DailyDebitAmountConsumtionRejected{})
+
+	c.ProducesCommandType(commands.DebitAccountForWithdrawal{})
+	c.ProducesCommandType(commands.ConsumeDailyDebitAmount{})
+	c.ProducesCommandType(commands.RestoreDailyDebitAmount{})
+	c.ProducesCommandType(commands.MarkWithdrawalDeclinedDueToDailyDebitLimit{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
