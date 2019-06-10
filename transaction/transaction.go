@@ -6,8 +6,8 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
-// Aggregate implements the business logic for a transaction of any
-// kind against an account.
+// Aggregate implements the business logic for a transaction of any kind against
+// an account.
 //
 // It's sole purpose is to ensure the global uniqueness of transaction IDs.
 type Aggregate struct {

@@ -13,7 +13,7 @@ import (
 type App struct {
 	accountAggregate         account.Aggregate
 	transactionAggregate     transaction.Aggregate
-	dailyDebitLimitAggregate transaction.DailyDebitLimitHandler
+	dailyDebitLimitAggregate transaction.DailyDebitLimitAggregate
 	depositProcess           transaction.DepositProcess
 	withdrawalProcess        transaction.WithdrawalProcess
 	transferProcess          transaction.TransferProcess

@@ -25,21 +25,21 @@ func (d *dailyDebitLimit) ApplyEvent(m dogma.Message) {
 	}
 }
 
-// DailyDebitLimitHandler implements the business logic for a daily debit limit
+// DailyDebitLimitAggregate implements the business logic for a daily debit limit
 // policy.
 //
-// It centralizes all debits that are applied to an account over a period of
-// time in order to enforce a policy of limited daily debits.
-type DailyDebitLimitHandler struct{}
+// It centralizes all debits that are applied to an account over a calendar day
+// in order to enforce a policy of limited daily debits.
+type DailyDebitLimitAggregate struct{}
 
 // New returns a new daily debit limit instance.
-func (DailyDebitLimitHandler) New() dogma.AggregateRoot {
+func (DailyDebitLimitAggregate) New() dogma.AggregateRoot {
 	return &dailyDebitLimit{}
 }
 
 // Configure configures the behaviour of the engine as it relates to this
 // handler.
-func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
+func (DailyDebitLimitAggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("dailydebitlimit")
 
 	c.ConsumesCommandType(commands.ConsumeDailyDebitAmount{})
@@ -48,7 +48,7 @@ func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
+func (DailyDebitLimitAggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitAmount:
 		return makeInstanceID(x.TransactionTimestamp, x.AccountID)
@@ -60,7 +60,7 @@ func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (DailyDebitLimitHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (DailyDebitLimitAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitAmount:
 		increaseAmount(s, x)
