@@ -58,6 +58,7 @@ func (WithdrawalProcess) HandleEvent(
 ) error {
 	switch x := m.(type) {
 	case events.WithdrawalStarted:
+		// TODO(KM): FIX THIS
 		s.Log("***NOT THIS WITHDRAWAL HANDLER! events.WithdrawalStarted***")
 		s.Begin()
 		s.ExecuteCommand(commands.ConsumeDailyDebitAmount{
@@ -68,6 +69,7 @@ func (WithdrawalProcess) HandleEvent(
 		})
 
 	case events.DailyDebitAmountConsumtionRejected:
+		// TODO(KM): FIX THIS
 		s.Log("***NOT THIS WITHDRAWAL HANDLER! events.DailyDebitAmountConsumtionRejected***")
 		s.ExecuteCommand(commands.MarkWithdrawalDeclinedDueToDailyDebitLimit{
 			TransactionID: x.TransactionID,
@@ -77,6 +79,7 @@ func (WithdrawalProcess) HandleEvent(
 		s.End()
 
 	case events.DailyDebitAmountConsumed:
+		// TODO(KM): FIX THIS
 		s.Log("***NOT THIS WITHDRAWAL HANDLER! events.DailyDebitAmountConsumed***")
 		// TODO(KM): Disabled this for debugging the Transfer test.
 		// s.ExecuteCommand(commands.DebitAccountForWithdrawal{
