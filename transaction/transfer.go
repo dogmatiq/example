@@ -36,8 +36,9 @@ func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 
 	c.ProducesCommandType(commands.CreditAccountForTransfer{})
 	c.ProducesCommandType(commands.DebitAccountForTransfer{})
-	c.ProducesCommandType(commands.MarkTransferDeclinedDueToDailyDebitLimit{})
+	c.ProducesCommandType(commands.ConsumeDailyDebitAmount{})
 	c.ProducesCommandType(commands.RestoreDailyDebitAmount{})
+	c.ProducesCommandType(commands.MarkTransferDeclinedDueToDailyDebitLimit{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted

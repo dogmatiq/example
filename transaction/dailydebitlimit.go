@@ -44,6 +44,10 @@ func (DailyDebitLimitAggregate) Configure(c dogma.AggregateConfigurer) {
 
 	c.ConsumesCommandType(commands.ConsumeDailyDebitAmount{})
 	c.ConsumesCommandType(commands.RestoreDailyDebitAmount{})
+
+	c.ProducesEventType(events.DailyDebitAmountConsumed{})
+	c.ProducesEventType(events.DailyDebitAmountConsumtionRejected{})
+	c.ProducesEventType(events.DailyDebitAmountRestored{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is

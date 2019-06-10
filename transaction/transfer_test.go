@@ -89,9 +89,10 @@ func TestTransferProcess_InsufficientFunds(t *testing.T) {
 			AllOf(
 				EventRecorded(
 					events.TransferDeclinedDueToInsufficientFunds{
-						TransactionID: "T003",
-						AccountID:     "A001",
-						Amount:        1000,
+						TransactionID:        "T003",
+						AccountID:            "A001",
+						Amount:               1000,
+						TransactionTimestamp: timestamp,
 					},
 				),
 				NoneOf(
