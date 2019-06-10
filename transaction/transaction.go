@@ -28,8 +28,8 @@ func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 	c.ProducesEventType(events.DepositStarted{})
 	c.ProducesEventType(events.WithdrawalStarted{})
 	c.ProducesEventType(events.TransferStarted{})
-	c.ProducesEventType((events.WithdrawalDeclinedDueToDailyDebitLimit{})
-	c.ProducesEventType((events.TransferDeclinedDueToDailyDebitLimit{})
+	c.ProducesEventType(events.WithdrawalDeclinedDueToDailyDebitLimit{})
+	c.ProducesEventType(events.TransferDeclinedDueToDailyDebitLimit{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is

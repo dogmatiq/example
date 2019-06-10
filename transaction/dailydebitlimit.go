@@ -41,8 +41,9 @@ func (DailyDebitLimitHandler) New() dogma.AggregateRoot {
 // handler.
 func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Name("dailydebitlimit")
-	c.RouteCommandType(commands.ConsumeDailyDebitAmount{})
-	c.RouteCommandType(commands.RestoreDailyDebitAmount{})
+
+	c.ConsumesCommandType(commands.ConsumeDailyDebitAmount{})
+	c.ConsumesCommandType(commands.RestoreDailyDebitAmount{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
