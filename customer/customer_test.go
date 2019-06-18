@@ -19,7 +19,7 @@ func TestCustomer_OpenAccountForNewCustomer(t *testing.T) {
 					commands.OpenAccountForNewCustomer{
 						CustomerID:    "C001",
 						CustomerName:  "Bob Jones",
-						CustomerEmail: "email@1",
+						CustomerEmail: "bob@example.com",
 						AccountID:     "A001",
 						AccountName:   "Savings",
 					},
@@ -27,7 +27,7 @@ func TestCustomer_OpenAccountForNewCustomer(t *testing.T) {
 						events.CustomerAcquired{
 							CustomerID:    "C001",
 							CustomerName:  "Bob Jones",
-							CustomerEmail: "email@1",
+							CustomerEmail: "bob@example.com",
 							AccountID:     "A001",
 							AccountName:   "Savings",
 						},
@@ -42,7 +42,7 @@ func TestCustomer_OpenAccountForNewCustomer(t *testing.T) {
 			cmd := commands.OpenAccountForNewCustomer{
 				CustomerID:    "C001",
 				CustomerName:  "Bob Jones",
-				CustomerEmail: "email@1",
+				CustomerEmail: "bob@example.com",
 				AccountID:     "A001",
 				AccountName:   "Savings",
 			}
@@ -70,7 +70,7 @@ func TestCustomer_ChangeCustomerEmailAddress(t *testing.T) {
 					commands.OpenAccountForNewCustomer{
 						CustomerID:    "C001",
 						CustomerName:  "Bob Jones",
-						CustomerEmail: "email@1",
+						CustomerEmail: "bob@example.com",
 						AccountID:     "A001",
 						AccountName:   "Savings",
 					},
@@ -78,12 +78,12 @@ func TestCustomer_ChangeCustomerEmailAddress(t *testing.T) {
 				ExecuteCommand(
 					commands.ChangeCustomerEmailAddress{
 						CustomerID:    "C001",
-						CustomerEmail: "email@1new",
+						CustomerEmail: "newbob@example.com",
 					},
 					EventRecorded(
 						events.CustomerEmailAddressChanged{
 							CustomerID:    "C001",
-							CustomerEmail: "email@1new",
+							CustomerEmail: "newbob@example.com",
 						},
 					),
 				)
@@ -99,7 +99,7 @@ func TestCustomer_ChangeCustomerEmailAddress(t *testing.T) {
 					commands.OpenAccountForNewCustomer{
 						CustomerID:    "C001",
 						CustomerName:  "Bob Jones",
-						CustomerEmail: "email@1",
+						CustomerEmail: "bob@example.com",
 						AccountID:     "A001",
 						AccountName:   "Savings",
 					},
@@ -107,7 +107,7 @@ func TestCustomer_ChangeCustomerEmailAddress(t *testing.T) {
 				ExecuteCommand(
 					commands.ChangeCustomerEmailAddress{
 						CustomerID:    "C001",
-						CustomerEmail: "email@1",
+						CustomerEmail: "bob@example.com",
 					},
 					NoneOf(
 						EventTypeRecorded(events.CustomerEmailAddressChanged{}),
