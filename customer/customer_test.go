@@ -21,7 +21,7 @@ func TestCustomer_OpenAccountForNewCustomer(t *testing.T) {
 						CustomerName:  "Bob Jones",
 						CustomerEmail: "bob@example.com",
 						AccountID:     "A001",
-						AccountName:   "Savings",
+						AccountName:   "Bob Jones",
 					},
 					EventRecorded(
 						events.CustomerAcquired{
@@ -29,7 +29,7 @@ func TestCustomer_OpenAccountForNewCustomer(t *testing.T) {
 							CustomerName:  "Bob Jones",
 							CustomerEmail: "bob@example.com",
 							AccountID:     "A001",
-							AccountName:   "Savings",
+							AccountName:   "Bob Jones",
 						},
 					),
 				)
@@ -44,7 +44,7 @@ func TestCustomer_OpenAccountForNewCustomer(t *testing.T) {
 				CustomerName:  "Bob Jones",
 				CustomerEmail: "bob@example.com",
 				AccountID:     "A001",
-				AccountName:   "Savings",
+				AccountName:   "Bob Jones",
 			}
 
 			testrunner.Runner.
@@ -72,7 +72,7 @@ func TestCustomer_ChangeCustomerEmailAddress(t *testing.T) {
 						CustomerName:  "Bob Jones",
 						CustomerEmail: "bob@example.com",
 						AccountID:     "A001",
-						AccountName:   "Savings",
+						AccountName:   "Bob Jones",
 					},
 				).
 				ExecuteCommand(
@@ -101,7 +101,7 @@ func TestCustomer_ChangeCustomerEmailAddress(t *testing.T) {
 						CustomerName:  "Bob Jones",
 						CustomerEmail: "bob@example.com",
 						AccountID:     "A001",
-						AccountName:   "Savings",
+						AccountName:   "Bob Jones",
 					},
 				).
 				ExecuteCommand(

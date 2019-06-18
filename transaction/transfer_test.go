@@ -16,12 +16,12 @@ func TestTransferProcess_SufficientFunds(t *testing.T) {
 			commands.OpenAccount{
 				CustomerID:  "C001",
 				AccountID:   "A001",
-				AccountName: "Savings",
+				AccountName: "Anna Smith",
 			},
 			commands.OpenAccount{
 				CustomerID:  "C002",
 				AccountID:   "A002",
-				AccountName: "Savings",
+				AccountName: "Bob Jones",
 			},
 			commands.Deposit{
 				TransactionID: "D001",
@@ -62,12 +62,12 @@ func TestTransferProcess_InsufficientFunds(t *testing.T) {
 			commands.OpenAccount{
 				CustomerID:  "C001",
 				AccountID:   "A001",
-				AccountName: "Savings",
+				AccountName: "Anna Smith",
 			},
 			commands.OpenAccount{
 				CustomerID:  "C002",
 				AccountID:   "A002",
-				AccountName: "Savings",
+				AccountName: "Bob Jones",
 			},
 			commands.Deposit{
 				TransactionID: "D001",

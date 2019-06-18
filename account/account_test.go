@@ -19,13 +19,13 @@ func TestAccount_OpenAccount(t *testing.T) {
 					commands.OpenAccount{
 						CustomerID:  "C001",
 						AccountID:   "A001",
-						AccountName: "Savings",
+						AccountName: "Anna Smith",
 					},
 					EventRecorded(
 						events.AccountOpened{
 							CustomerID:  "C001",
 							AccountID:   "A001",
-							AccountName: "Savings",
+							AccountName: "Anna Smith",
 						},
 					),
 				)
@@ -38,7 +38,7 @@ func TestAccount_OpenAccount(t *testing.T) {
 			cmd := commands.OpenAccount{
 				CustomerID:  "C001",
 				AccountID:   "A001",
-				AccountName: "Savings",
+				AccountName: "Anna Smith",
 			}
 
 			testrunner.Runner.

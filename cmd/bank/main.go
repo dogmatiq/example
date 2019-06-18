@@ -23,13 +23,13 @@ func main() {
 			CustomerID:   "cust1",
 			CustomerName: "Anna Smith",
 			AccountID:    "acct1",
-			AccountName:  "Savings",
+			AccountName:  "Anna Smith",
 		},
 		commands.OpenAccountForNewCustomer{
 			CustomerID:   "cust2",
 			CustomerName: "Bob Jones",
 			AccountID:    "acct2",
-			AccountName:  "Savings",
+			AccountName:  "Bob Jones",
 		},
 		commands.Deposit{
 			TransactionID: "txn1",
