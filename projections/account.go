@@ -108,7 +108,7 @@ func (h *AccountProjectionHandler) HandleEvent(
 	switch x := m.(type) {
 	case events.AccountOpened:
 		r := h.get(x.AccountID)
-		r.Name = x.Name
+		r.Name = x.AccountName
 
 	case events.AccountCreditedForDeposit:
 		r := h.get(x.AccountID)

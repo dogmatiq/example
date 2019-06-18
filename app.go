@@ -5,12 +5,15 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/account"
+	"github.com/dogmatiq/example/customer"
 	"github.com/dogmatiq/example/projections"
 	"github.com/dogmatiq/example/transaction"
 )
 
 // App is an implementation of dogma.Application for the bank example.
 type App struct {
+	customerAggregate    customer.Aggregate
+	acquireProcess       customer.AcquireProcess
 	accountAggregate     account.Aggregate
 	transactionAggregate transaction.Aggregate
 	depositProcess       transaction.DepositProcess
@@ -22,6 +25,8 @@ type App struct {
 // Configure configures the Dogma engine for this application.
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.Name("bank")
+	c.RegisterAggregate(a.customerAggregate)
+	c.RegisterProcess(a.acquireProcess)
 	c.RegisterAggregate(a.accountAggregate)
 	c.RegisterAggregate(a.transactionAggregate)
 	c.RegisterProcess(a.depositProcess)

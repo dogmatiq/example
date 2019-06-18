@@ -100,8 +100,9 @@ func openAccount(s dogma.AggregateCommandScope, m commands.OpenAccount) {
 	}
 
 	s.RecordEvent(events.AccountOpened{
-		AccountID: m.AccountID,
-		Name:      m.Name,
+		CustomerID:  m.CustomerID,
+		AccountID:   m.AccountID,
+		AccountName: m.AccountName,
 	})
 }
 

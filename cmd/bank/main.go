@@ -19,13 +19,17 @@ func main() {
 	}
 
 	messages := []dogma.Message{
-		commands.OpenAccount{
-			AccountID: "acct1",
-			Name:      "Anna Smith",
+		commands.OpenAccountForNewCustomer{
+			CustomerID:   "cust1",
+			CustomerName: "Anna Smith",
+			AccountID:    "acct1",
+			AccountName:  "Anna Smith",
 		},
-		commands.OpenAccount{
-			AccountID: "acct2",
-			Name:      "Bob Jones",
+		commands.OpenAccountForNewCustomer{
+			CustomerID:   "cust2",
+			CustomerName: "Bob Jones",
+			AccountID:    "acct2",
+			AccountName:  "Bob Jones",
 		},
 		commands.Deposit{
 			TransactionID: "txn1",
