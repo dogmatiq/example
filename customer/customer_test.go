@@ -37,7 +37,7 @@ func TestCustomer_OpenAccountForNewCustomer(t *testing.T) {
 	)
 
 	t.Run(
-		"it does not acquire a customer that already exists",
+		"it does not reacquire a customer that has already been acquired",
 		func(t *testing.T) {
 			cmd := commands.OpenAccountForNewCustomer{
 				CustomerID:    "C001",
@@ -91,7 +91,7 @@ func TestCustomer_ChangeCustomerEmailAddress(t *testing.T) {
 	)
 
 	t.Run(
-		"it does not change the email address if it is the same",
+		"it does not change the email address again if it has not changed",
 		func(t *testing.T) {
 			testrunner.Runner.
 				Begin(t).
