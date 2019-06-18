@@ -1,7 +1,9 @@
 package commands
 
-// OpenAccount is a command requesting that a new bank account be opened.
+// OpenAccount is a command requesting that a new bank account be opened for an
+// existing customer.
 type OpenAccount struct {
-	AccountID string
-	Name      string
+	CustomerID  string
+	AccountID   string
+	AccountName string
 }

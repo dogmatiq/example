@@ -17,13 +17,15 @@ func TestAccount_OpenAccount(t *testing.T) {
 				Begin(t).
 				ExecuteCommand(
 					commands.OpenAccount{
-						AccountID: "A001",
-						Name:      "Bob Jones",
+						CustomerID:  "C001",
+						AccountID:   "A001",
+						AccountName: "Savings",
 					},
 					EventRecorded(
 						events.AccountOpened{
-							AccountID: "A001",
-							Name:      "Bob Jones",
+							CustomerID:  "C001",
+							AccountID:   "A001",
+							AccountName: "Savings",
 						},
 					),
 				)
@@ -34,8 +36,9 @@ func TestAccount_OpenAccount(t *testing.T) {
 		"it does not open an account that is already open",
 		func(t *testing.T) {
 			cmd := commands.OpenAccount{
-				AccountID: "A001",
-				Name:      "Bob Jones",
+				CustomerID:  "C001",
+				AccountID:   "A001",
+				AccountName: "Savings",
 			}
 
 			testrunner.Runner.
