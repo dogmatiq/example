@@ -8,7 +8,7 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
-// AcquireProcess is manages the process of creating accounts for acquired
+// AcquireProcess manages the process of creating accounts for acquired
 // customers.
 type AcquireProcess struct {
 	dogma.StatelessProcessBehavior
