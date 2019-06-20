@@ -11,7 +11,7 @@ type AggregateHandler struct{}
 
 // New returns a new customer instance.
 func (AggregateHandler) New() dogma.AggregateRoot {
-	return &root{}
+	return &customer{}
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -67,7 +67,7 @@ func acquire(s dogma.AggregateCommandScope, m command.OpenAccountForNewCustomer)
 }
 
 func changeEmailAddress(s dogma.AggregateCommandScope, m command.ChangeCustomerEmailAddress) {
-	r := s.Root().(*root)
+	r := s.Root().(*customer)
 
 	if r.Email != m.CustomerEmail {
 		s.RecordEvent(event.CustomerEmailAddressChanged{

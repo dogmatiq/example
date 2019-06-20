@@ -5,13 +5,13 @@ import (
 	"github.com/dogmatiq/example/message/event"
 )
 
-// root is the aggregate root for a bank customer.
-type root struct {
+// customer is the aggregate root for a bank customer.
+type customer struct {
 	// Email is the customer email address.
 	Email string
 }
 
-func (r *root) ApplyEvent(m dogma.Message) {
+func (r *customer) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case event.CustomerAcquired:
 		r.Email = x.CustomerEmail

@@ -14,7 +14,7 @@ type AggregateHandler struct{}
 
 // New returns a new account instance.
 func (AggregateHandler) New() dogma.AggregateRoot {
-	return &root{}
+	return &account{}
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -104,7 +104,7 @@ func creditForTransfer(s dogma.AggregateCommandScope, m command.CreditAccountFor
 }
 
 func debitForWithdrawal(s dogma.AggregateCommandScope, m command.DebitAccountForWithdrawal) {
-	r := s.Root().(*root)
+	r := s.Root().(*account)
 
 	if r.Balance >= m.Amount {
 		s.RecordEvent(event.AccountDebitedForWithdrawal{
@@ -122,7 +122,7 @@ func debitForWithdrawal(s dogma.AggregateCommandScope, m command.DebitAccountFor
 }
 
 func debitForTransfer(s dogma.AggregateCommandScope, m command.DebitAccountForTransfer) {
-	r := s.Root().(*root)
+	r := s.Root().(*account)
 
 	if r.Balance >= m.Amount {
 		s.RecordEvent(event.AccountDebitedForTransfer{

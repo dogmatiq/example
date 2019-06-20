@@ -15,7 +15,7 @@ type ProcessHandler struct {
 
 // New returns a new transfer instance.
 func (ProcessHandler) New() dogma.ProcessRoot {
-	return &root{}
+	return &transfer{}
 }
 
 // Configure configures the behavior of the engine as it relates to this handler.
@@ -58,7 +58,7 @@ func (ProcessHandler) HandleEvent(
 	case event.TransferStarted:
 		s.Begin()
 
-		r := s.Root().(*root)
+		r := s.Root().(*transfer)
 		r.ToAccountID = x.ToAccountID
 
 		s.ExecuteCommand(command.DebitAccountForTransfer{
@@ -68,7 +68,7 @@ func (ProcessHandler) HandleEvent(
 		})
 
 	case event.AccountDebitedForTransfer:
-		r := s.Root().(*root)
+		r := s.Root().(*transfer)
 
 		s.ExecuteCommand(command.CreditAccountForTransfer{
 			TransactionID: x.TransactionID,
