@@ -123,9 +123,9 @@ func creditForTransfer(s dogma.AggregateCommandScope, m commands.CreditAccountFo
 }
 
 func debitForWithdrawal(s dogma.AggregateCommandScope, m commands.DebitAccountForWithdrawal) {
-	a := s.Root().(*account)
+	r := s.Root().(*account)
 
-	if a.Balance >= m.Amount {
+	if r.Balance >= m.Amount {
 		s.RecordEvent(events.AccountDebitedForWithdrawal{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
@@ -141,9 +141,9 @@ func debitForWithdrawal(s dogma.AggregateCommandScope, m commands.DebitAccountFo
 }
 
 func debitForTransfer(s dogma.AggregateCommandScope, m commands.DebitAccountForTransfer) {
-	a := s.Root().(*account)
+	r := s.Root().(*account)
 
-	if a.Balance >= m.Amount {
+	if r.Balance >= m.Amount {
 		s.RecordEvent(events.AccountDebitedForTransfer{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
