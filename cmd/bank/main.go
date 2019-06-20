@@ -6,7 +6,7 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/message/command"
 	"github.com/dogmatiq/testkit/engine"
 )
 
@@ -19,24 +19,24 @@ func main() {
 	}
 
 	messages := []dogma.Message{
-		commands.OpenAccountForNewCustomer{
+		command.OpenAccountForNewCustomer{
 			CustomerID:   "cust1",
 			CustomerName: "Anna Smith",
 			AccountID:    "acct1",
 			AccountName:  "Anna Smith",
 		},
-		commands.OpenAccountForNewCustomer{
+		command.OpenAccountForNewCustomer{
 			CustomerID:   "cust2",
 			CustomerName: "Bob Jones",
 			AccountID:    "acct2",
 			AccountName:  "Bob Jones",
 		},
-		commands.Deposit{
+		command.Deposit{
 			TransactionID: "txn1",
 			AccountID:     "acct1",
 			Amount:        10000,
 		},
-		commands.Transfer{
+		command.Transfer{
 			TransactionID: "txn2",
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
