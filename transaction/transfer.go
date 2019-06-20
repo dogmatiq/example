@@ -63,8 +63,8 @@ func (TransferProcess) HandleEvent(
 	case events.TransferStarted:
 		s.Begin()
 
-		xfer := s.Root().(*transfer)
-		xfer.ToAccountID = x.ToAccountID
+		r := s.Root().(*transfer)
+		r.ToAccountID = x.ToAccountID
 
 		s.ExecuteCommand(commands.DebitAccountForTransfer{
 			TransactionID: x.TransactionID,
@@ -73,11 +73,11 @@ func (TransferProcess) HandleEvent(
 		})
 
 	case events.AccountDebitedForTransfer:
-		xfer := s.Root().(*transfer)
+		r := s.Root().(*transfer)
 
 		s.ExecuteCommand(commands.CreditAccountForTransfer{
 			TransactionID: x.TransactionID,
-			AccountID:     xfer.ToAccountID,
+			AccountID:     r.ToAccountID,
 			Amount:        x.Amount,
 		})
 
