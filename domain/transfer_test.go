@@ -1,4 +1,4 @@
-package transaction_test
+package domain_test
 
 import (
 	"testing"

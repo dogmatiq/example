@@ -1,4 +1,4 @@
-package account
+package domain
 
 import (
 	"github.com/dogmatiq/dogma"
@@ -12,33 +12,33 @@ type account struct {
 	Balance int64
 }
 
-func (a *account) ApplyEvent(m dogma.Message) {
+func (r *account) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.AccountCreditedForDeposit:
-		a.Balance += x.Amount
+		r.Balance += x.Amount
 	case events.AccountCreditedForTransfer:
-		a.Balance += x.Amount
+		r.Balance += x.Amount
 	case events.AccountDebitedForWithdrawal:
-		a.Balance -= x.Amount
+		r.Balance -= x.Amount
 	case events.AccountDebitedForTransfer:
-		a.Balance -= x.Amount
+		r.Balance -= x.Amount
 	}
 }
 
-// Aggregate implements the business logic for a bank account.
+// AccountAggregate implements the business logic for a bank account.
 //
 // It centralizes all transactions that are applied to an account in order to
 // enforce a strict no-overdraw policy.
-type Aggregate struct{}
+type AccountAggregate struct{}
 
 // New returns a new account instance.
-func (Aggregate) New() dogma.AggregateRoot {
+func (AccountAggregate) New() dogma.AggregateRoot {
 	return &account{}
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
-func (Aggregate) Configure(c dogma.AggregateConfigurer) {
+func (AccountAggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("account")
 
 	c.ConsumesCommandType(commands.OpenAccount{})
@@ -58,7 +58,7 @@ func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
+func (AccountAggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.OpenAccount:
 		return x.AccountID
@@ -76,7 +76,7 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (AccountAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.OpenAccount:
 		openAccount(s, x)
