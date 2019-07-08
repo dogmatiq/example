@@ -10,14 +10,15 @@ import (
 
 // App is an implementation of dogma.Application for the bank example.
 type App struct {
-	customerAggregate                domain.CustomerAggregate
 	accountAggregate                 domain.AccountAggregate
+	accountProjection                projections.AccountProjectionHandler
+	customerAggregate                domain.CustomerAggregate
+	dailyDebitLimitAggregate         domain.DailyDebitLimitAggregate
+	depositProcess                   domain.DepositProcess
 	openAccountForNewCustomerProcess domain.OpenAccountForNewCustomerProcess
 	transactionAggregate             domain.TransactionAggregate
-	depositProcess                   domain.DepositProcess
-	withdrawalProcess                domain.WithdrawalProcess
 	transferProcess                  domain.TransferProcess
-	accountProjection                projections.AccountProjectionHandler
+	withdrawalProcess                domain.WithdrawalProcess
 }
 
 // Configure configures the Dogma engine for this application.
@@ -25,6 +26,7 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.Name("bank")
 	c.RegisterAggregate(a.accountAggregate)
 	c.RegisterAggregate(a.customerAggregate)
+	c.RegisterAggregate(a.dailyDebitLimitAggregate)
 	c.RegisterAggregate(a.transactionAggregate)
 	c.RegisterProcess(a.depositProcess)
 	c.RegisterProcess(a.openAccountForNewCustomerProcess)

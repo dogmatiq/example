@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
@@ -36,8 +37,14 @@ func main() {
 			AccountID:     "acct1",
 			Amount:        10000,
 		},
+		commands.Withdraw{
+			TransactionID:                 "txn2",
+			AccountID:                     "acct1",
+			Amount:                        500,
+			RequestedTransactionTimestamp: time.Now(),
+		},
 		commands.Transfer{
-			TransactionID: "txn2",
+			TransactionID: "txn3",
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
 			Amount:        2500,

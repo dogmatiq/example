@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
 )
@@ -18,8 +19,12 @@ func (r *account) ApplyEvent(m dogma.Message) {
 		r.Balance += x.Amount
 	case events.AccountCreditedForTransfer:
 		r.Balance += x.Amount
-	case events.AccountDebitedForWithdrawal:
+	case events.FundsHeldForWithdrawal:
 		r.Balance -= x.Amount
+	case events.WithdrawalDeclined:
+		if x.Reason == messages.ReasonDailyDebitLimitExceeded {
+			r.Balance += x.Amount
+		}
 	case events.AccountDebitedForTransfer:
 		r.Balance -= x.Amount
 	}
@@ -41,19 +46,22 @@ func (AccountAggregate) New() dogma.AggregateRoot {
 func (AccountAggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("account")
 
-	c.ConsumesCommandType(commands.OpenAccount{})
 	c.ConsumesCommandType(commands.CreditAccountForDeposit{})
 	c.ConsumesCommandType(commands.CreditAccountForTransfer{})
-	c.ConsumesCommandType(commands.DebitAccountForWithdrawal{})
 	c.ConsumesCommandType(commands.DebitAccountForTransfer{})
+	c.ConsumesCommandType(commands.DeclineWithdrawal{})
+	c.ConsumesCommandType(commands.HoldFundsForWithdrawal{})
+	c.ConsumesCommandType(commands.OpenAccount{})
+	c.ConsumesCommandType(commands.SettleWithdrawal{})
 
-	c.ProducesEventType(events.AccountOpened{})
 	c.ProducesEventType(events.AccountCreditedForDeposit{})
 	c.ProducesEventType(events.AccountCreditedForTransfer{})
-	c.ProducesEventType(events.AccountDebitedForWithdrawal{})
-	c.ProducesEventType(events.WithdrawalDeclinedDueToInsufficientFunds{})
 	c.ProducesEventType(events.AccountDebitedForTransfer{})
+	c.ProducesEventType(events.AccountDebitedForWithdrawal{})
+	c.ProducesEventType(events.AccountOpened{})
+	c.ProducesEventType(events.FundsHeldForWithdrawal{})
 	c.ProducesEventType(events.TransferDeclinedDueToInsufficientFunds{})
+	c.ProducesEventType(events.WithdrawalDeclined{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
@@ -64,11 +72,13 @@ func (AccountAggregate) RouteCommandToInstance(m dogma.Message) string {
 		return x.AccountID
 	case commands.CreditAccountForDeposit:
 		return x.AccountID
-	case commands.CreditAccountForTransfer:
+	case commands.HoldFundsForWithdrawal:
 		return x.AccountID
-	case commands.DebitAccountForWithdrawal:
+	case commands.SettleWithdrawal:
 		return x.AccountID
 	case commands.DebitAccountForTransfer:
+		return x.AccountID
+	case commands.DeclineWithdrawal:
 		return x.AccountID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -84,8 +94,12 @@ func (AccountAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Mes
 		creditForDeposit(s, x)
 	case commands.CreditAccountForTransfer:
 		creditForTransfer(s, x)
-	case commands.DebitAccountForWithdrawal:
-		debitForWithdrawal(s, x)
+	case commands.HoldFundsForWithdrawal:
+		holdFundsForWithdrawal(s, x)
+	case commands.SettleWithdrawal:
+		settleWithdrawal(s, x)
+	case commands.DeclineWithdrawal:
+		declineWithdrawal(s, x)
 	case commands.DebitAccountForTransfer:
 		debitForTransfer(s, x)
 	default:
@@ -122,22 +136,41 @@ func creditForTransfer(s dogma.AggregateCommandScope, m commands.CreditAccountFo
 	})
 }
 
-func debitForWithdrawal(s dogma.AggregateCommandScope, m commands.DebitAccountForWithdrawal) {
+func holdFundsForWithdrawal(s dogma.AggregateCommandScope, m commands.HoldFundsForWithdrawal) {
 	r := s.Root().(*account)
 
 	if r.Balance >= m.Amount {
-		s.RecordEvent(events.AccountDebitedForWithdrawal{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			Amount:        m.Amount,
+		s.RecordEvent(events.FundsHeldForWithdrawal{
+			TransactionID:                 m.TransactionID,
+			AccountID:                     m.AccountID,
+			Amount:                        m.Amount,
+			RequestedTransactionTimestamp: m.RequestedTransactionTimestamp,
 		})
 	} else {
-		s.RecordEvent(events.WithdrawalDeclinedDueToInsufficientFunds{
+		s.RecordEvent(events.WithdrawalDeclined{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
+			Reason:        messages.ReasonInsufficientFunds,
 		})
 	}
+}
+
+func settleWithdrawal(s dogma.AggregateCommandScope, m commands.SettleWithdrawal) {
+	s.RecordEvent(events.AccountDebitedForWithdrawal{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+	})
+}
+
+func declineWithdrawal(s dogma.AggregateCommandScope, m commands.DeclineWithdrawal) {
+	s.RecordEvent(events.WithdrawalDeclined{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+		Reason:        m.Reason,
+	})
 }
 
 func debitForTransfer(s dogma.AggregateCommandScope, m commands.DebitAccountForTransfer) {

@@ -1,25 +1,42 @@
 package events
 
+import (
+	"time"
+
+	"github.com/dogmatiq/example/messages"
+)
+
 // WithdrawalStarted is an event indicating that the process of withdrawing
 // funds from an account has begun.
 type WithdrawalStarted struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
+	TransactionID                 string
+	AccountID                     string
+	Amount                        int64
+	RequestedTransactionTimestamp time.Time
+}
+
+// FundsHeldForWithdrawal is an event that indicates account funds have been
+// held for a withdrawal.
+type FundsHeldForWithdrawal struct {
+	TransactionID                 string
+	AccountID                     string
+	Amount                        int64
+	RequestedTransactionTimestamp time.Time
 }
 
 // AccountDebitedForWithdrawal is an event that indicates an account has been
-// debited funds for a withdrawal.
+// debited funds due to a withdrawal.
 type AccountDebitedForWithdrawal struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
 }
 
-// WithdrawalDeclinedDueToInsufficientFunds is an event that indicates a
-// requested withdrawal has been declined due to insufficient funds.
-type WithdrawalDeclinedDueToInsufficientFunds struct {
+// WithdrawalDeclined is an event that indicates a requested withdrawal has been
+// declined due to insufficient funds.
+type WithdrawalDeclined struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
+	Reason        messages.DebitFailureReason
 }

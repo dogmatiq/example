@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
 )
@@ -19,11 +20,17 @@ type WithdrawalProcess struct {
 func (WithdrawalProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("withdrawal")
 
-	c.ConsumesEventType(events.WithdrawalStarted{})
 	c.ConsumesEventType(events.AccountDebitedForWithdrawal{})
-	c.ConsumesEventType(events.WithdrawalDeclinedDueToInsufficientFunds{})
+	c.ConsumesEventType(events.DailyDebitLimitConsumed{})
+	c.ConsumesEventType(events.DailyDebitLimitExceeded{})
+	c.ConsumesEventType(events.FundsHeldForWithdrawal{})
+	c.ConsumesEventType(events.WithdrawalDeclined{})
+	c.ConsumesEventType(events.WithdrawalStarted{})
 
-	c.ProducesCommandType(commands.DebitAccountForWithdrawal{})
+	c.ProducesCommandType(commands.ConsumeDailyDebitLimit{})
+	c.ProducesCommandType(commands.DeclineWithdrawal{})
+	c.ProducesCommandType(commands.HoldFundsForWithdrawal{})
+	c.ProducesCommandType(commands.SettleWithdrawal{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -32,9 +39,9 @@ func (WithdrawalProcess) RouteEventToInstance(_ context.Context, m dogma.Message
 	switch x := m.(type) {
 	case events.WithdrawalStarted:
 		return x.TransactionID, true, nil
-	case events.AccountDebitedForWithdrawal:
+	case events.FundsHeldForWithdrawal:
 		return x.TransactionID, true, nil
-	case events.WithdrawalDeclinedDueToInsufficientFunds:
+	case events.WithdrawalDeclined:
 		return x.TransactionID, true, nil
 	default:
 		return "", false, nil
@@ -50,14 +57,42 @@ func (WithdrawalProcess) HandleEvent(
 	switch x := m.(type) {
 	case events.WithdrawalStarted:
 		s.Begin()
-		s.ExecuteCommand(commands.DebitAccountForWithdrawal{
+
+		// TODO(KM): Schedule a timeout for the requested time...
+		// s.ScheduleTimeout(x, x.RequestedTransactionTimestamp)
+
+		s.ExecuteCommand(commands.HoldFundsForWithdrawal{
+			TransactionID:                 x.TransactionID,
+			AccountID:                     x.AccountID,
+			Amount:                        x.Amount,
+			RequestedTransactionTimestamp: x.RequestedTransactionTimestamp,
+		})
+
+	case events.FundsHeldForWithdrawal:
+		s.ExecuteCommand(commands.ConsumeDailyDebitLimit{
+			TransactionID:                 x.TransactionID,
+			AccountID:                     x.AccountID,
+			Amount:                        x.Amount,
+			RequestedTransactionTimestamp: x.RequestedTransactionTimestamp,
+		})
+
+	case events.DailyDebitLimitConsumed:
+		s.ExecuteCommand(commands.SettleWithdrawal{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
+	case events.DailyDebitLimitExceeded:
+		s.ExecuteCommand(commands.DeclineWithdrawal{
+			TransactionID: x.TransactionID,
+			AccountID:     x.AccountID,
+			Amount:        x.Amount,
+			Reason:        messages.ReasonDailyDebitLimitExceeded,
+		})
+
 	case events.AccountDebitedForWithdrawal,
-		events.WithdrawalDeclinedDueToInsufficientFunds:
+		events.WithdrawalDeclined:
 		s.End()
 
 	default:
