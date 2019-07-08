@@ -29,8 +29,8 @@ func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
 
 	c.ConsumesEventType(events.TransferStarted{})
 	c.ConsumesEventType(events.AccountDebitedForTransfer{})
-	c.ConsumesEventType(events.AccountCreditedForTransfer{})
 	c.ConsumesEventType(events.TransferDeclinedDueToInsufficientFunds{})
+	c.ConsumesEventType(events.AccountCreditedForTransfer{})
 
 	c.ProducesCommandType(commands.CreditAccountForTransfer{})
 	c.ProducesCommandType(commands.DebitAccountForTransfer{})
@@ -44,9 +44,9 @@ func (TransferProcess) RouteEventToInstance(_ context.Context, m dogma.Message) 
 		return x.TransactionID, true, nil
 	case events.AccountDebitedForTransfer:
 		return x.TransactionID, true, nil
-	case events.AccountCreditedForTransfer:
-		return x.TransactionID, true, nil
 	case events.TransferDeclinedDueToInsufficientFunds:
+		return x.TransactionID, true, nil
+	case events.AccountCreditedForTransfer:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)

@@ -35,7 +35,6 @@ func TestAccount_OpenAccount(t *testing.T) {
 	t.Run(
 		"it does not open an account that is already open",
 		func(t *testing.T) {
-
 			testrunner.Runner.
 				Begin(t).
 				Prepare(

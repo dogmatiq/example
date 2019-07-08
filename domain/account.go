@@ -17,8 +17,6 @@ func (r *account) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.AccountCreditedForDeposit:
 		r.Balance += x.Amount
-	case events.AccountCreditedForTransfer:
-		r.Balance += x.Amount
 	case events.FundsHeldForWithdrawal:
 		r.Balance -= x.Amount
 	case events.WithdrawalDeclined:
@@ -27,6 +25,8 @@ func (r *account) ApplyEvent(m dogma.Message) {
 		}
 	case events.AccountDebitedForTransfer:
 		r.Balance -= x.Amount
+	case events.AccountCreditedForTransfer:
+		r.Balance += x.Amount
 	}
 }
 
@@ -46,22 +46,22 @@ func (AccountAggregate) New() dogma.AggregateRoot {
 func (AccountAggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("account")
 
-	c.ConsumesCommandType(commands.CreditAccountForDeposit{})
-	c.ConsumesCommandType(commands.CreditAccountForTransfer{})
-	c.ConsumesCommandType(commands.DebitAccountForTransfer{})
-	c.ConsumesCommandType(commands.DeclineWithdrawal{})
-	c.ConsumesCommandType(commands.HoldFundsForWithdrawal{})
 	c.ConsumesCommandType(commands.OpenAccount{})
+	c.ConsumesCommandType(commands.CreditAccountForDeposit{})
+	c.ConsumesCommandType(commands.HoldFundsForWithdrawal{})
+	c.ConsumesCommandType(commands.DeclineWithdrawal{})
 	c.ConsumesCommandType(commands.SettleWithdrawal{})
+	c.ConsumesCommandType(commands.DebitAccountForTransfer{})
+	c.ConsumesCommandType(commands.CreditAccountForTransfer{})
 
-	c.ProducesEventType(events.AccountCreditedForDeposit{})
-	c.ProducesEventType(events.AccountCreditedForTransfer{})
-	c.ProducesEventType(events.AccountDebitedForTransfer{})
-	c.ProducesEventType(events.AccountDebitedForWithdrawal{})
 	c.ProducesEventType(events.AccountOpened{})
+	c.ProducesEventType(events.AccountCreditedForDeposit{})
 	c.ProducesEventType(events.FundsHeldForWithdrawal{})
-	c.ProducesEventType(events.TransferDeclinedDueToInsufficientFunds{})
 	c.ProducesEventType(events.WithdrawalDeclined{})
+	c.ProducesEventType(events.AccountDebitedForWithdrawal{})
+	c.ProducesEventType(events.AccountDebitedForTransfer{})
+	c.ProducesEventType(events.TransferDeclinedDueToInsufficientFunds{})
+	c.ProducesEventType(events.AccountCreditedForTransfer{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
@@ -92,8 +92,6 @@ func (AccountAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Mes
 		openAccount(s, x)
 	case commands.CreditAccountForDeposit:
 		creditForDeposit(s, x)
-	case commands.CreditAccountForTransfer:
-		creditForTransfer(s, x)
 	case commands.HoldFundsForWithdrawal:
 		holdFundsForWithdrawal(s, x)
 	case commands.SettleWithdrawal:
@@ -102,6 +100,8 @@ func (AccountAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Mes
 		declineWithdrawal(s, x)
 	case commands.DebitAccountForTransfer:
 		debitForTransfer(s, x)
+	case commands.CreditAccountForTransfer:
+		creditForTransfer(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}

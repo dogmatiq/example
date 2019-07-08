@@ -20,12 +20,12 @@ type WithdrawalProcess struct {
 func (WithdrawalProcess) Configure(c dogma.ProcessConfigurer) {
 	c.Name("withdrawal")
 
-	c.ConsumesEventType(events.AccountDebitedForWithdrawal{})
-	c.ConsumesEventType(events.DailyDebitLimitConsumed{})
-	c.ConsumesEventType(events.DailyDebitLimitExceeded{})
+	c.ConsumesEventType(events.WithdrawalStarted{})
 	c.ConsumesEventType(events.FundsHeldForWithdrawal{})
 	c.ConsumesEventType(events.WithdrawalDeclined{})
-	c.ConsumesEventType(events.WithdrawalStarted{})
+	c.ConsumesEventType(events.DailyDebitLimitConsumed{})
+	c.ConsumesEventType(events.DailyDebitLimitExceeded{})
+	c.ConsumesEventType(events.AccountDebitedForWithdrawal{})
 
 	c.ProducesCommandType(commands.ConsumeDailyDebitLimit{})
 	c.ProducesCommandType(commands.DeclineWithdrawal{})
@@ -42,6 +42,12 @@ func (WithdrawalProcess) RouteEventToInstance(_ context.Context, m dogma.Message
 	case events.FundsHeldForWithdrawal:
 		return x.TransactionID, true, nil
 	case events.WithdrawalDeclined:
+		return x.TransactionID, true, nil
+	case events.DailyDebitLimitConsumed:
+		return x.TransactionID, true, nil
+	case events.DailyDebitLimitExceeded:
+		return x.TransactionID, true, nil
+	case events.AccountDebitedForWithdrawal:
 		return x.TransactionID, true, nil
 	default:
 		return "", false, nil
