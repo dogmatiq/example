@@ -30,20 +30,20 @@ func (r *account) ApplyEvent(m dogma.Message) {
 	}
 }
 
-// AccountAggregate implements the business logic for a bank account.
+// AccountHandler implements the business logic for a bank account.
 //
 // It centralizes all transactions that are applied to an account in order to
 // enforce a strict no-overdraw policy.
-type AccountAggregate struct{}
+type AccountHandler struct{}
 
 // New returns a new account instance.
-func (AccountAggregate) New() dogma.AggregateRoot {
+func (AccountHandler) New() dogma.AggregateRoot {
 	return &account{}
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
-func (AccountAggregate) Configure(c dogma.AggregateConfigurer) {
+func (AccountHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Name("account")
 
 	c.ConsumesCommandType(commands.OpenAccount{})
@@ -66,7 +66,7 @@ func (AccountAggregate) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (AccountAggregate) RouteCommandToInstance(m dogma.Message) string {
+func (AccountHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.OpenAccount:
 		return x.AccountID
@@ -78,6 +78,8 @@ func (AccountAggregate) RouteCommandToInstance(m dogma.Message) string {
 		return x.AccountID
 	case commands.DebitAccountForTransfer:
 		return x.AccountID
+	case commands.CreditAccountForTransfer:
+		return x.AccountID
 	case commands.DeclineWithdrawal:
 		return x.AccountID
 	default:
@@ -86,7 +88,7 @@ func (AccountAggregate) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (AccountAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (AccountHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.OpenAccount:
 		openAccount(s, x)
@@ -141,10 +143,10 @@ func holdFundsForWithdrawal(s dogma.AggregateCommandScope, m commands.HoldFundsF
 
 	if r.Balance >= m.Amount {
 		s.RecordEvent(events.FundsHeldForWithdrawal{
-			TransactionID:                 m.TransactionID,
-			AccountID:                     m.AccountID,
-			Amount:                        m.Amount,
-			RequestedTransactionTimestamp: m.RequestedTransactionTimestamp,
+			TransactionID: m.TransactionID,
+			AccountID:     m.AccountID,
+			Amount:        m.Amount,
+			ScheduledDate: m.ScheduledDate,
 		})
 	} else {
 		s.RecordEvent(events.WithdrawalDeclined{

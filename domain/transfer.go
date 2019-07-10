@@ -9,36 +9,37 @@ import (
 )
 
 // transfer is the process root for a funds transfer.
-type transfer struct {
+type transferProcess struct {
 	ToAccountID string
 }
 
-// TransferProcess manages the process of transferring funds between accounts.
-type TransferProcess struct {
+// TransferProcessHandler manages the process of transferring funds between
+// accounts.
+type TransferProcessHandler struct {
 	dogma.NoTimeoutBehavior
 }
 
 // New returns a new transfer instance.
-func (TransferProcess) New() dogma.ProcessRoot {
-	return &transfer{}
+func (TransferProcessHandler) New() dogma.ProcessRoot {
+	return &transferProcess{}
 }
 
 // Configure configures the behavior of the engine as it relates to this handler.
-func (TransferProcess) Configure(c dogma.ProcessConfigurer) {
-	c.Name("transfer")
+func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
+	c.Name("transfer-process")
 
 	c.ConsumesEventType(events.TransferStarted{})
 	c.ConsumesEventType(events.AccountDebitedForTransfer{})
 	c.ConsumesEventType(events.TransferDeclinedDueToInsufficientFunds{})
 	c.ConsumesEventType(events.AccountCreditedForTransfer{})
 
-	c.ProducesCommandType(commands.CreditAccountForTransfer{})
 	c.ProducesCommandType(commands.DebitAccountForTransfer{})
+	c.ProducesCommandType(commands.CreditAccountForTransfer{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
 // by m.
-func (TransferProcess) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
+func (TransferProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
 	switch x := m.(type) {
 	case events.TransferStarted:
 		return x.TransactionID, true, nil
@@ -54,7 +55,7 @@ func (TransferProcess) RouteEventToInstance(_ context.Context, m dogma.Message) 
 }
 
 // HandleEvent handles an event message that has been routed to this handler.
-func (TransferProcess) HandleEvent(
+func (TransferProcessHandler) HandleEvent(
 	_ context.Context,
 	s dogma.ProcessEventScope,
 	m dogma.Message,
@@ -63,7 +64,7 @@ func (TransferProcess) HandleEvent(
 	case events.TransferStarted:
 		s.Begin()
 
-		r := s.Root().(*transfer)
+		r := s.Root().(*transferProcess)
 		r.ToAccountID = x.ToAccountID
 
 		s.ExecuteCommand(commands.DebitAccountForTransfer{
@@ -73,7 +74,7 @@ func (TransferProcess) HandleEvent(
 		})
 
 	case events.AccountDebitedForTransfer:
-		r := s.Root().(*transfer)
+		r := s.Root().(*transferProcess)
 
 		s.ExecuteCommand(commands.CreditAccountForTransfer{
 			TransactionID: x.TransactionID,

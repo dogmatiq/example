@@ -9,19 +9,19 @@ import (
 // WithdrawalStarted is an event indicating that the process of withdrawing
 // funds from an account has begun.
 type WithdrawalStarted struct {
-	TransactionID                 string
-	AccountID                     string
-	Amount                        int64
-	RequestedTransactionTimestamp time.Time
+	TransactionID string
+	AccountID     string
+	Amount        int64
+	ScheduledDate time.Time
 }
 
 // FundsHeldForWithdrawal is an event that indicates account funds have been
 // held for a withdrawal.
 type FundsHeldForWithdrawal struct {
-	TransactionID                 string
-	AccountID                     string
-	Amount                        int64
-	RequestedTransactionTimestamp time.Time
+	TransactionID string
+	AccountID     string
+	Amount        int64
+	ScheduledDate time.Time
 }
 
 // AccountDebitedForWithdrawal is an event that indicates an account has been

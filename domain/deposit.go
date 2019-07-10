@@ -8,15 +8,16 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
-// DepositProcess is manages the process of depositing funds into an account.
-type DepositProcess struct {
+// DepositProcessHandler is manages the process of depositing funds into an
+// account.
+type DepositProcessHandler struct {
 	dogma.StatelessProcessBehavior
 	dogma.NoTimeoutBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
-func (DepositProcess) Configure(c dogma.ProcessConfigurer) {
+func (DepositProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Name("deposit")
 
 	c.ConsumesEventType(events.DepositStarted{})
@@ -27,7 +28,7 @@ func (DepositProcess) Configure(c dogma.ProcessConfigurer) {
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
 // by m.
-func (DepositProcess) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
+func (DepositProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
 	switch x := m.(type) {
 	case events.DepositStarted:
 		return x.TransactionID, true, nil
@@ -39,7 +40,7 @@ func (DepositProcess) RouteEventToInstance(_ context.Context, m dogma.Message) (
 }
 
 // HandleEvent handles an event message that has been routed to this handler.
-func (DepositProcess) HandleEvent(_ context.Context, s dogma.ProcessEventScope, m dogma.Message) error {
+func (DepositProcessHandler) HandleEvent(_ context.Context, s dogma.ProcessEventScope, m dogma.Message) error {
 	switch x := m.(type) {
 	case events.DepositStarted:
 		s.Begin()

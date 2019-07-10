@@ -38,10 +38,10 @@ func main() {
 			Amount:        10000,
 		},
 		commands.Withdraw{
-			TransactionID:                 "txn2",
-			AccountID:                     "acct1",
-			Amount:                        500,
-			RequestedTransactionTimestamp: time.Now(),
+			TransactionID: "txn2",
+			AccountID:     "acct1",
+			Amount:        500,
+			ScheduledDate: time.Now(),
 		},
 		commands.Transfer{
 			TransactionID: "txn3",

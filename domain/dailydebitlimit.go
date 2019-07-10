@@ -23,21 +23,21 @@ func (r *dailyDebitLimit) ApplyEvent(m dogma.Message) {
 	}
 }
 
-// DailyDebitLimitAggregate implements the business logic for an account daily
+// DailyDebitLimitHandler implements the business logic for an account daily
 // debit limit policy.
 //
 // It centralizes all debits that are applied to an account over a calendar day
 // in order to enforce a policy of limited daily debits.
-type DailyDebitLimitAggregate struct{}
+type DailyDebitLimitHandler struct{}
 
 // New returns a new daily debit limit instance.
-func (DailyDebitLimitAggregate) New() dogma.AggregateRoot {
+func (DailyDebitLimitHandler) New() dogma.AggregateRoot {
 	return &dailyDebitLimit{}
 }
 
 // Configure configures the behaviour of the engine as it relates to this
 // handler.
-func (DailyDebitLimitAggregate) Configure(c dogma.AggregateConfigurer) {
+func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Name("daily-debit-limit")
 
 	c.ConsumesCommandType(commands.ConsumeDailyDebitLimit{})
@@ -48,17 +48,17 @@ func (DailyDebitLimitAggregate) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (DailyDebitLimitAggregate) RouteCommandToInstance(m dogma.Message) string {
+func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
-		return makeInstanceID(x.RequestedTransactionTimestamp, x.AccountID)
+		return makeInstanceID(x.ScheduledDate, x.AccountID)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (DailyDebitLimitAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (DailyDebitLimitHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
 		consume(s, x)
