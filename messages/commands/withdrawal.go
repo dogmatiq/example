@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"time"
-
 	"github.com/dogmatiq/example/messages"
 )
 
@@ -11,7 +9,7 @@ type Withdraw struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledDate string
 }
 
 // HoldFundsForWithdrawal is a command that requests bank account funds be held
@@ -20,7 +18,7 @@ type HoldFundsForWithdrawal struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledDate string
 }
 
 // SettleWithdrawal is a command that completes an account withdrawal.

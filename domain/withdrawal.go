@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
@@ -14,6 +13,7 @@ import (
 // account.
 type WithdrawalProcessHandler struct {
 	dogma.StatelessProcessBehavior
+	dogma.NoTimeoutBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -32,8 +32,6 @@ func (WithdrawalProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.ProducesCommandType(commands.DeclineWithdrawal{})
 	c.ProducesCommandType(commands.ConsumeDailyDebitLimit{})
 	c.ProducesCommandType(commands.SettleWithdrawal{})
-
-	c.SchedulesTimeoutType(ScheduleWithdrawalTimeout{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -66,16 +64,12 @@ func (WithdrawalProcessHandler) HandleEvent(
 	switch x := m.(type) {
 	case events.WithdrawalStarted:
 		s.Begin()
-
-		s.ScheduleTimeout(
-			ScheduleWithdrawalTimeout{
-				TransactionID: x.TransactionID,
-				AccountID:     x.AccountID,
-				Amount:        x.Amount,
-				ScheduledDate: startOfBusinessDay(x.ScheduledDate),
-			},
-			startOfBusinessDay(x.ScheduledDate),
-		)
+		s.ExecuteCommand(commands.HoldFundsForWithdrawal{
+			TransactionID: x.TransactionID,
+			AccountID:     x.AccountID,
+			Amount:        x.Amount,
+			ScheduledDate: x.ScheduledDate,
+		})
 
 	case events.FundsHeldForWithdrawal:
 		s.ExecuteCommand(commands.ConsumeDailyDebitLimit{
@@ -109,35 +103,4 @@ func (WithdrawalProcessHandler) HandleEvent(
 	}
 
 	return nil
-}
-
-// HandleTimeout handles an event message that has been scheduled for timeout by
-// this handler.
-func (WithdrawalProcessHandler) HandleTimeout(
-	_ context.Context,
-	s dogma.ProcessTimeoutScope,
-	m dogma.Message,
-) error {
-	switch x := m.(type) {
-	case ScheduleWithdrawalTimeout:
-		s.ExecuteCommand(commands.HoldFundsForWithdrawal{
-			TransactionID: x.TransactionID,
-			AccountID:     x.AccountID,
-			Amount:        x.Amount,
-			ScheduledDate: x.ScheduledDate,
-		})
-	default:
-		panic(dogma.UnexpectedMessage)
-	}
-
-	return nil
-}
-
-// ScheduleWithdrawalTimeout is a timeout message for scheduling a withdrawal to
-// happen at a later date.
-type ScheduleWithdrawalTimeout struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
-	ScheduledDate time.Time
 }

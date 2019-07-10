@@ -41,7 +41,7 @@ func main() {
 			TransactionID: "txn2",
 			AccountID:     "acct1",
 			Amount:        500,
-			ScheduledDate: time.Now(),
+			ScheduledDate: time.Now().Format("2006-01-02"),
 		},
 		commands.Transfer{
 			TransactionID: "txn3",

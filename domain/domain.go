@@ -2,19 +2,17 @@ package domain
 
 import "time"
 
-const timeZone = "UTC"
+const dateFormat = "2006-01-02"
 
-func startOfBusinessDay(t time.Time) time.Time {
-	x := t.In(time.FixedZone(timeZone, 0))
+func businessDayFromTime(t time.Time) string {
+	return t.Format(dateFormat)
+}
 
-	return time.Date(
-		x.Year(),
-		x.Month(),
-		x.Day(),
-		0,
-		0,
-		0,
-		0,
-		x.Location(),
-	)
+func startOfBusinessDay(date string) time.Time {
+	t, err := time.Parse(dateFormat, date)
+	if err != nil {
+		panic(err)
+	}
+
+	return t
 }

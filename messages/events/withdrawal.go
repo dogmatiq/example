@@ -1,8 +1,6 @@
 package events
 
 import (
-	"time"
-
 	"github.com/dogmatiq/example/messages"
 )
 
@@ -12,7 +10,7 @@ type WithdrawalStarted struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledDate string
 }
 
 // FundsHeldForWithdrawal is an event that indicates account funds have been
@@ -21,7 +19,7 @@ type FundsHeldForWithdrawal struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledDate string
 }
 
 // AccountDebitedForWithdrawal is an event that indicates an account has been

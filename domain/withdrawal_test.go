@@ -11,6 +11,13 @@ import (
 	. "github.com/dogmatiq/testkit/assert"
 )
 
+// The current expected daily debit limit.
+const expectedDailyDebitLimit = 900000
+
+var dateTimeNow = time.Date(2001, time.February, 3, 11, 22, 33, 0, time.UTC)
+var businessDateToday = dateTimeNow.Format("2006-01-02")
+var businessDateTomorrow = dateTimeNow.Add(time.Hour * 24).Format("2006-01-02")
+
 func Test_Withdraw(t *testing.T) {
 	t.Run(
 		"when sufficient funds",
@@ -37,7 +44,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T002",
 								AccountID:     "A001",
 								Amount:        500,
-								ScheduledDate: time.Unix(12345, 0),
+								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
 								events.AccountDebitedForWithdrawal{
@@ -72,7 +79,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T001",
 								AccountID:     "A001",
 								Amount:        500,
-								ScheduledDate: time.Unix(12345, 0),
+								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
 								events.WithdrawalDeclined{
@@ -88,14 +95,11 @@ func Test_Withdraw(t *testing.T) {
 		},
 	)
 
-	// The current expected daily debit limit.
-	const expectedDailyDebitLimit = 900000
-
 	t.Run(
-		"when within daily limit",
+		"when within daily debit limit",
 		func(t *testing.T) {
 			t.Run(
-				"it withdraws funds from an account",
+				"it withdraws funds from the specified account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -116,7 +120,108 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T002",
 								AccountID:     "A001",
 								Amount:        500,
-								ScheduledDate: time.Unix(12345, 0),
+								ScheduledDate: businessDateToday,
+							},
+							EventRecorded(
+								events.AccountDebitedForWithdrawal{
+									TransactionID: "T002",
+									AccountID:     "A001",
+									Amount:        500,
+								},
+							),
+						)
+				},
+			)
+
+			t.Run(
+				"it applies the limit per account",
+				func(t *testing.T) {
+					testrunner.Runner.
+						Begin(t).
+						Prepare(
+							commands.OpenAccount{
+								CustomerID:  "C001",
+								AccountID:   "A001",
+								AccountName: "Anna Smith",
+							},
+							commands.OpenAccount{
+								CustomerID:  "C002",
+								AccountID:   "A002",
+								AccountName: "Bob Jones",
+							},
+							commands.Deposit{
+								TransactionID: "D001",
+								AccountID:     "A001",
+								Amount:        expectedDailyDebitLimit + 10000,
+							},
+							commands.Deposit{
+								TransactionID: "D002",
+								AccountID:     "A002",
+								Amount:        expectedDailyDebitLimit + 10000,
+							},
+						).
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "T001",
+								AccountID:     "A001",
+								Amount:        expectedDailyDebitLimit,
+								ScheduledDate: businessDateToday,
+							},
+							EventRecorded(
+								events.AccountDebitedForWithdrawal{
+									TransactionID: "T001",
+									AccountID:     "A001",
+									Amount:        expectedDailyDebitLimit,
+								},
+							),
+						).
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "T002",
+								AccountID:     "A002",
+								Amount:        expectedDailyDebitLimit,
+								ScheduledDate: businessDateToday,
+							},
+							EventRecorded(
+								events.AccountDebitedForWithdrawal{
+									TransactionID: "T002",
+									AccountID:     "A002",
+									Amount:        expectedDailyDebitLimit,
+								},
+							),
+						)
+				},
+			)
+
+			t.Run(
+				"it applies the limit per day",
+				func(t *testing.T) {
+					testrunner.Runner.
+						Begin(t).
+						Prepare(
+							commands.OpenAccount{
+								CustomerID:  "C001",
+								AccountID:   "A001",
+								AccountName: "Anna Smith",
+							},
+							commands.Deposit{
+								TransactionID: "D001",
+								AccountID:     "A001",
+								Amount:        expectedDailyDebitLimit * 2,
+							},
+							commands.Withdraw{
+								TransactionID: "T001",
+								AccountID:     "A001",
+								Amount:        expectedDailyDebitLimit,
+								ScheduledDate: businessDateToday,
+							},
+						).
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "T002",
+								AccountID:     "A001",
+								Amount:        500,
+								ScheduledDate: businessDateTomorrow,
 							},
 							EventRecorded(
 								events.AccountDebitedForWithdrawal{
@@ -132,7 +237,7 @@ func Test_Withdraw(t *testing.T) {
 	)
 
 	t.Run(
-		"when daily limit will be exceeded",
+		"when daily debit limit will be exceeded",
 		func(t *testing.T) {
 			t.Run(
 				"it does not withdraw funds from an account",
@@ -156,7 +261,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T002",
 								AccountID:     "A001",
 								Amount:        expectedDailyDebitLimit + 1,
-								ScheduledDate: time.Unix(12345, 0),
+								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
 								events.WithdrawalDeclined{

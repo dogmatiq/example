@@ -2,7 +2,6 @@ package domain
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages/commands"
@@ -95,14 +94,8 @@ func (r *dailyDebitLimit) isAmountWithinLimit(amount int64) bool {
 	return r.UsedAmount+amount <= maximumDailyDebitLimit
 }
 
-func makeInstanceID(t time.Time, accountID string) string {
-	return fmt.Sprintf(
-		"%04d-%02d-%02d:%s",
-		t.Year(),
-		t.Month(),
-		t.Day(),
-		accountID,
-	)
+func makeInstanceID(date string, accountID string) string {
+	return fmt.Sprintf("%s:%s", date, accountID)
 }
 
 // Limit amount, in cents.
