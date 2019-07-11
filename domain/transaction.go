@@ -1,4 +1,4 @@
-package transaction
+package domain
 
 import (
 	"github.com/dogmatiq/dogma"
@@ -6,17 +6,17 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
-// Aggregate implements the business logic for a transaction of any
+// TransactionAggregate implements the business logic for a transaction of any
 // kind against an account.
 //
 // It's sole purpose is to ensure the global uniqueness of transaction IDs.
-type Aggregate struct {
+type TransactionAggregate struct {
 	dogma.StatelessAggregateBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
-func (Aggregate) Configure(c dogma.AggregateConfigurer) {
+func (TransactionAggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("transaction")
 
 	c.ConsumesCommandType(commands.Deposit{})
@@ -30,7 +30,7 @@ func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
+func (TransactionAggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.Deposit:
 		return x.TransactionID
@@ -45,7 +45,7 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 
 // HandleCommand handles a command message that has been routed to this
 // handler.
-func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (TransactionAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	if !s.Create() {
 		s.Log("transaction already exists")
 		return

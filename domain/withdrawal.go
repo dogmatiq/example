@@ -1,4 +1,4 @@
-package transaction
+package domain
 
 import (
 	"context"

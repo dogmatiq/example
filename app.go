@@ -4,34 +4,32 @@ import (
 	"io"
 
 	"github.com/dogmatiq/dogma"
-	"github.com/dogmatiq/example/account"
-	"github.com/dogmatiq/example/customer"
+	"github.com/dogmatiq/example/domain"
 	"github.com/dogmatiq/example/projections"
-	"github.com/dogmatiq/example/transaction"
 )
 
 // App is an implementation of dogma.Application for the bank example.
 type App struct {
-	customerAggregate                customer.Aggregate
-	accountAggregate                 account.Aggregate
-	openAccountForNewCustomerProcess account.OpenAccountForNewCustomerProcess
-	transactionAggregate             transaction.Aggregate
-	depositProcess                   transaction.DepositProcess
-	withdrawalProcess                transaction.WithdrawalProcess
-	transferProcess                  transaction.TransferProcess
+	customerAggregate                domain.CustomerAggregate
+	accountAggregate                 domain.AccountAggregate
+	openAccountForNewCustomerProcess domain.OpenAccountForNewCustomerProcess
+	transactionAggregate             domain.TransactionAggregate
+	depositProcess                   domain.DepositProcess
+	withdrawalProcess                domain.WithdrawalProcess
+	transferProcess                  domain.TransferProcess
 	accountProjection                projections.AccountProjectionHandler
 }
 
 // Configure configures the Dogma engine for this application.
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.Name("bank")
-	c.RegisterAggregate(a.customerAggregate)
-	c.RegisterProcess(a.openAccountForNewCustomerProcess)
 	c.RegisterAggregate(a.accountAggregate)
+	c.RegisterAggregate(a.customerAggregate)
 	c.RegisterAggregate(a.transactionAggregate)
 	c.RegisterProcess(a.depositProcess)
-	c.RegisterProcess(a.withdrawalProcess)
+	c.RegisterProcess(a.openAccountForNewCustomerProcess)
 	c.RegisterProcess(a.transferProcess)
+	c.RegisterProcess(a.withdrawalProcess)
 	c.RegisterProjection(&a.accountProjection)
 }
 

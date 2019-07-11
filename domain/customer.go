@@ -1,4 +1,4 @@
-package customer
+package domain
 
 import (
 	"github.com/dogmatiq/dogma"
@@ -12,26 +12,26 @@ type customer struct {
 	Email string
 }
 
-func (c *customer) ApplyEvent(m dogma.Message) {
+func (r *customer) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.CustomerAcquired:
-		c.Email = x.CustomerEmail
+		r.Email = x.CustomerEmail
 	case events.CustomerEmailAddressChanged:
-		c.Email = x.CustomerEmail
+		r.Email = x.CustomerEmail
 	}
 }
 
-// Aggregate implements the business logic for a bank customer.
-type Aggregate struct{}
+// CustomerAggregate implements the business logic for a bank customer.
+type CustomerAggregate struct{}
 
 // New returns a new customer instance.
-func (Aggregate) New() dogma.AggregateRoot {
+func (CustomerAggregate) New() dogma.AggregateRoot {
 	return &customer{}
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
-func (Aggregate) Configure(c dogma.AggregateConfigurer) {
+func (CustomerAggregate) Configure(c dogma.AggregateConfigurer) {
 	c.Name("customer")
 
 	c.ConsumesCommandType(commands.OpenAccountForNewCustomer{})
@@ -43,7 +43,7 @@ func (Aggregate) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
+func (CustomerAggregate) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
 		return x.CustomerID
@@ -55,7 +55,7 @@ func (Aggregate) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (Aggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (CustomerAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
 		acquire(s, x)
