@@ -7,7 +7,7 @@ import "github.com/dogmatiq/example/messages"
 type ConsumeDailyDebitLimit struct {
 	TransactionID string
 	AccountID     string
-	DebitType     messages.DebitType
+	DebitType     messages.TransactionType
 	Amount        int64
 	ScheduledDate string
 }

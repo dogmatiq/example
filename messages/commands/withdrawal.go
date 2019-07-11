@@ -12,17 +12,8 @@ type Withdraw struct {
 	ScheduledDate string
 }
 
-// HoldFundsForWithdrawal is a command that requests bank account funds be held
-// for a withdrawal.
-type HoldFundsForWithdrawal struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
-	ScheduledDate string
-}
-
-// SettleWithdrawal is a command that completes an account withdrawal.
-type SettleWithdrawal struct {
+// ApproveWithdrawal is a command that approves an account withdrawal.
+type ApproveWithdrawal struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64

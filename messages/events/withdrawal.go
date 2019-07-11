@@ -13,25 +13,16 @@ type WithdrawalStarted struct {
 	ScheduledDate string
 }
 
-// FundsHeldForWithdrawal is an event that indicates account funds have been
-// held for a withdrawal.
-type FundsHeldForWithdrawal struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
-	ScheduledDate string
-}
-
-// AccountDebitedForWithdrawal is an event that indicates an account has been
-// debited funds due to a withdrawal.
-type AccountDebitedForWithdrawal struct {
+// WithdrawalApproved is an event that indicates a requested withdrawal has been
+// approved.
+type WithdrawalApproved struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
 }
 
 // WithdrawalDeclined is an event that indicates a requested withdrawal has been
-// declined due to insufficient funds.
+// declined.
 type WithdrawalDeclined struct {
 	TransactionID string
 	AccountID     string

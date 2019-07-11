@@ -7,7 +7,7 @@ import "github.com/dogmatiq/example/messages"
 type DailyDebitLimitConsumed struct {
 	TransactionID string
 	AccountID     string
-	DebitType     messages.DebitType
+	DebitType     messages.TransactionType
 	Amount        int64
 	LimitUsed     int64
 	LimitMaximum  int64
@@ -18,7 +18,7 @@ type DailyDebitLimitConsumed struct {
 type DailyDebitLimitExceeded struct {
 	TransactionID string
 	AccountID     string
-	DebitType     messages.DebitType
+	DebitType     messages.TransactionType
 	Amount        int64
 	LimitUsed     int64
 	LimitMaximum  int64

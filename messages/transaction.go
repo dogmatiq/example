@@ -1,14 +1,17 @@
 package messages
 
-// DebitType defines reasons why a debits may fail.
-type DebitType string
+// TransactionType defines types of debits.
+type TransactionType string
 
 const (
+	// Deposit is a deposit transaction type.
+	Deposit TransactionType = "deposit"
+
 	// Withdrawal is a withdrawal transaction type.
-	Withdrawal DebitType = "withdrawal"
+	Withdrawal TransactionType = "withdrawal"
 
 	// Transfer is a transfer transaction type.
-	Transfer DebitType = "transfer"
+	Transfer TransactionType = "transfer"
 )
 
 // DebitFailureReason defines reasons why a debits may fail.

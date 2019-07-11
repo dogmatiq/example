@@ -23,7 +23,7 @@ func Test_Withdraw(t *testing.T) {
 		"when sufficient funds",
 		func(t *testing.T) {
 			t.Run(
-				"it withdraws some funds from an account",
+				"it withdraws funds from an account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -47,7 +47,7 @@ func Test_Withdraw(t *testing.T) {
 								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
-								events.AccountDebitedForWithdrawal{
+								events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -123,7 +123,7 @@ func Test_Withdraw(t *testing.T) {
 								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
-								events.AccountDebitedForWithdrawal{
+								events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -168,7 +168,7 @@ func Test_Withdraw(t *testing.T) {
 								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
-								events.AccountDebitedForWithdrawal{
+								events.WithdrawalApproved{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit,
@@ -183,7 +183,7 @@ func Test_Withdraw(t *testing.T) {
 								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
-								events.AccountDebitedForWithdrawal{
+								events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A002",
 									Amount:        expectedDailyDebitLimit,
@@ -224,7 +224,7 @@ func Test_Withdraw(t *testing.T) {
 								ScheduledDate: businessDateTomorrow,
 							},
 							EventRecorded(
-								events.AccountDebitedForWithdrawal{
+								events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
