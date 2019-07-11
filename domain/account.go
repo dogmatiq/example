@@ -20,7 +20,7 @@ func (r *account) ApplyEvent(m dogma.Message) {
 	case events.FundsHeldForWithdrawal:
 		r.Balance -= x.Amount
 	case events.WithdrawalDeclined:
-		if x.Reason == messages.ReasonDailyDebitLimitExceeded {
+		if x.Reason == messages.DailyDebitLimitExceeded {
 			r.Balance += x.Amount
 		}
 	case events.AccountDebitedForTransfer:
@@ -153,7 +153,7 @@ func holdFundsForWithdrawal(s dogma.AggregateCommandScope, m commands.HoldFundsF
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			Amount:        m.Amount,
-			Reason:        messages.ReasonInsufficientFunds,
+			Reason:        messages.InsufficientFunds,
 		})
 	}
 }

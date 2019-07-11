@@ -45,9 +45,9 @@ func (WithdrawalProcessHandler) RouteEventToInstance(_ context.Context, m dogma.
 	case events.WithdrawalDeclined:
 		return x.TransactionID, true, nil
 	case events.DailyDebitLimitConsumed:
-		return x.TransactionID, true, nil
+		return x.TransactionID, x.DebitType == messages.Withdrawal, nil
 	case events.DailyDebitLimitExceeded:
-		return x.TransactionID, true, nil
+		return x.TransactionID, x.DebitType == messages.Withdrawal, nil
 	case events.AccountDebitedForWithdrawal:
 		return x.TransactionID, true, nil
 	default:
@@ -75,6 +75,7 @@ func (WithdrawalProcessHandler) HandleEvent(
 		s.ExecuteCommand(commands.ConsumeDailyDebitLimit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
+			DebitType:     messages.Withdrawal,
 			Amount:        x.Amount,
 			ScheduledDate: x.ScheduledDate,
 		})
@@ -91,7 +92,7 @@ func (WithdrawalProcessHandler) HandleEvent(
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
-			Reason:        messages.ReasonDailyDebitLimitExceeded,
+			Reason:        messages.DailyDebitLimitExceeded,
 		})
 
 	case events.AccountDebitedForWithdrawal,

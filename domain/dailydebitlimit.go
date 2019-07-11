@@ -75,6 +75,7 @@ func consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
 		s.RecordEvent(events.DailyDebitLimitConsumed{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
+			DebitType:     m.DebitType,
 			Amount:        m.Amount,
 			LimitUsed:     r.UsedAmount + m.Amount,
 			LimitMaximum:  maximumDailyDebitLimit,
@@ -83,6 +84,7 @@ func consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
 		s.RecordEvent(events.DailyDebitLimitExceeded{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
+			DebitType:     m.DebitType,
 			Amount:        m.Amount,
 			LimitUsed:     r.UsedAmount,
 			LimitMaximum:  maximumDailyDebitLimit,

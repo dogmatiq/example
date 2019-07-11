@@ -86,7 +86,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,
-									Reason:        messages.ReasonInsufficientFunds,
+									Reason:        messages.InsufficientFunds,
 								},
 							),
 						)
@@ -268,7 +268,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 1,
-									Reason:        messages.ReasonDailyDebitLimitExceeded,
+									Reason:        messages.DailyDebitLimitExceeded,
 								},
 							),
 						)
