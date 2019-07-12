@@ -19,13 +19,6 @@ func (r *account) ApplyEvent(m dogma.Message) {
 		r.Balance += x.Amount
 	case events.AccountDebited:
 		r.Balance -= x.Amount
-
-	// TODO: later these below will be merged with generic above
-
-	case events.AccountDebitedForTransfer:
-		r.Balance -= x.Amount
-	case events.AccountCreditedForTransfer:
-		r.Balance += x.Amount
 	}
 }
 
@@ -53,15 +46,6 @@ func (AccountHandler) Configure(c dogma.AggregateConfigurer) {
 	c.ProducesEventType(events.AccountCredited{})
 	c.ProducesEventType(events.AccountDebited{})
 	c.ProducesEventType(events.AccountDebitDeclined{})
-
-	// TODO: later these below will be merged with generic above
-	c.ConsumesCommandType(commands.CreditAccountForTransfer{})
-	c.ConsumesCommandType(commands.DebitAccountForTransfer{})
-
-	// TODO: later these below will be merged with generic above
-	c.ProducesEventType(events.AccountDebitedForTransfer{})
-	c.ProducesEventType(events.TransferDeclinedDueToInsufficientFunds{})
-	c.ProducesEventType(events.AccountCreditedForTransfer{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
@@ -74,14 +58,6 @@ func (AccountHandler) RouteCommandToInstance(m dogma.Message) string {
 		return x.AccountID
 	case commands.DebitAccount:
 		return x.AccountID
-
-	// TODO: later these will be merged with generic above
-
-	case commands.DebitAccountForTransfer:
-		return x.AccountID
-	case commands.CreditAccountForTransfer:
-		return x.AccountID
-
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
@@ -96,14 +72,6 @@ func (AccountHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Messa
 		creditAccount(s, x)
 	case commands.DebitAccount:
 		debitAccount(s, x)
-
-	// TODO: later these will be merged with generic above
-
-	case commands.DebitAccountForTransfer:
-		debitForTransfer(s, x)
-	case commands.CreditAccountForTransfer:
-		creditForTransfer(s, x)
-
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
@@ -155,32 +123,4 @@ func debitAccount(s dogma.AggregateCommandScope, m commands.DebitAccount) {
 
 func (r *account) hasAvailableAmount(amount int64) bool {
 	return r.Balance-amount >= 0
-}
-
-// TODO: later this will be merged with generic above
-func creditForTransfer(s dogma.AggregateCommandScope, m commands.CreditAccountForTransfer) {
-	s.RecordEvent(events.AccountCreditedForTransfer{
-		TransactionID: m.TransactionID,
-		AccountID:     m.AccountID,
-		Amount:        m.Amount,
-	})
-}
-
-// TODO: later this will be merged with generic above
-func debitForTransfer(s dogma.AggregateCommandScope, m commands.DebitAccountForTransfer) {
-	r := s.Root().(*account)
-
-	if r.Balance >= m.Amount {
-		s.RecordEvent(events.AccountDebitedForTransfer{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			Amount:        m.Amount,
-		})
-	} else {
-		s.RecordEvent(events.TransferDeclinedDueToInsufficientFunds{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			Amount:        m.Amount,
-		})
-	}
 }

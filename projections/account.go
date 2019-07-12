@@ -37,11 +37,7 @@ func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.ConsumesEventType(events.AccountOpened{})
 	c.ConsumesEventType(events.DepositApproved{})
 	c.ConsumesEventType(events.WithdrawalApproved{})
-
-	// TODO: later these below will be changed to be like above
-
-	c.ConsumesEventType(events.AccountCreditedForTransfer{})
-	c.ConsumesEventType(events.AccountDebitedForTransfer{})
+	c.ConsumesEventType(events.TransferApproved{})
 }
 
 // GenerateCSV writes a CSV report of all accounts to w.
@@ -125,15 +121,15 @@ func (h *AccountProjectionHandler) HandleEvent(
 
 	// TODO: later these below will be changed to be like above
 
-	case events.AccountCreditedForTransfer:
-		r := h.get(x.AccountID)
-		r.TransfersIn += x.Amount
-		r.CurrentBalance += x.Amount
-
-	case events.AccountDebitedForTransfer:
-		r := h.get(x.AccountID)
-		r.TransfersOut += x.Amount
-		r.CurrentBalance -= x.Amount
+	case events.TransferApproved:
+		// debit
+		rFrom := h.get(x.FromAccountID)
+		rFrom.TransfersOut += x.Amount
+		rFrom.CurrentBalance -= x.Amount
+		// credit
+		rTo := h.get(x.ToAccountID)
+		rTo.TransfersIn += x.Amount
+		rTo.CurrentBalance += x.Amount
 
 	default:
 		panic(dogma.UnexpectedMessage)

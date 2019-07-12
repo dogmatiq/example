@@ -1,5 +1,7 @@
 package commands
 
+import "github.com/dogmatiq/example/messages"
+
 // Transfer is a command requesting that funds be transferred from one bank
 // account to another.
 type Transfer struct {
@@ -7,20 +9,22 @@ type Transfer struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
+	ScheduledDate string
 }
 
-// DebitAccountForTransfer is a command that requests a bank account be debited
-// for a transfer.
-type DebitAccountForTransfer struct {
+// ApproveTransfer is a command that approves an account transfer.
+type ApproveTransfer struct {
 	TransactionID string
-	AccountID     string
+	FromAccountID string
+	ToAccountID   string
 	Amount        int64
 }
 
-// CreditAccountForTransfer is a command that credits a bank account with
-// transferred funds.
-type CreditAccountForTransfer struct {
+// DeclineTransfer is a command that rejects an account transfer.
+type DeclineTransfer struct {
 	TransactionID string
-	AccountID     string
+	FromAccountID string
+	ToAccountID   string
 	Amount        int64
+	Reason        messages.DebitFailureReason // TODO: does this name/type make sense for Transfer?
 }

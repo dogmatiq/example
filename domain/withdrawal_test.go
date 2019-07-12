@@ -251,21 +251,21 @@ func Test_Withdraw(t *testing.T) {
 								AccountName: "Anna Smith",
 							},
 							commands.Deposit{
-								TransactionID: "T001",
+								TransactionID: "D001",
 								AccountID:     "A001",
 								Amount:        expectedDailyDebitLimit + 10000,
 							},
 						).
 						ExecuteCommand(
 							commands.Withdraw{
-								TransactionID: "T002",
+								TransactionID: "T001",
 								AccountID:     "A001",
 								Amount:        expectedDailyDebitLimit + 1,
 								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
 								events.WithdrawalDeclined{
-									TransactionID: "T002",
+									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 1,
 									Reason:        messages.DailyDebitLimitExceeded,

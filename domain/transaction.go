@@ -25,6 +25,8 @@ func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 	c.ConsumesCommandType(commands.ApproveWithdrawal{})
 	c.ConsumesCommandType(commands.DeclineWithdrawal{})
 	c.ConsumesCommandType(commands.Transfer{})
+	c.ConsumesCommandType(commands.ApproveTransfer{})
+	c.ConsumesCommandType(commands.DeclineTransfer{})
 
 	c.ProducesEventType(events.DepositStarted{})
 	c.ProducesEventType(events.DepositApproved{})
@@ -32,6 +34,8 @@ func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 	c.ProducesEventType(events.WithdrawalApproved{})
 	c.ProducesEventType(events.WithdrawalDeclined{})
 	c.ProducesEventType(events.TransferStarted{})
+	c.ProducesEventType(events.TransferApproved{})
+	c.ProducesEventType(events.TransferDeclined{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
@@ -49,6 +53,10 @@ func (TransactionHandler) RouteCommandToInstance(m dogma.Message) string {
 	case commands.DeclineWithdrawal:
 		return x.TransactionID
 	case commands.Transfer:
+		return x.TransactionID
+	case commands.ApproveTransfer:
+		return x.TransactionID
+	case commands.DeclineTransfer:
 		return x.TransactionID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -71,6 +79,10 @@ func (TransactionHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.M
 		declineWithdrawal(s, x)
 	case commands.Transfer:
 		startTransfer(s, x)
+	case commands.ApproveTransfer:
+		approveTransfer(s, x)
+	case commands.DeclineTransfer:
+		declineTransfer(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
@@ -129,6 +141,11 @@ func declineWithdrawal(s dogma.AggregateCommandScope, m commands.DeclineWithdraw
 }
 
 func startTransfer(s dogma.AggregateCommandScope, m commands.Transfer) {
+	if m.FromAccountID == m.ToAccountID {
+		s.Log("cannot transfer to same account")
+		return
+	}
+
 	if !s.Create() {
 		s.Log("transaction already exists")
 		return
@@ -139,5 +156,25 @@ func startTransfer(s dogma.AggregateCommandScope, m commands.Transfer) {
 		FromAccountID: m.FromAccountID,
 		ToAccountID:   m.ToAccountID,
 		Amount:        m.Amount,
+		ScheduledDate: m.ScheduledDate,
+	})
+}
+
+func approveTransfer(s dogma.AggregateCommandScope, m commands.ApproveTransfer) {
+	s.RecordEvent(events.TransferApproved{
+		TransactionID: m.TransactionID,
+		FromAccountID: m.FromAccountID,
+		ToAccountID:   m.ToAccountID,
+		Amount:        m.Amount,
+	})
+}
+
+func declineTransfer(s dogma.AggregateCommandScope, m commands.DeclineTransfer) {
+	s.RecordEvent(events.TransferDeclined{
+		TransactionID: m.TransactionID,
+		FromAccountID: m.FromAccountID,
+		ToAccountID:   m.ToAccountID,
+		Amount:        m.Amount,
+		Reason:        m.Reason,
 	})
 }
