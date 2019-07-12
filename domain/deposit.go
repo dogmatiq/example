@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
 )
@@ -21,9 +22,11 @@ func (DepositProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Name("deposit")
 
 	c.ConsumesEventType(events.DepositStarted{})
-	c.ConsumesEventType(events.AccountCreditedForDeposit{})
+	c.ConsumesEventType(events.AccountCredited{})
+	c.ConsumesEventType(events.DepositApproved{})
 
-	c.ProducesCommandType(commands.CreditAccountForDeposit{})
+	c.ProducesCommandType(commands.CreditAccount{})
+	c.ProducesCommandType(commands.ApproveDeposit{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -32,7 +35,9 @@ func (DepositProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Mes
 	switch x := m.(type) {
 	case events.DepositStarted:
 		return x.TransactionID, true, nil
-	case events.AccountCreditedForDeposit:
+	case events.AccountCredited:
+		return x.TransactionID, x.TransactionType == messages.Deposit, nil
+	case events.DepositApproved:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -44,13 +49,21 @@ func (DepositProcessHandler) HandleEvent(_ context.Context, s dogma.ProcessEvent
 	switch x := m.(type) {
 	case events.DepositStarted:
 		s.Begin()
-		s.ExecuteCommand(commands.CreditAccountForDeposit{
+		s.ExecuteCommand(commands.CreditAccount{
+			TransactionID:   x.TransactionID,
+			AccountID:       x.AccountID,
+			TransactionType: messages.Deposit,
+			Amount:          x.Amount,
+		})
+
+	case events.AccountCredited:
+		s.ExecuteCommand(commands.ApproveDeposit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
-	case events.AccountCreditedForDeposit:
+	case events.DepositApproved:
 		s.End()
 
 	default:

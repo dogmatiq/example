@@ -7,9 +7,8 @@ type Deposit struct {
 	Amount        int64
 }
 
-// CreditAccountForDeposit is a command that credits a bank account with
-// deposited funds.
-type CreditAccountForDeposit struct {
+// ApproveDeposit is a command that approves an account deposit.
+type ApproveDeposit struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64

@@ -22,8 +22,6 @@ func (r *account) ApplyEvent(m dogma.Message) {
 
 	// TODO: later these below will be merged with generic above
 
-	case events.AccountCreditedForDeposit:
-		r.Balance += x.Amount
 	case events.AccountDebitedForTransfer:
 		r.Balance -= x.Amount
 	case events.AccountCreditedForTransfer:
@@ -57,12 +55,10 @@ func (AccountHandler) Configure(c dogma.AggregateConfigurer) {
 	c.ProducesEventType(events.AccountDebitDeclined{})
 
 	// TODO: later these below will be merged with generic above
-	c.ConsumesCommandType(commands.CreditAccountForDeposit{})
 	c.ConsumesCommandType(commands.CreditAccountForTransfer{})
 	c.ConsumesCommandType(commands.DebitAccountForTransfer{})
 
 	// TODO: later these below will be merged with generic above
-	c.ProducesEventType(events.AccountCreditedForDeposit{})
 	c.ProducesEventType(events.AccountDebitedForTransfer{})
 	c.ProducesEventType(events.TransferDeclinedDueToInsufficientFunds{})
 	c.ProducesEventType(events.AccountCreditedForTransfer{})
@@ -81,8 +77,6 @@ func (AccountHandler) RouteCommandToInstance(m dogma.Message) string {
 
 	// TODO: later these will be merged with generic above
 
-	case commands.CreditAccountForDeposit:
-		return x.AccountID
 	case commands.DebitAccountForTransfer:
 		return x.AccountID
 	case commands.CreditAccountForTransfer:
@@ -105,8 +99,6 @@ func (AccountHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Messa
 
 	// TODO: later these will be merged with generic above
 
-	case commands.CreditAccountForDeposit:
-		creditForDeposit(s, x)
 	case commands.DebitAccountForTransfer:
 		debitForTransfer(s, x)
 	case commands.CreditAccountForTransfer:
@@ -163,15 +155,6 @@ func debitAccount(s dogma.AggregateCommandScope, m commands.DebitAccount) {
 
 func (r *account) hasAvailableAmount(amount int64) bool {
 	return r.Balance-amount >= 0
-}
-
-// TODO: later this will be merged with generic above
-func creditForDeposit(s dogma.AggregateCommandScope, m commands.CreditAccountForDeposit) {
-	s.RecordEvent(events.AccountCreditedForDeposit{
-		TransactionID: m.TransactionID,
-		AccountID:     m.AccountID,
-		Amount:        m.Amount,
-	})
 }
 
 // TODO: later this will be merged with generic above

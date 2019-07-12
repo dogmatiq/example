@@ -20,12 +20,14 @@ func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Name("transaction")
 
 	c.ConsumesCommandType(commands.Deposit{})
+	c.ConsumesCommandType(commands.ApproveDeposit{})
 	c.ConsumesCommandType(commands.Withdraw{})
 	c.ConsumesCommandType(commands.ApproveWithdrawal{})
 	c.ConsumesCommandType(commands.DeclineWithdrawal{})
 	c.ConsumesCommandType(commands.Transfer{})
 
 	c.ProducesEventType(events.DepositStarted{})
+	c.ProducesEventType(events.DepositApproved{})
 	c.ProducesEventType(events.WithdrawalStarted{})
 	c.ProducesEventType(events.WithdrawalApproved{})
 	c.ProducesEventType(events.WithdrawalDeclined{})
@@ -37,6 +39,8 @@ func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 func (TransactionHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.Deposit:
+		return x.TransactionID
+	case commands.ApproveDeposit:
 		return x.TransactionID
 	case commands.Withdraw:
 		return x.TransactionID
@@ -57,6 +61,8 @@ func (TransactionHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.M
 	switch x := m.(type) {
 	case commands.Deposit:
 		startDeposit(s, x)
+	case commands.ApproveDeposit:
+		approveDeposit(s, x)
 	case commands.Withdraw:
 		startWithdraw(s, x)
 	case commands.ApproveWithdrawal:
@@ -77,6 +83,14 @@ func startDeposit(s dogma.AggregateCommandScope, m commands.Deposit) {
 	}
 
 	s.RecordEvent(events.DepositStarted{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+	})
+}
+
+func approveDeposit(s dogma.AggregateCommandScope, m commands.ApproveDeposit) {
+	s.RecordEvent(events.DepositApproved{
 		TransactionID: m.TransactionID,
 		AccountID:     m.AccountID,
 		Amount:        m.Amount,

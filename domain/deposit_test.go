@@ -11,10 +11,10 @@ import (
 
 func Test_Deposit(t *testing.T) {
 	t.Run(
-		"when deposit with vaild account",
+		"when deposit",
 		func(t *testing.T) {
 			t.Run(
-				"it deposits some funds into an account",
+				"it deposits funds into an account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -31,7 +31,7 @@ func Test_Deposit(t *testing.T) {
 								Amount:        500,
 							},
 							EventRecorded(
-								events.AccountCreditedForDeposit{
+								events.DepositApproved{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,

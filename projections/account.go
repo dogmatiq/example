@@ -35,11 +35,11 @@ func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.Name("account-projection")
 
 	c.ConsumesEventType(events.AccountOpened{})
+	c.ConsumesEventType(events.DepositApproved{})
 	c.ConsumesEventType(events.WithdrawalApproved{})
 
 	// TODO: later these below will be changed to be like above
 
-	c.ConsumesEventType(events.AccountCreditedForDeposit{})
 	c.ConsumesEventType(events.AccountCreditedForTransfer{})
 	c.ConsumesEventType(events.AccountDebitedForTransfer{})
 }
@@ -113,7 +113,7 @@ func (h *AccountProjectionHandler) HandleEvent(
 		r := h.get(x.AccountID)
 		r.Name = x.AccountName
 
-	case events.AccountCreditedForDeposit:
+	case events.DepositApproved:
 		r := h.get(x.AccountID)
 		r.DepositsIn += x.Amount
 		r.CurrentBalance += x.Amount
@@ -122,6 +122,8 @@ func (h *AccountProjectionHandler) HandleEvent(
 		r := h.get(x.AccountID)
 		r.WithdrawalsOut += x.Amount
 		r.CurrentBalance -= x.Amount
+
+	// TODO: later these below will be changed to be like above
 
 	case events.AccountCreditedForTransfer:
 		r := h.get(x.AccountID)
