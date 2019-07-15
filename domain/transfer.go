@@ -28,7 +28,7 @@ func (TransferProcessHandler) New() dogma.ProcessRoot {
 
 // Configure configures the behavior of the engine as it relates to this handler.
 func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
-	c.Name("transfer-process")
+	c.Name("transfer")
 
 	c.ConsumesEventType(events.TransferStarted{})
 	c.ConsumesEventType(events.AccountDebited{})
