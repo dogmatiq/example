@@ -43,15 +43,13 @@ func Test_Transfer(t *testing.T) {
 								ToAccountID:   "A002",
 								Amount:        100,
 							},
-							AllOf(
-								EventRecorded(
-									events.TransferApproved{
-										TransactionID: "T001",
-										FromAccountID: "A001",
-										ToAccountID:   "A002",
-										Amount:        100,
-									},
-								),
+							EventRecorded(
+								events.TransferApproved{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        100,
+								},
 							),
 						)
 				},
@@ -91,27 +89,14 @@ func Test_Transfer(t *testing.T) {
 								ToAccountID:   "A002",
 								Amount:        1000,
 							},
-							AllOf(
-								EventRecorded(
-									events.TransferDeclined{
-										TransactionID: "T001",
-										FromAccountID: "A001",
-										ToAccountID:   "A002",
-										Amount:        1000,
-										Reason:        messages.InsufficientFunds,
-									},
-								),
-
-								// TODO: How should we verify that everything worked?
-								// The old test had this, but that doesn't deal with generic
-								// credit/debit and some compenstation steps?
-								// Should we verify the AccountDebited and AccountCredited
-								// events, or is that inspecting the internals too much?
-
-								// NoneOf(
-								// 	EventTypeRecorded(events.AccountDebitedForTransfer{}),
-								// 	EventTypeRecorded(events.AccountCreditedForTransfer{}),
-								// ),
+							EventRecorded(
+								events.TransferDeclined{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        1000,
+									Reason:        messages.InsufficientFunds,
+								},
 							),
 						)
 				},
