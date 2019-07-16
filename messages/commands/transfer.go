@@ -26,5 +26,5 @@ type DeclineTransfer struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	Reason        messages.DebitFailureReason // TODO: does this name/type make sense for Transfer?
+	Reason        messages.DebitFailureReason
 }

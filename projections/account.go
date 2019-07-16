@@ -119,8 +119,6 @@ func (h *AccountProjectionHandler) HandleEvent(
 		r.WithdrawalsOut += x.Amount
 		r.CurrentBalance -= x.Amount
 
-	// TODO: later these below will be changed to be like above
-
 	case events.TransferApproved:
 		// debit
 		rFrom := h.get(x.FromAccountID)
