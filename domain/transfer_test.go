@@ -51,6 +51,21 @@ func Test_Transfer(t *testing.T) {
 									Amount:        100,
 								},
 							),
+						).
+						// verify that funds are availalbe
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "W001",
+								AccountID:     "A002",
+								Amount:        100,
+							},
+							EventRecorded(
+								events.WithdrawalApproved{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+								},
+							),
 						)
 				},
 			)
@@ -95,6 +110,22 @@ func Test_Transfer(t *testing.T) {
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
 									Amount:        1000,
+									Reason:        messages.InsufficientFunds,
+								},
+							),
+						).
+						// verify that funds are not availalbe
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "W001",
+								AccountID:     "A002",
+								Amount:        100,
+							},
+							EventRecorded(
+								events.WithdrawalDeclined{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
 									Reason:        messages.InsufficientFunds,
 								},
 							),
@@ -145,6 +176,21 @@ func Test_Transfer(t *testing.T) {
 									Amount:        500,
 								},
 							),
+						).
+						// verify that funds are availalbe
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "W001",
+								AccountID:     "A002",
+								Amount:        100,
+							},
+							EventRecorded(
+								events.WithdrawalApproved{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+								},
+							),
 						)
 				},
 			)
@@ -155,7 +201,7 @@ func Test_Transfer(t *testing.T) {
 		"when daily debit limit will be exceeded",
 		func(t *testing.T) {
 			t.Run(
-				"it does not withdraw funds from an account",
+				"it does not transfer any funds from one account to another",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -191,6 +237,22 @@ func Test_Transfer(t *testing.T) {
 									ToAccountID:   "A002",
 									Amount:        expectedDailyDebitLimit + 1,
 									Reason:        messages.DailyDebitLimitExceeded,
+								},
+							),
+						).
+						// verify that funds are not availalbe
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "W001",
+								AccountID:     "A002",
+								Amount:        100,
+							},
+							EventRecorded(
+								events.WithdrawalDeclined{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+									Reason:        messages.InsufficientFunds,
 								},
 							),
 						)

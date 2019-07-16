@@ -2,7 +2,6 @@ package domain_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages"
@@ -10,13 +9,6 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 	. "github.com/dogmatiq/testkit/assert"
 )
-
-// The current expected daily debit limit.
-const expectedDailyDebitLimit = 900000
-
-var dateTimeNow = time.Date(2001, time.February, 3, 11, 22, 33, 0, time.UTC)
-var businessDateToday = dateTimeNow.Format("2006-01-02")
-var businessDateTomorrow = dateTimeNow.Add(time.Hour * 24).Format("2006-01-02")
 
 func Test_Withdraw(t *testing.T) {
 	t.Run(
@@ -36,7 +28,7 @@ func Test_Withdraw(t *testing.T) {
 							commands.Deposit{
 								TransactionID: "T001",
 								AccountID:     "A001",
-								Amount:        5000,
+								Amount:        500,
 							},
 						).
 						ExecuteCommand(
