@@ -135,8 +135,6 @@ func (TransferProcessHandler) HandleEvent(
 			Amount:          x.Amount,
 		})
 
-		// TODO: Can we do this here? we already submitted a command.
-		// If we do it here, then we know the reason why to decline.
 		s.ExecuteCommand(commands.DeclineTransfer{
 			TransactionID: x.TransactionID,
 			FromAccountID: r.FromAccountID,
@@ -148,7 +146,8 @@ func (TransferProcessHandler) HandleEvent(
 	case events.AccountCredited:
 		r := s.Root().(*transferProcess)
 
-		// check if it was a completion (success) or compensation (failure)
+		// check if it was a credit to complete the transfer (success) and not
+		// a compensation credit (failure)
 		if r.ToAccountID == x.AccountID {
 			s.ExecuteCommand(commands.ApproveTransfer{
 				TransactionID: x.TransactionID,
@@ -156,25 +155,6 @@ func (TransferProcessHandler) HandleEvent(
 				ToAccountID:   r.ToAccountID,
 				Amount:        x.Amount,
 			})
-		} else {
-			// TODO: If we don't decline after the events.DailyDebitLimitExceeded,
-			// then we could do it here, but then we need to try guess the "Reason"
-			// for the decline. In this case it would have to be due to daily limit
-			// exceeding, but if new features/policies were added then this may be
-			// invalid.
-			// For now, i will try DeclineTransfer after the daily limit exceeding.
-			// I'm not sure if that will cause this process instance to end before
-			// it finalizes the compensation.
-			// The `if` block is always needed because there can be two possibilities
-			// for an AccountCredited as part of a Transfer.
-
-			// s.ExecuteCommand(commands.DeclineTransfer{
-			// 	TransactionID: x.TransactionID,
-			// 	FromAccountID: r.FromAccountID,
-			// 	ToAccountID:   r.ToAccountID,
-			// 	Amount:        x.Amount,
-			// 	Reason:        messages.DailyDebitLimitExceeded, // TODO: we are kind of guessing here! If there were other reasons, then this wouldn't work.
-			// })
 		}
 
 	case events.TransferApproved,
