@@ -9,7 +9,7 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
-// DepositProcessHandler is manages the process of depositing funds into an
+// DepositProcessHandler manages the process of depositing funds into an
 // account.
 type DepositProcessHandler struct {
 	dogma.StatelessProcessBehavior
