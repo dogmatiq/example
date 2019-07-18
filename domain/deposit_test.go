@@ -11,35 +11,45 @@ import (
 
 func Test_Deposit(t *testing.T) {
 	t.Run(
-		"when deposit",
+		"it deposits the funds into the account",
 		func(t *testing.T) {
-			t.Run(
-				"it deposits funds into an account",
-				func(t *testing.T) {
-					testrunner.Runner.
-						Begin(t).
-						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							}).
-						ExecuteCommand(
-							commands.Deposit{
-								TransactionID: "T001",
-								AccountID:     "A001",
-								Amount:        500,
-							},
-							EventRecorded(
-								events.DepositApproved{
-									TransactionID: "T001",
-									AccountID:     "A001",
-									Amount:        500,
-								},
-							),
-						)
-				},
-			)
+			testrunner.Runner.
+				Begin(t).
+				Prepare(
+					commands.OpenAccount{
+						CustomerID:  "C001",
+						AccountID:   "A001",
+						AccountName: "Anna Smith",
+					}).
+				ExecuteCommand(
+					commands.Deposit{
+						TransactionID: "T001",
+						AccountID:     "A001",
+						Amount:        500,
+					},
+					EventRecorded(
+						events.DepositApproved{
+							TransactionID: "T001",
+							AccountID:     "A001",
+							Amount:        500,
+						},
+					),
+				).
+				// verify that funds are availalbe
+				ExecuteCommand(
+					commands.Withdraw{
+						TransactionID: "W001",
+						AccountID:     "A001",
+						Amount:        100,
+					},
+					EventRecorded(
+						events.WithdrawalApproved{
+							TransactionID: "W001",
+							AccountID:     "A001",
+							Amount:        100,
+						},
+					),
+				)
 		},
 	)
 }

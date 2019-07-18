@@ -9,12 +9,12 @@ import (
 	. "github.com/dogmatiq/testkit/assert"
 )
 
-func Test_Account(t *testing.T) {
+func Test_OpenAccount(t *testing.T) {
 	t.Run(
-		"when open new account",
+		"when the account does not exist",
 		func(t *testing.T) {
 			t.Run(
-				"it opens the account",
+				"the new account is opened",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -38,10 +38,10 @@ func Test_Account(t *testing.T) {
 	)
 
 	t.Run(
-		"when open existing account",
+		"when the account already exists",
 		func(t *testing.T) {
 			t.Run(
-				"it does not open an account that is already open",
+				"nothing happens to the existing account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).

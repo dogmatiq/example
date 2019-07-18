@@ -12,10 +12,10 @@ import (
 
 func Test_Withdraw(t *testing.T) {
 	t.Run(
-		"when sufficient funds",
+		"when there are sufficient funds",
 		func(t *testing.T) {
 			t.Run(
-				"it withdraws funds from an account",
+				"it withdraws the funds from the account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -52,10 +52,10 @@ func Test_Withdraw(t *testing.T) {
 	)
 
 	t.Run(
-		"when insufficient funds",
+		"when there are insufficient funds",
 		func(t *testing.T) {
 			t.Run(
-				"it does not withdraw funds from an account",
+				"it does not withdraw funds from the account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -88,10 +88,10 @@ func Test_Withdraw(t *testing.T) {
 	)
 
 	t.Run(
-		"when within daily debit limit",
+		"when the withdrawal does not exceed the daily debit limit",
 		func(t *testing.T) {
 			t.Run(
-				"it withdraws funds from the specified account",
+				"it withdraws the funds from the account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -126,7 +126,7 @@ func Test_Withdraw(t *testing.T) {
 			)
 
 			t.Run(
-				"it applies the limit per account",
+				"it enforces the daily debit limit per account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -186,7 +186,7 @@ func Test_Withdraw(t *testing.T) {
 			)
 
 			t.Run(
-				"it applies the limit per day",
+				"it enforces the daily debit limit per day",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -229,10 +229,10 @@ func Test_Withdraw(t *testing.T) {
 	)
 
 	t.Run(
-		"when daily debit limit will be exceeded",
+		"when the withdrawal exceeds the daily debit limit",
 		func(t *testing.T) {
 			t.Run(
-				"it does not withdraw funds from an account",
+				"it does not withdraw any funds from the account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).

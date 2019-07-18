@@ -12,7 +12,7 @@ import (
 
 func Test_Transfer(t *testing.T) {
 	t.Run(
-		"when transfer with sufficient funds",
+		"when there are sufficient funds",
 		func(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
@@ -73,10 +73,10 @@ func Test_Transfer(t *testing.T) {
 	)
 
 	t.Run(
-		"when transfer with insufficient funds",
+		"when there are insufficient funds",
 		func(t *testing.T) {
 			t.Run(
-				"it does not transfer any funds from one account to another",
+				"it does not transfer any funds from the account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
@@ -136,7 +136,7 @@ func Test_Transfer(t *testing.T) {
 	)
 
 	t.Run(
-		"when within daily debit limit",
+		"when the transfer does not exceed the daily debit limit",
 		func(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
@@ -198,10 +198,10 @@ func Test_Transfer(t *testing.T) {
 	)
 
 	t.Run(
-		"when daily debit limit will be exceeded",
+		"when the transfer exceeds the daily debit limit",
 		func(t *testing.T) {
 			t.Run(
-				"it does not transfer any funds from one account to another",
+				"it does not transfer any funds from the account",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).

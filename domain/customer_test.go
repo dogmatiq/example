@@ -9,9 +9,9 @@ import (
 	. "github.com/dogmatiq/testkit/assert"
 )
 
-func Test_Customer(t *testing.T) {
+func Test_OpenAccountForNewCustomer(t *testing.T) {
 	t.Run(
-		"when a new customer opens an account",
+		"when the customer does not exist",
 		func(t *testing.T) {
 			t.Run(
 				"it acquires the customer",
@@ -42,10 +42,10 @@ func Test_Customer(t *testing.T) {
 	)
 
 	t.Run(
-		"when an existing customer opens an account",
+		"when the customer already exists",
 		func(t *testing.T) {
 			t.Run(
-				"it does not reacquire a customer that has already been acquired",
+				"it does not reacquire the customer",
 				func(t *testing.T) {
 					cmd := commands.OpenAccountForNewCustomer{
 						CustomerID:    "C001",
@@ -66,32 +66,13 @@ func Test_Customer(t *testing.T) {
 						)
 				},
 			)
-
-			t.Run(
-				"it does not reacquire a customer that has already been acquired",
-				func(t *testing.T) {
-					cmd := commands.OpenAccount{
-						CustomerID:  "C001",
-						AccountID:   "A002",
-						AccountName: "Bob Jones and Co",
-					}
-
-					testrunner.Runner.
-						Begin(t).
-						Prepare(cmd).
-						ExecuteCommand(
-							cmd,
-							NoneOf(
-								EventTypeRecorded(events.CustomerAcquired{}),
-							),
-						)
-				},
-			)
 		},
 	)
+}
 
+func Test_ChangeCustomerEmailAddress(t *testing.T) {
 	t.Run(
-		"when a customer changes email address",
+		"when the email address is different",
 		func(t *testing.T) {
 			t.Run(
 				"it changes the email address of the customer",
@@ -121,9 +102,14 @@ func Test_Customer(t *testing.T) {
 						)
 				},
 			)
+		},
+	)
 
+	t.Run(
+		"when the email address is the same",
+		func(t *testing.T) {
 			t.Run(
-				"it does not change the email address again if it is not different",
+				"it does not change the email address",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t).
