@@ -102,7 +102,7 @@ func creditAccount(s dogma.AggregateCommandScope, m commands.CreditAccount) {
 func debitAccount(s dogma.AggregateCommandScope, m commands.DebitAccount) {
 	r := s.Root().(*account)
 
-	if r.hasAvailableAmount(m.Amount) {
+	if r.hasSufficientFunds(m.Amount) {
 		s.RecordEvent(events.AccountDebited{
 			TransactionID:   m.TransactionID,
 			AccountID:       m.AccountID,
@@ -121,6 +121,6 @@ func debitAccount(s dogma.AggregateCommandScope, m commands.DebitAccount) {
 	}
 }
 
-func (r *account) hasAvailableAmount(amount int64) bool {
-	return r.Balance-amount >= 0
+func (r *account) hasSufficientFunds(amount int64) bool {
+	return r.Balance >= amount
 }
