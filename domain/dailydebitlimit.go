@@ -71,16 +71,7 @@ func consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
 
 	r := s.Root().(*dailyDebitLimit)
 
-	if r.isAmountWithinLimit(m.Amount) {
-		s.RecordEvent(events.DailyDebitLimitConsumed{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			DebitType:     m.DebitType,
-			Amount:        m.Amount,
-			LimitUsed:     r.UsedAmount + m.Amount,
-			LimitMaximum:  maximumDailyDebitLimit,
-		})
-	} else {
+	if r.wouldExceedLimit(m.Amount) {
 		s.RecordEvent(events.DailyDebitLimitExceeded{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
@@ -89,11 +80,20 @@ func consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
 			LimitUsed:     r.UsedAmount,
 			LimitMaximum:  maximumDailyDebitLimit,
 		})
+	} else {
+		s.RecordEvent(events.DailyDebitLimitConsumed{
+			TransactionID: m.TransactionID,
+			AccountID:     m.AccountID,
+			DebitType:     m.DebitType,
+			Amount:        m.Amount,
+			LimitUsed:     r.UsedAmount + m.Amount,
+			LimitMaximum:  maximumDailyDebitLimit,
+		})
 	}
 }
 
-func (r *dailyDebitLimit) isAmountWithinLimit(amount int64) bool {
-	return r.UsedAmount+amount <= maximumDailyDebitLimit
+func (r *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
+	return r.UsedAmount+amount > maximumDailyDebitLimit
 }
 
 func makeInstanceID(date string, accountID string) string {
