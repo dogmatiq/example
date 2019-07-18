@@ -13,6 +13,7 @@ import (
 type transferProcess struct {
 	FromAccountID string
 	ToAccountID   string
+	DeclineReason messages.DebitFailureReason
 }
 
 // TransferProcessHandler manages the process of transferring funds between
@@ -127,6 +128,8 @@ func (TransferProcessHandler) HandleEvent(
 	case events.DailyDebitLimitExceeded:
 		r := s.Root().(*transferProcess)
 
+		r.DeclineReason = messages.DailyDebitLimitExceeded
+
 		// compensate the initial debit
 		s.ExecuteCommand(commands.CreditAccount{
 			TransactionID:   x.TransactionID,
@@ -135,25 +138,25 @@ func (TransferProcessHandler) HandleEvent(
 			Amount:          x.Amount,
 		})
 
-		s.ExecuteCommand(commands.DeclineTransfer{
-			TransactionID: x.TransactionID,
-			FromAccountID: r.FromAccountID,
-			ToAccountID:   r.ToAccountID,
-			Amount:        x.Amount,
-			Reason:        messages.DailyDebitLimitExceeded,
-		})
-
 	case events.AccountCredited:
 		r := s.Root().(*transferProcess)
 
-		// check if it was a credit to complete the transfer (success) and not
-		// a compensation credit (failure)
 		if r.ToAccountID == x.AccountID {
+			// it was a credit to complete the transfer (success)
 			s.ExecuteCommand(commands.ApproveTransfer{
 				TransactionID: x.TransactionID,
 				FromAccountID: r.FromAccountID,
 				ToAccountID:   r.ToAccountID,
 				Amount:        x.Amount,
+			})
+		} else {
+			// it was a compensating credit to undo the transfer (failure)
+			s.ExecuteCommand(commands.DeclineTransfer{
+				TransactionID: x.TransactionID,
+				FromAccountID: r.FromAccountID,
+				ToAccountID:   r.ToAccountID,
+				Amount:        x.Amount,
+				Reason:        r.DeclineReason,
 			})
 		}
 
