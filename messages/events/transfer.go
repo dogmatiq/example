@@ -1,5 +1,7 @@
 package events
 
+import "github.com/dogmatiq/example/messages"
+
 // TransferStarted is an event indicating that the process of transferring funds
 // from one account to another has begun.
 type TransferStarted struct {
@@ -7,28 +9,24 @@ type TransferStarted struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
+	ScheduledDate string
 }
 
-// AccountCreditedForTransfer is an event that indicates an account has been
-// credited with funds from a transfer.
-type AccountCreditedForTransfer struct {
+// TransferApproved is an event that indicates a requested transfer has been
+// approved.
+type TransferApproved struct {
 	TransactionID string
-	AccountID     string
+	FromAccountID string
+	ToAccountID   string
 	Amount        int64
 }
 
-// AccountDebitedForTransfer is an event that indicates an account has been
-// debited funds for a transfer.
-type AccountDebitedForTransfer struct {
+// TransferDeclined is an event that indicates a requested transfer has been
+// declined.
+type TransferDeclined struct {
 	TransactionID string
-	AccountID     string
+	FromAccountID string
+	ToAccountID   string
 	Amount        int64
-}
-
-// TransferDeclinedDueToInsufficientFunds is an event that indicates a requested
-// transfer has been declined due to insufficient funds.
-type TransferDeclinedDueToInsufficientFunds struct {
-	TransactionID string
-	AccountID     string
-	Amount        int64
+	Reason        messages.DebitFailureReason
 }

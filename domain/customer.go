@@ -21,17 +21,17 @@ func (r *customer) ApplyEvent(m dogma.Message) {
 	}
 }
 
-// CustomerAggregate implements the business logic for a bank customer.
-type CustomerAggregate struct{}
+// CustomerHandler implements the business logic for a bank customer.
+type CustomerHandler struct{}
 
 // New returns a new customer instance.
-func (CustomerAggregate) New() dogma.AggregateRoot {
+func (CustomerHandler) New() dogma.AggregateRoot {
 	return &customer{}
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
-func (CustomerAggregate) Configure(c dogma.AggregateConfigurer) {
+func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Name("customer")
 
 	c.ConsumesCommandType(commands.OpenAccountForNewCustomer{})
@@ -43,7 +43,7 @@ func (CustomerAggregate) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (CustomerAggregate) RouteCommandToInstance(m dogma.Message) string {
+func (CustomerHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
 		return x.CustomerID
@@ -55,7 +55,7 @@ func (CustomerAggregate) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (CustomerAggregate) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (CustomerHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
 		acquire(s, x)

@@ -9,51 +9,60 @@ import (
 	. "github.com/dogmatiq/testkit/assert"
 )
 
-func TestAccount_OpenAccount(t *testing.T) {
+func Test_OpenAccount(t *testing.T) {
 	t.Run(
-		"it opens the account",
+		"when the account does not exist",
 		func(t *testing.T) {
-			testrunner.Runner.
-				Begin(t).
-				ExecuteCommand(
-					commands.OpenAccount{
-						CustomerID:  "C001",
-						AccountID:   "A001",
-						AccountName: "Anna Smith",
-					},
-					EventRecorded(
-						events.AccountOpened{
-							CustomerID:  "C001",
-							AccountID:   "A001",
-							AccountName: "Anna Smith",
-						},
-					),
-				)
+			t.Run(
+				"the new account is opened",
+				func(t *testing.T) {
+					testrunner.Runner.
+						Begin(t).
+						ExecuteCommand(
+							commands.OpenAccount{
+								CustomerID:  "C001",
+								AccountID:   "A001",
+								AccountName: "Anna Smith",
+							},
+							EventRecorded(
+								events.AccountOpened{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+						)
+				},
+			)
 		},
 	)
 
 	t.Run(
-		"it does not open an account that is already open",
+		"when the account already exists",
 		func(t *testing.T) {
-
-			testrunner.Runner.
-				Begin(t).
-				Prepare(
-					commands.OpenAccount{
-						CustomerID:  "C001",
-						AccountID:   "A001",
-						AccountName: "Anna Smith",
-					}).
-				ExecuteCommand(
-					commands.OpenAccount{
-						CustomerID:  "C001",
-						AccountID:   "A001",
-						AccountName: "Anna Smith",
-					},
-					NoneOf(
-						EventTypeRecorded(events.AccountOpened{}),
-					),
-				)
+			t.Run(
+				"nothing happens to the existing account",
+				func(t *testing.T) {
+					testrunner.Runner.
+						Begin(t).
+						Prepare(
+							commands.OpenAccount{
+								CustomerID:  "C001",
+								AccountID:   "A001",
+								AccountName: "Anna Smith",
+							}).
+						ExecuteCommand(
+							commands.OpenAccount{
+								CustomerID:  "C001",
+								AccountID:   "A001",
+								AccountName: "Anna Smith",
+							},
+							NoneOf(
+								EventTypeRecorded(events.AccountOpened{}),
+							),
+						)
+				},
+			)
 		},
 	)
 }

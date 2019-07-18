@@ -8,9 +8,9 @@ type DepositStarted struct {
 	Amount        int64
 }
 
-// AccountCreditedForDeposit is an event that indicates an account has been
-// credited with funds from a deposit.
-type AccountCreditedForDeposit struct {
+// DepositApproved is an event that indicates a requested deposit has been
+// approved.
+type DepositApproved struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
