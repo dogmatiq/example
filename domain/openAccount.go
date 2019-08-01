@@ -12,13 +12,14 @@ import (
 // initial account for a new customer.
 type OpenAccountForNewCustomerProcessHandler struct {
 	dogma.StatelessProcessBehavior
-	dogma.NoTimeoutBehavior
+	dogma.NoTimeoutMessagesBehavior
+	dogma.NoTimeoutHintBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
 func (OpenAccountForNewCustomerProcessHandler) Configure(c dogma.ProcessConfigurer) {
-	c.Name("open-account-for-new-customer")
+	c.Identity("open-account-for-new-customer", "89b39176-a57f-4071-afad-e0db62137fd3")
 
 	c.ConsumesEventType(events.CustomerAcquired{})
 

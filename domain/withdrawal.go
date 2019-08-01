@@ -13,13 +13,14 @@ import (
 // account.
 type WithdrawalProcessHandler struct {
 	dogma.StatelessProcessBehavior
-	dogma.NoTimeoutBehavior
+	dogma.NoTimeoutMessagesBehavior
+	dogma.NoTimeoutHintBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
 func (WithdrawalProcessHandler) Configure(c dogma.ProcessConfigurer) {
-	c.Name("withdrawal")
+	c.Identity("withdrawal", "23f70d2b-a289-4e0f-8a83-c0c6a69d11d9")
 
 	c.ConsumesEventType(events.WithdrawalStarted{})
 	c.ConsumesEventType(events.AccountDebited{})

@@ -19,7 +19,8 @@ type transferProcess struct {
 // TransferProcessHandler manages the process of transferring funds between
 // accounts.
 type TransferProcessHandler struct {
-	dogma.NoTimeoutBehavior
+	dogma.NoTimeoutMessagesBehavior
+	dogma.NoTimeoutHintBehavior
 }
 
 // New returns a new transfer instance.
@@ -29,7 +30,7 @@ func (TransferProcessHandler) New() dogma.ProcessRoot {
 
 // Configure configures the behavior of the engine as it relates to this handler.
 func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
-	c.Name("transfer")
+	c.Identity("transfer", "35afbe82-24c1-4868-a689-c2ec96c2e953")
 
 	c.ConsumesEventType(events.TransferStarted{})
 	c.ConsumesEventType(events.AccountDebited{})

@@ -13,13 +13,14 @@ import (
 // account.
 type DepositProcessHandler struct {
 	dogma.StatelessProcessBehavior
-	dogma.NoTimeoutBehavior
+	dogma.NoTimeoutMessagesBehavior
+	dogma.NoTimeoutHintBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
 func (DepositProcessHandler) Configure(c dogma.ProcessConfigurer) {
-	c.Name("deposit")
+	c.Identity("deposit", "4e50b66b-b2c4-4522-bf15-39756186caee")
 
 	c.ConsumesEventType(events.DepositStarted{})
 	c.ConsumesEventType(events.AccountCredited{})
