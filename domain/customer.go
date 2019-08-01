@@ -32,7 +32,7 @@ func (CustomerHandler) New() dogma.AggregateRoot {
 // Configure configures the behavior of the engine as it relates to this
 // handler.
 func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
-	c.Name("customer")
+	c.Identity("customer", "f30111d5-f100-4495-90ad-b09746ba8477")
 
 	c.ConsumesCommandType(commands.OpenAccountForNewCustomer{})
 	c.ConsumesCommandType(commands.ChangeCustomerEmailAddress{})

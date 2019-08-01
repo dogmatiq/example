@@ -37,7 +37,7 @@ func (DailyDebitLimitHandler) New() dogma.AggregateRoot {
 // Configure configures the behaviour of the engine as it relates to this
 // handler.
 func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
-	c.Name("daily-debit-limit")
+	c.Identity("daily-debit-limit", "238c5a7b-b51d-42d8-ac8d-a8c81b780230")
 
 	c.ConsumesCommandType(commands.ConsumeDailyDebitLimit{})
 

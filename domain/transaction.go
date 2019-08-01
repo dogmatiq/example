@@ -17,7 +17,7 @@ type TransactionHandler struct {
 // Configure configures the behavior of the engine as it relates to this
 // handler.
 func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
-	c.Name("transaction")
+	c.Identity("transaction", "2afe7484-8eb4-4c02-9c39-c2493e0defb0")
 
 	c.ConsumesCommandType(commands.Deposit{})
 	c.ConsumesCommandType(commands.ApproveDeposit{})

@@ -36,7 +36,7 @@ func (AccountHandler) New() dogma.AggregateRoot {
 // Configure configures the behavior of the engine as it relates to this
 // handler.
 func (AccountHandler) Configure(c dogma.AggregateConfigurer) {
-	c.Name("account")
+	c.Identity("account", "fcce9a78-23a3-4211-b608-ecbe21ea446f")
 
 	c.ConsumesCommandType(commands.OpenAccount{})
 	c.ConsumesCommandType(commands.CreditAccount{})

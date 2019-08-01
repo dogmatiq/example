@@ -1,6 +1,7 @@
 package projections
 
 import (
+	"bytes"
 	"context"
 	"encoding/csv"
 	"fmt"
@@ -15,7 +16,10 @@ import (
 // AccountProjectionHandler is a projection that builds a report of accounts and
 // their balances.
 type AccountProjectionHandler struct {
+	dogma.NoTimeoutHintBehavior
+
 	m       sync.RWMutex
+	occ     map[string][]byte
 	records map[string]*record
 }
 
@@ -32,7 +36,7 @@ type record struct {
 
 // Configure configs the engine for this projection.
 func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
-	c.Name("account-projection")
+	c.Identity("account-projection", "38dcb02a-3d76-4798-9c2a-186f8764ba19")
 
 	c.ConsumesEventType(events.AccountOpened{})
 	c.ConsumesEventType(events.DepositApproved{})
@@ -98,11 +102,17 @@ func (h *AccountProjectionHandler) slice() []record {
 // HandleEvent updates the in-memory records to reflect the occurence of m.
 func (h *AccountProjectionHandler) HandleEvent(
 	_ context.Context,
+	r, c, n []byte,
 	s dogma.ProjectionEventScope,
 	m dogma.Message,
-) error {
+) (bool, error) {
 	h.m.Lock()
 	defer h.m.Unlock()
+
+	res := string(r)
+	if !bytes.Equal(c, h.occ[res]) {
+		return false, nil
+	}
 
 	switch x := m.(type) {
 	case events.AccountOpened:
@@ -133,6 +143,32 @@ func (h *AccountProjectionHandler) HandleEvent(
 		panic(dogma.UnexpectedMessage)
 	}
 
+	if h.occ == nil {
+		h.occ = map[string][]byte{}
+	}
+
+	h.occ[res] = n
+
+	return true, nil
+}
+
+// ResourceVersion returns the version of the resource r.
+func (h *AccountProjectionHandler) ResourceVersion(ctx context.Context, r []byte) ([]byte, error) {
+	h.m.RLock()
+	defer h.m.RUnlock()
+
+	res := string(r)
+	return h.occ[res], nil
+}
+
+// CloseResource informs the projection that the resource r will not be
+// used in any future calls to HandleEvent().
+func (h *AccountProjectionHandler) CloseResource(ctx context.Context, r []byte) error {
+	h.m.Lock()
+	defer h.m.Unlock()
+
+	res := string(r)
+	delete(h.occ, res)
 	return nil
 }
 

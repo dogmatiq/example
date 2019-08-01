@@ -25,7 +25,7 @@ type App struct {
 
 // Configure configures the Dogma engine for this application.
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
-	c.Name("bank")
+	c.Identity("bank", "22028264-0bca-43e1-8d9d-cd094efb10b7")
 
 	c.RegisterAggregate(a.accountAggregate)
 	c.RegisterAggregate(a.customerAggregate)
