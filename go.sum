@@ -1,5 +1,7 @@
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dogmatiq/dapper v0.3.3 h1:H/nh8tyo+p12c+btiGQRD9GezlGXxQW19+nU7AbyAfU=
 github.com/dogmatiq/dapper v0.3.3/go.mod h1:wvWzpY8JYKHRZE80Mf0jdjSDkMezyv/amjgbirHUyaw=
 github.com/dogmatiq/dogma v0.6.0 h1:HdJ0cTcORIxZRTB5Z7RdsBXEr18gB3so7FMIHYiAhEQ=
@@ -10,8 +12,8 @@ github.com/dogmatiq/graphkit v0.1.0 h1:GhSTMtto+vLu9m3KIa2Br/7hmfrbuOpjbqDyfV/Pk
 github.com/dogmatiq/graphkit v0.1.0/go.mod h1:d2Fo/rQGlvHOoML3TU4pDE87iboSle6oJT0VWP8Dqbw=
 github.com/dogmatiq/iago v0.4.0 h1:57nZqVT34IZxtCZEW/RFif7DNUEjMXgevfr/Mmd0N8I=
 github.com/dogmatiq/iago v0.4.0/go.mod h1:fishMWBtzYcjgis6d873VTv9kFm/wHYLOzOyO9ECBDc=
-github.com/dogmatiq/testkit v0.0.0-20190801010026-6ea53288a214 h1:47CS67xgMPWRAFeGGZ90fiSmIoVIWbbyfZGft+QnosI=
-github.com/dogmatiq/testkit v0.0.0-20190801010026-6ea53288a214/go.mod h1:iTeSAOYgvJkV5O+MwxqdeCaEp/c6B3r06oLUEsYJPeo=
+github.com/dogmatiq/testkit v0.1.0 h1:+csjsss/hUFN0EmHMaMG+Gtr2G5dq92Rh4Y5p+cFWnU=
+github.com/dogmatiq/testkit v0.1.0/go.mod h1:iTeSAOYgvJkV5O+MwxqdeCaEp/c6B3r06oLUEsYJPeo=
 github.com/emicklei/dot v0.9.2 h1:QE7n6FMotYKA8GaVMgJoYzpgoPUz7ukeZLaxugLhVXc=
 github.com/emicklei/dot v0.9.2/go.mod h1:kZg82Ikwc4pqb31Ct2yb0B7RUqxh3JESIXw2uWSv/xY=
 github.com/emicklei/dot v0.10.0 h1:BAuTQEJM56bu8Z0+d073CPJrc9I8gj4uXCKDIO0Cwpk=
