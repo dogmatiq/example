@@ -14,7 +14,7 @@ import (
 func main() {
 	app := &example.App{}
 
-	en, err := engine.New(&example.App{})
+	en, err := engine.New(app)
 	if err != nil {
 		panic(err)
 	}
