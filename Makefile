@@ -6,6 +6,7 @@ graph: artifacts/graph.png
 	open "$<"
 
 artifacts/graph.png: $(shell find . -name '*.go')
+	@mkdir -p "$(@D)"
 	go run cmd/graph/main.go | dot -Tpng -o "$@"
 
 .makefiles/%:
