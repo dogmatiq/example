@@ -268,7 +268,7 @@ func Test_Transfer(t *testing.T) {
 		"when the transfer is scheduled for a future date",
 		func(t *testing.T) {
 			t.Run(
-				"it transfers the funds from one account to another after the scheduled time",
+				"it transfers the funds after the scheduled time",
 				func(t *testing.T) {
 					testrunner.Runner.
 						Begin(t, testkit.WithStartTime(dateTimeNow)).
