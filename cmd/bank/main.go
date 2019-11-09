@@ -48,13 +48,14 @@ func main() {
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
 			Amount:        2500,
+			ScheduledDate: time.Now().Format("2006-01-02"),
 		},
 		commands.Transfer{
 			TransactionID: "txn4",
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
 			Amount:        500,
-			ScheduledDate: time.Now().Add(5 * time.Minute).Format("2006-01-02"),
+			ScheduledDate: time.Now().Add(2 * time.Minute).Format("2006-01-02"),
 		},
 	}
 
