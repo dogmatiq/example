@@ -55,7 +55,7 @@ func main() {
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
 			Amount:        500,
-			ScheduledDate: time.Now().Add(2 * time.Minute).Format("2006-01-02"),
+			ScheduledDate: time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
 		},
 	}
 
