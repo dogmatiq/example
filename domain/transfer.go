@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
@@ -19,8 +20,6 @@ type transferProcess struct {
 // TransferProcessHandler manages the process of transferring funds between
 // accounts.
 type TransferProcessHandler struct {
-	dogma.NoTimeoutMessagesBehavior
-	dogma.NoTimeoutHintBehavior
 }
 
 // New returns a new transfer instance.
@@ -46,6 +45,8 @@ func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.ProducesCommandType(commands.CreditAccount{})
 	c.ProducesCommandType(commands.ApproveTransfer{})
 	c.ProducesCommandType(commands.DeclineTransfer{})
+
+	c.SchedulesTimeoutType(TransferAtScheduledTimeout{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -87,13 +88,21 @@ func (TransferProcessHandler) HandleEvent(
 		r.FromAccountID = x.FromAccountID
 		r.ToAccountID = x.ToAccountID
 
-		s.ExecuteCommand(commands.DebitAccount{
-			TransactionID:   x.TransactionID,
-			AccountID:       x.FromAccountID,
-			TransactionType: messages.Transfer,
-			Amount:          x.Amount,
-			ScheduledDate:   x.ScheduledDate,
-		})
+		scheduled, err := time.Parse("2006-01-02", x.ScheduledDate)
+		if err != nil {
+			// TODO: Panic with some error about invalid argument
+			return err
+		}
+
+		s.ScheduleTimeout(
+			TransferAtScheduledTimeout{
+				TransactionID: x.TransactionID,
+				FromAccountID: x.FromAccountID,
+				Amount:        x.Amount,
+				ScheduledDate: x.ScheduledDate,
+			},
+			scheduled,
+		)
 
 	case events.AccountDebited:
 		s.ExecuteCommand(commands.ConsumeDailyDebitLimit{
@@ -170,4 +179,43 @@ func (TransferProcessHandler) HandleEvent(
 	}
 
 	return nil
+}
+
+// HandleTimeout handles a timeout message that has been routed to this handler.
+func (TransferProcessHandler) HandleTimeout(
+	ctx context.Context,
+	s dogma.ProcessTimeoutScope,
+	m dogma.Message,
+) error {
+	switch x := m.(type) {
+	case TransferAtScheduledTimeout:
+		s.ExecuteCommand(commands.DebitAccount{
+			TransactionID:   x.TransactionID,
+			AccountID:       x.FromAccountID,
+			TransactionType: messages.Transfer,
+			Amount:          x.Amount,
+			ScheduledDate:   x.ScheduledDate,
+		})
+
+	default:
+		panic(dogma.UnexpectedMessage)
+	}
+
+	return nil
+}
+
+// TimeoutHint returns a duration that is suitable for computing a deadline for
+// the handling of the given message by this handler.
+func (TransferProcessHandler) TimeoutHint(m dogma.Message) time.Duration {
+	return 0
+}
+
+// TransferAtScheduledTimeout is a timeout command requesting that funds be
+// transferred from one bank account to another.
+type TransferAtScheduledTimeout struct {
+	TransactionID string
+	FromAccountID string
+	ToAccountID   string
+	Amount        int64
+	ScheduledDate string
 }

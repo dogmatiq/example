@@ -49,6 +49,13 @@ func main() {
 			ToAccountID:   "acct2",
 			Amount:        2500,
 		},
+		commands.Transfer{
+			TransactionID: "txn4",
+			FromAccountID: "acct1",
+			ToAccountID:   "acct2",
+			Amount:        500,
+			ScheduledDate: time.Now().Add(5 * time.Minute).Format("2006-01-02"),
+		},
 	}
 
 	for _, m := range messages {

@@ -42,6 +42,7 @@ func Test_Transfer(t *testing.T) {
 								FromAccountID: "A001",
 								ToAccountID:   "A002",
 								Amount:        100,
+								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
 								events.TransferApproved{
@@ -103,6 +104,7 @@ func Test_Transfer(t *testing.T) {
 								FromAccountID: "A001",
 								ToAccountID:   "A002",
 								Amount:        1000,
+								ScheduledDate: businessDateToday,
 							},
 							EventRecorded(
 								events.TransferDeclined{
@@ -260,4 +262,80 @@ func Test_Transfer(t *testing.T) {
 			)
 		},
 	)
+
+	t.Run(
+		"when the transfer is scheduled for a future date",
+		func(t *testing.T) {
+			t.Run(
+				"it transfers the funds from one account to another after the scheduled time",
+				func(t *testing.T) {
+					testrunner.Runner.
+						Begin(t).
+						Prepare(
+							commands.OpenAccount{
+								CustomerID:  "C001",
+								AccountID:   "A001",
+								AccountName: "Anna Smith",
+							},
+							commands.OpenAccount{
+								CustomerID:  "C002",
+								AccountID:   "A002",
+								AccountName: "Bob Jones",
+							},
+							commands.Deposit{
+								TransactionID: "D001",
+								AccountID:     "A001",
+								Amount:        500,
+							},
+						).
+						ExecuteCommand(
+							commands.Transfer{
+								TransactionID: "T001",
+								FromAccountID: "A001",
+								ToAccountID:   "A002",
+								Amount:        100,
+								ScheduledDate: businessDateTomorrow,
+							},
+							CommandExecuted(
+								commands.Transfer{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        100,
+									ScheduledDate: businessDateTomorrow,
+								},
+							),
+						).
+						AdvanceTimeTo(
+							// startOfBusinessDateTimeTomorrow,
+							dateTimeNow.AddDate(1, 1, 1),
+							EventRecorded(
+								events.TransferApproved{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        100,
+								},
+							),
+						).
+						// verify that funds are availalbe
+						ExecuteCommand(
+							commands.Withdraw{
+								TransactionID: "W001",
+								AccountID:     "A002",
+								Amount:        100,
+							},
+							EventRecorded(
+								events.WithdrawalApproved{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+								},
+							),
+						)
+				},
+			)
+		},
+	)
+
 }
