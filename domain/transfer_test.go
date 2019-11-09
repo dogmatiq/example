@@ -7,6 +7,7 @@ import (
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
+	"github.com/dogmatiq/testkit"
 	. "github.com/dogmatiq/testkit/assert"
 )
 
@@ -270,7 +271,7 @@ func Test_Transfer(t *testing.T) {
 				"it transfers the funds from one account to another after the scheduled time",
 				func(t *testing.T) {
 					testrunner.Runner.
-						Begin(t).
+						Begin(t, testkit.WithStartTime(dateTimeNow)).
 						Prepare(
 							commands.OpenAccount{
 								CustomerID:  "C001",
@@ -296,19 +297,10 @@ func Test_Transfer(t *testing.T) {
 								Amount:        100,
 								ScheduledDate: businessDateTomorrow,
 							},
-							CommandExecuted(
-								commands.Transfer{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        100,
-									ScheduledDate: businessDateTomorrow,
-								},
-							),
+							NoneOf(EventRecorded(&events.TransferApproved{})),
 						).
 						AdvanceTimeTo(
-							// startOfBusinessDateTimeTomorrow,
-							dateTimeNow.AddDate(1, 1, 1),
+							startOfBusinessDateTimeTomorrow,
 							EventRecorded(
 								events.TransferApproved{
 									TransactionID: "T001",
