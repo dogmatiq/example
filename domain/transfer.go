@@ -46,7 +46,7 @@ func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.ProducesCommandType(commands.ApproveTransfer{})
 	c.ProducesCommandType(commands.DeclineTransfer{})
 
-	c.SchedulesTimeoutType(TransferAtScheduledTimeout{})
+	c.SchedulesTimeoutType(TransferReadyToSend{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -89,7 +89,7 @@ func (TransferProcessHandler) HandleEvent(
 		r.ToAccountID = x.ToAccountID
 
 		s.ScheduleTimeout(
-			TransferAtScheduledTimeout{
+			TransferReadyToSend{
 				TransactionID: x.TransactionID,
 				FromAccountID: x.FromAccountID,
 				Amount:        x.Amount,
@@ -182,7 +182,7 @@ func (TransferProcessHandler) HandleTimeout(
 	m dogma.Message,
 ) error {
 	switch x := m.(type) {
-	case TransferAtScheduledTimeout:
+	case TransferReadyToSend:
 		s.ExecuteCommand(commands.DebitAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       x.FromAccountID,
@@ -198,9 +198,9 @@ func (TransferProcessHandler) HandleTimeout(
 	return nil
 }
 
-// TransferAtScheduledTimeout is a timeout command requesting that funds be
-// transferred from one bank account to another.
-type TransferAtScheduledTimeout struct {
+// TransferReadyToSend is a timeout message notifiying that the transfer is
+// ready to send.
+type TransferReadyToSend struct {
 	TransactionID string
 	FromAccountID string
 	ToAccountID   string
