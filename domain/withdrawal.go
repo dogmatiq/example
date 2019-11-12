@@ -59,7 +59,7 @@ func (WithdrawalProcessHandler) RouteEventToInstance(_ context.Context, m dogma.
 	case events.WithdrawalDeclined:
 		return x.TransactionID, true, nil
 	default:
-		return "", false, nil
+		panic(dogma.UnexpectedMessage)
 	}
 }
 
