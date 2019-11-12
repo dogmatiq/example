@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
@@ -89,12 +88,6 @@ func (TransferProcessHandler) HandleEvent(
 		r.FromAccountID = x.FromAccountID
 		r.ToAccountID = x.ToAccountID
 
-		scheduled, err := time.Parse("2006-01-02", x.ScheduledDate)
-		if err != nil {
-			// TODO: Panic with some error about invalid argument
-			return err
-		}
-
 		s.ScheduleTimeout(
 			TransferAtScheduledTimeout{
 				TransactionID: x.TransactionID,
@@ -102,7 +95,7 @@ func (TransferProcessHandler) HandleEvent(
 				Amount:        x.Amount,
 				ScheduledDate: x.ScheduledDate,
 			},
-			scheduled,
+			startOfBusinessDay(x.ScheduledDate),
 		)
 
 	case events.AccountDebited:
