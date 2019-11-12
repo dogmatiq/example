@@ -7,7 +7,7 @@ import (
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
-	"github.com/dogmatiq/testkit"
+	. "github.com/dogmatiq/testkit"
 	. "github.com/dogmatiq/testkit/assert"
 )
 
@@ -271,7 +271,7 @@ func Test_Transfer(t *testing.T) {
 				"it transfers the funds after the scheduled time",
 				func(t *testing.T) {
 					testrunner.Runner.
-						Begin(t, testkit.WithStartTime(dateTimeNow)).
+						Begin(t, WithStartTime(dateTimeNow)).
 						Prepare(
 							commands.OpenAccount{
 								CustomerID:  "C001",
