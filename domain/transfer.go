@@ -20,6 +20,7 @@ type transferProcess struct {
 // TransferProcessHandler manages the process of transferring funds between
 // accounts.
 type TransferProcessHandler struct {
+	dogma.NoTimeoutHintBehavior
 }
 
 // New returns a new transfer instance.
@@ -202,12 +203,6 @@ func (TransferProcessHandler) HandleTimeout(
 	}
 
 	return nil
-}
-
-// TimeoutHint returns a duration that is suitable for computing a deadline for
-// the handling of the given message by this handler.
-func (TransferProcessHandler) TimeoutHint(m dogma.Message) time.Duration {
-	return 0
 }
 
 // TransferAtScheduledTimeout is a timeout command requesting that funds be
