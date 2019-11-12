@@ -1,15 +1,13 @@
 package domain
 
-import "time"
+import (
+	"time"
 
-const dateFormat = "2006-01-02"
-
-func businessDayFromTime(t time.Time) string {
-	return t.Format(dateFormat)
-}
+	"github.com/dogmatiq/example/messages"
+)
 
 func startOfBusinessDay(date string) time.Time {
-	t, err := time.Parse(dateFormat, date)
+	t, err := time.Parse(messages.BusinessDateFormat, date)
 	if err != nil {
 		panic(err)
 	}
@@ -18,7 +16,7 @@ func startOfBusinessDay(date string) time.Time {
 }
 
 func mustValidateDate(date string) {
-	_, err := time.Parse(dateFormat, date)
+	_, err := time.Parse(messages.BusinessDateFormat, date)
 	if err != nil {
 		panic(err)
 	}
