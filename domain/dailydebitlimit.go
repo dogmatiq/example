@@ -97,9 +97,7 @@ func (r *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
 }
 
 func makeInstanceID(date string, accountID string) string {
-	// validate the date
-	startOfBusinessDay(date)
-
+	mustValidateDate(date)
 	return fmt.Sprintf("%s:%s", date, accountID)
 }
 
