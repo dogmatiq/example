@@ -2,6 +2,7 @@ package domain_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages"
@@ -43,7 +44,7 @@ func Test_Transfer(t *testing.T) {
 								FromAccountID: "A001",
 								ToAccountID:   "A002",
 								Amount:        100,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.TransferApproved{
@@ -105,7 +106,7 @@ func Test_Transfer(t *testing.T) {
 								FromAccountID: "A001",
 								ToAccountID:   "A002",
 								Amount:        1000,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.TransferDeclined{
@@ -169,7 +170,7 @@ func Test_Transfer(t *testing.T) {
 								FromAccountID: "A001",
 								ToAccountID:   "A002",
 								Amount:        500,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.TransferApproved{
@@ -231,7 +232,7 @@ func Test_Transfer(t *testing.T) {
 								FromAccountID: "A001",
 								ToAccountID:   "A002",
 								Amount:        expectedDailyDebitLimit + 1,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.TransferDeclined{
@@ -271,7 +272,12 @@ func Test_Transfer(t *testing.T) {
 				"it transfers the funds after the scheduled time",
 				func(t *testing.T) {
 					testrunner.Runner.
-						Begin(t, WithStartTime(dateTimeNow)).
+						Begin(
+							t,
+							WithStartTime(
+								time.Date(2001, time.February, 3, 11, 22, 33, 0, time.UTC),
+							),
+						).
 						Prepare(
 							commands.OpenAccount{
 								CustomerID:  "C001",
@@ -295,12 +301,12 @@ func Test_Transfer(t *testing.T) {
 								FromAccountID: "A001",
 								ToAccountID:   "A002",
 								Amount:        100,
-								ScheduledDate: businessDateTomorrow,
+								ScheduledDate: "2001-02-04",
 							},
 							NoneOf(EventRecorded(&events.TransferApproved{})),
 						).
 						AdvanceTimeTo(
-							startOfBusinessDateTimeTomorrow,
+							time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
 							EventRecorded(
 								events.TransferApproved{
 									TransactionID: "T001",
