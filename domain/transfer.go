@@ -19,7 +19,6 @@ type transferProcess struct {
 // TransferProcessHandler manages the process of transferring funds between
 // accounts.
 type TransferProcessHandler struct {
-	dogma.NoTimeoutMessagesBehavior
 	dogma.NoTimeoutHintBehavior
 }
 
@@ -46,6 +45,8 @@ func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.ProducesCommandType(commands.CreditAccount{})
 	c.ProducesCommandType(commands.ApproveTransfer{})
 	c.ProducesCommandType(commands.DeclineTransfer{})
+
+	c.SchedulesTimeoutType(TransferReadyToProceed{})
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
@@ -87,13 +88,16 @@ func (TransferProcessHandler) HandleEvent(
 		r.FromAccountID = x.FromAccountID
 		r.ToAccountID = x.ToAccountID
 
-		s.ExecuteCommand(commands.DebitAccount{
-			TransactionID:   x.TransactionID,
-			AccountID:       x.FromAccountID,
-			TransactionType: messages.Transfer,
-			Amount:          x.Amount,
-			ScheduledDate:   x.ScheduledDate,
-		})
+		mustValidateDate(x.ScheduledDate)
+		s.ScheduleTimeout(
+			TransferReadyToProceed{
+				TransactionID: x.TransactionID,
+				FromAccountID: x.FromAccountID,
+				Amount:        x.Amount,
+				ScheduledDate: x.ScheduledDate,
+			},
+			startOfBusinessDay(x.ScheduledDate),
+		)
 
 	case events.AccountDebited:
 		s.ExecuteCommand(commands.ConsumeDailyDebitLimit{
@@ -170,4 +174,37 @@ func (TransferProcessHandler) HandleEvent(
 	}
 
 	return nil
+}
+
+// HandleTimeout handles a timeout message that has been routed to this handler.
+func (TransferProcessHandler) HandleTimeout(
+	ctx context.Context,
+	s dogma.ProcessTimeoutScope,
+	m dogma.Message,
+) error {
+	switch x := m.(type) {
+	case TransferReadyToProceed:
+		s.ExecuteCommand(commands.DebitAccount{
+			TransactionID:   x.TransactionID,
+			AccountID:       x.FromAccountID,
+			TransactionType: messages.Transfer,
+			Amount:          x.Amount,
+			ScheduledDate:   x.ScheduledDate,
+		})
+
+	default:
+		panic(dogma.UnexpectedMessage)
+	}
+
+	return nil
+}
+
+// TransferReadyToProceed is a timeout message notifiying that the transfer is
+// ready to proceed.
+type TransferReadyToProceed struct {
+	TransactionID string
+	FromAccountID string
+	ToAccountID   string
+	Amount        int64
+	ScheduledDate string
 }

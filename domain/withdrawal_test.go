@@ -36,7 +36,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T002",
 								AccountID:     "A001",
 								Amount:        500,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -71,7 +71,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T001",
 								AccountID:     "A001",
 								Amount:        500,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalDeclined{
@@ -112,7 +112,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T002",
 								AccountID:     "A001",
 								Amount:        500,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -157,7 +157,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T001",
 								AccountID:     "A001",
 								Amount:        expectedDailyDebitLimit,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -172,7 +172,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T002",
 								AccountID:     "A002",
 								Amount:        expectedDailyDebitLimit,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -205,7 +205,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T001",
 								AccountID:     "A001",
 								Amount:        expectedDailyDebitLimit,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 						).
 						ExecuteCommand(
@@ -213,7 +213,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T002",
 								AccountID:     "A001",
 								Amount:        500,
-								ScheduledDate: businessDateTomorrow,
+								ScheduledDate: "2001-02-04",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -253,7 +253,7 @@ func Test_Withdraw(t *testing.T) {
 								TransactionID: "T001",
 								AccountID:     "A001",
 								Amount:        expectedDailyDebitLimit + 1,
-								ScheduledDate: businessDateToday,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalDeclined{
