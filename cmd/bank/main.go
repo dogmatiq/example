@@ -7,9 +7,14 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit/engine"
 )
+
+func businessDayFromTime(t time.Time) string {
+	return t.Format(messages.BusinessDateFormat)
+}
 
 func main() {
 	app := &example.App{}
@@ -41,21 +46,21 @@ func main() {
 			TransactionID: "txn2",
 			AccountID:     "acct1",
 			Amount:        500,
-			ScheduledDate: time.Now().Format("2006-01-02"),
+			ScheduledDate: businessDayFromTime(time.Now()),
 		},
 		commands.Transfer{
 			TransactionID: "txn3",
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
 			Amount:        2500,
-			ScheduledDate: time.Now().Format("2006-01-02"),
+			ScheduledDate: businessDayFromTime(time.Now()),
 		},
 		commands.Transfer{
 			TransactionID: "txn4",
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
 			Amount:        500,
-			ScheduledDate: time.Now().AddDate(0, 0, 1).Format("2006-01-02"),
+			ScheduledDate: businessDayFromTime(time.Now().AddDate(0, 0, 1)),
 		},
 	}
 
