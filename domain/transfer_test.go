@@ -61,6 +61,7 @@ func Test_Transfer(t *testing.T) {
 								TransactionID: "W001",
 								AccountID:     "A002",
 								Amount:        100,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -187,6 +188,7 @@ func Test_Transfer(t *testing.T) {
 								TransactionID: "W001",
 								AccountID:     "A002",
 								Amount:        100,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -250,6 +252,7 @@ func Test_Transfer(t *testing.T) {
 								TransactionID: "W001",
 								AccountID:     "A002",
 								Amount:        100,
+								ScheduledDate: "2001-02-03",
 							},
 							EventRecorded(
 								events.WithdrawalDeclined{
@@ -322,6 +325,7 @@ func Test_Transfer(t *testing.T) {
 								TransactionID: "W001",
 								AccountID:     "A002",
 								Amount:        100,
+								ScheduledDate: "2001-02-04",
 							},
 							EventRecorded(
 								events.WithdrawalApproved{
@@ -335,5 +339,4 @@ func Test_Transfer(t *testing.T) {
 			)
 		},
 	)
-
 }

@@ -41,6 +41,7 @@ func Test_Deposit(t *testing.T) {
 						TransactionID: "W001",
 						AccountID:     "A001",
 						Amount:        100,
+						ScheduledDate: "2001-02-03",
 					},
 					EventRecorded(
 						events.WithdrawalApproved{
