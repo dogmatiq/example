@@ -2,13 +2,17 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"os"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/projectionkit/sql/sqlite"
 	"github.com/dogmatiq/testkit/engine"
 )
 
@@ -17,7 +21,10 @@ func businessDayFromTime(t time.Time) string {
 }
 
 func main() {
-	app := &example.App{}
+	app, err := example.NewApp(newDB())
+	if err != nil {
+		panic(err)
+	}
 
 	en, err := engine.New(app)
 	if err != nil {
@@ -84,4 +91,35 @@ func main() {
 	if err := app.GenerateAccountCSV(os.Stdout); err != nil {
 		panic(err)
 	}
+}
+
+func newDB() *sql.DB {
+	ctx := context.Background()
+
+	db, err := sql.Open("sqlite3", "file::memory:?cache=shared")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	db.SetMaxIdleConns(1)
+	db.SetConnMaxLifetime(-1)
+
+	if err := sqlite.CreateSchema(ctx, db); err != nil {
+		panic(err)
+	}
+
+	if _, err := db.ExecContext(
+		ctx,
+		`CREATE TABLE customer (
+			id   TEXT NOT NULL,
+			name TEXT NOT NULL,
+
+			PRIMARY KEY (id)
+		)`,
+	); err != nil {
+		panic(err)
+	}
+
+	return db
 }
