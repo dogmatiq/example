@@ -5,11 +5,10 @@ import "github.com/dogmatiq/example/messages"
 // OpenAccountForNewCustomer is a command requesting that a new bank account be
 // opened for a new customer.
 type OpenAccountForNewCustomer struct {
-	CustomerID    string
-	CustomerName  string
-	CustomerEmail string
-	AccountID     string
-	AccountName   string
+	CustomerID   string
+	CustomerName string
+	AccountID    string
+	AccountName  string
 }
 
 // OpenAccount is a command requesting that a new bank account be opened for an
