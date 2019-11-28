@@ -6,27 +6,9 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
-// customer is the aggregate root for a bank customer.
-type customer struct {
-	// Email is the customer email address.
-	Email string
-}
-
-func (r *customer) ApplyEvent(m dogma.Message) {
-	switch x := m.(type) {
-	case events.CustomerAcquired:
-		r.Email = x.CustomerEmail
-	case events.CustomerEmailAddressChanged:
-		r.Email = x.CustomerEmail
-	}
-}
-
 // CustomerHandler implements the business logic for a bank customer.
-type CustomerHandler struct{}
-
-// New returns a new customer instance.
-func (CustomerHandler) New() dogma.AggregateRoot {
-	return &customer{}
+type CustomerHandler struct {
+	dogma.StatelessAggregateBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -35,10 +17,8 @@ func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Identity("customer", "f30111d5-f100-4495-90ad-b09746ba8477")
 
 	c.ConsumesCommandType(commands.OpenAccountForNewCustomer{})
-	c.ConsumesCommandType(commands.ChangeCustomerEmailAddress{})
 
 	c.ProducesEventType(events.CustomerAcquired{})
-	c.ProducesEventType(events.CustomerEmailAddressChanged{})
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
@@ -46,8 +26,6 @@ func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
 func (CustomerHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
-		return x.CustomerID
-	case commands.ChangeCustomerEmailAddress:
 		return x.CustomerID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -59,8 +37,6 @@ func (CustomerHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Mess
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
 		acquire(s, x)
-	case commands.ChangeCustomerEmailAddress:
-		changeEmailAddress(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
@@ -73,21 +49,9 @@ func acquire(s dogma.AggregateCommandScope, m commands.OpenAccountForNewCustomer
 	}
 
 	s.RecordEvent(events.CustomerAcquired{
-		CustomerID:    m.CustomerID,
-		CustomerName:  m.CustomerName,
-		CustomerEmail: m.CustomerEmail,
-		AccountID:     m.AccountID,
-		AccountName:   m.AccountName,
+		CustomerID:   m.CustomerID,
+		CustomerName: m.CustomerName,
+		AccountID:    m.AccountID,
+		AccountName:  m.AccountName,
 	})
-}
-
-func changeEmailAddress(s dogma.AggregateCommandScope, m commands.ChangeCustomerEmailAddress) {
-	r := s.Root().(*customer)
-
-	if r.Email != m.CustomerEmail {
-		s.RecordEvent(events.CustomerEmailAddressChanged{
-			CustomerID:    m.CustomerID,
-			CustomerEmail: m.CustomerEmail,
-		})
-	}
 }
