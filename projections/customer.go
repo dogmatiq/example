@@ -32,9 +32,13 @@ func (h *CustomerProjectionHandler) HandleEvent(
 	case events.CustomerAcquired:
 		_, err := tx.ExecContext(
 			ctx,
-			`INSERT INTO customer SET
-				id = ?
-				name = ?`,
+			`INSERT INTO customer (
+				id,
+				name
+			) VALUES (
+				?,
+				?
+			)`,
 			x.CustomerID,
 			x.CustomerName,
 		)

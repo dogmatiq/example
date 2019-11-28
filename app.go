@@ -24,7 +24,7 @@ type App struct {
 
 	accountProjection projections.AccountProjectionHandler
 
-	customerProjection dogma.ProjectionMessageHandler
+	CustomerProjection dogma.ProjectionMessageHandler
 }
 
 // NewApp returns the example application.
@@ -39,7 +39,7 @@ func NewApp(db *sql.DB) (*App, error) {
 	}
 
 	return &App{
-		customerProjection: cust,
+		CustomerProjection: cust,
 	}, nil
 }
 
@@ -59,7 +59,9 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 
 	c.RegisterProjection(&a.accountProjection)
 
-	c.RegisterProjection(a.customerProjection)
+	if a.CustomerProjection != nil {
+		c.RegisterProjection(a.CustomerProjection)
+	}
 }
 
 // GenerateAccountCSV generates CSV of accounts and their balances, sorted by

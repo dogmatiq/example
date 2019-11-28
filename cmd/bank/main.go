@@ -20,7 +20,10 @@ func businessDayFromTime(t time.Time) string {
 }
 
 func main() {
-	app, err := example.NewApp(database.New())
+	db := database.New()
+	defer db.Close()
+
+	app, err := example.NewApp(db)
 	if err != nil {
 		panic(err)
 	}
