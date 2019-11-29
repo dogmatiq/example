@@ -5,8 +5,10 @@ import (
 	"os"
 	"time"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/example/internal/database"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit/engine"
@@ -17,7 +19,13 @@ func businessDayFromTime(t time.Time) string {
 }
 
 func main() {
-	app := &example.App{}
+	db := database.New()
+	defer db.Close()
+
+	app, err := example.NewApp(db)
+	if err != nil {
+		panic(err)
+	}
 
 	en, err := engine.New(app)
 	if err != nil {
