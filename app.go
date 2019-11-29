@@ -29,7 +29,7 @@ type App struct {
 
 // NewApp returns the example application.
 //
-// db may be nil to bypass projection database setup.
+// If db is nil, it omits projection message handlers from the configuration.
 func NewApp(db *sql.DB) (*App, error) {
 	app := &App{}
 
