@@ -28,19 +28,25 @@ type App struct {
 }
 
 // NewApp returns the example application.
+//
+// If db is nil, it omits projection message handlers from the configuration.
 func NewApp(db *sql.DB) (*App, error) {
-	cust, err := pksql.New(
-		db,
-		&projections.CustomerProjectionHandler{},
-		nil,
-	)
-	if err != nil {
-		return nil, err
+	app := &App{}
+
+	if db != nil {
+		cust, err := pksql.New(
+			db,
+			&projections.CustomerProjectionHandler{},
+			nil,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		app.CustomerProjection = cust
 	}
 
-	return &App{
-		CustomerProjection: cust,
-	}, nil
+	return app, nil
 }
 
 // Configure configures the Dogma engine for this application.

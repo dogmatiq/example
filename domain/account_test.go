@@ -16,7 +16,7 @@ func Test_OpenAccount(t *testing.T) {
 			t.Run(
 				"the new account is opened",
 				func(t *testing.T) {
-					testrunner.Runner.
+					testrunner.New(nil).
 						Begin(t).
 						ExecuteCommand(
 							commands.OpenAccount{
@@ -43,7 +43,7 @@ func Test_OpenAccount(t *testing.T) {
 			t.Run(
 				"nothing happens to the existing account",
 				func(t *testing.T) {
-					testrunner.Runner.
+					testrunner.New(nil).
 						Begin(t).
 						Prepare(
 							commands.OpenAccount{
