@@ -7,7 +7,11 @@ import (
 	"github.com/dogmatiq/projectionkit/sql/sqlite"
 )
 
-// New returns an in memory database with pre-created schema.
+// New returns an in-memory SQLite database, with database tables necessary to
+// run the example application.
+//
+// It panics if the database is unable to be opened, or the schema is unable to be
+// created.
 func New() *sql.DB {
 	ctx := context.Background()
 
@@ -16,6 +20,10 @@ func New() *sql.DB {
 		panic(err)
 	}
 
+	// Setup the pool to ensure the memory database survives when all
+	// connections are returned to the pool.
+	//
+	// See https://github.com/mattn/go-sqlite3#faq.
 	db.SetMaxIdleConns(1)
 	db.SetConnMaxLifetime(-1)
 

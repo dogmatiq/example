@@ -6,7 +6,6 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/internal/database"
