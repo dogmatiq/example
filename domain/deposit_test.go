@@ -13,7 +13,7 @@ func Test_Deposit(t *testing.T) {
 	t.Run(
 		"it deposits the funds into the account",
 		func(t *testing.T) {
-			testrunner.Runner.
+			testrunner.New(nil).
 				Begin(t).
 				Prepare(
 					commands.OpenAccount{

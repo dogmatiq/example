@@ -16,7 +16,7 @@ func Test_OpenAccountForNewCustomer(t *testing.T) {
 			t.Run(
 				"it acquires the customer",
 				func(t *testing.T) {
-					testrunner.Runner.
+					testrunner.New(nil).
 						Begin(t).
 						ExecuteCommand(
 							commands.OpenAccountForNewCustomer{
@@ -52,7 +52,7 @@ func Test_OpenAccountForNewCustomer(t *testing.T) {
 						AccountName:  "Bob Jones",
 					}
 
-					testrunner.Runner.
+					testrunner.New(nil).
 						Begin(t).
 						Prepare(cmd).
 						ExecuteCommand(

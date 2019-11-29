@@ -5,13 +5,13 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/internal/database"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit/engine"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func businessDayFromTime(t time.Time) string {
