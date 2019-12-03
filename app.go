@@ -2,7 +2,6 @@ package example
 
 import (
 	"database/sql"
-	"io"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/domain"
@@ -22,9 +21,8 @@ type App struct {
 	transferProcess                  domain.TransferProcessHandler
 	withdrawalProcess                domain.WithdrawalProcessHandler
 
-	accountProjection projections.AccountProjectionHandler
-
 	CustomerProjection dogma.ProjectionMessageHandler
+	AccountProjection  dogma.ProjectionMessageHandler
 }
 
 // NewApp returns the example application.
@@ -43,7 +41,17 @@ func NewApp(db *sql.DB) (*App, error) {
 			return nil, err
 		}
 
+		acc, err := pksql.New(
+			db,
+			&projections.AccountProjectionHandler{},
+			nil,
+		)
+		if err != nil {
+			return nil, err
+		}
+
 		app.CustomerProjection = cust
+		app.AccountProjection = acc
 	}
 
 	return app, nil
@@ -63,15 +71,8 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.RegisterProcess(a.transferProcess)
 	c.RegisterProcess(a.withdrawalProcess)
 
-	c.RegisterProjection(&a.accountProjection)
-
 	if a.CustomerProjection != nil {
 		c.RegisterProjection(a.CustomerProjection)
+		c.RegisterProjection(a.AccountProjection)
 	}
-}
-
-// GenerateAccountCSV generates CSV of accounts and their balances, sorted by
-// the current balance in descending order.
-func (a *App) GenerateAccountCSV(w io.Writer) error {
-	return a.accountProjection.GenerateCSV(w)
 }

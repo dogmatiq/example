@@ -43,5 +43,18 @@ func New() *sql.DB {
 		panic(err)
 	}
 
+	if _, err := db.ExecContext(
+		ctx,
+		`CREATE TABLE account (
+			id          TEXT NOT NULL,
+			name        TEXT NOT NULL,
+			customer_id TEXT NOT NULL,
+
+			PRIMARY KEY (id)
+		)`,
+	); err != nil {
+		panic(err)
+	}
+
 	return db
 }

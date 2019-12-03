@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"os"
 	"time"
 
 	"github.com/dogmatiq/dogma"
@@ -87,9 +86,5 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-	}
-
-	if err := app.GenerateAccountCSV(os.Stdout); err != nil {
-		panic(err)
 	}
 }
