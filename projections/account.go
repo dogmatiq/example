@@ -35,13 +35,11 @@ func (h *AccountProjectionHandler) HandleEvent(
 			`INSERT INTO account (
 				id,
 				name,
-				customer_id,
-				balance
+				customer_id
 			) VALUES (
 				?,
 				?,
-				?,
-				0
+				?
 			)`,
 			x.AccountID,
 			x.AccountName,

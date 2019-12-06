@@ -44,7 +44,7 @@ func New() *sql.DB {
 			id          TEXT NOT NULL,
 			name        TEXT NOT NULL,
 			customer_id TEXT NOT NULL,
-			balance     INTEGER NOT NULL,
+			balance     INTEGER NOT NULL DEFAULT 0,
 
 			PRIMARY KEY (id)
 		);
