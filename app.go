@@ -29,12 +29,11 @@ type App struct {
 //
 // If db is nil, it omits projection message handlers from the configuration.
 func NewApp(db *sql.DB) (*App, error) {
-	var (
-		app = &App{}
-		err error
-	)
+	app := &App{}
 
 	if db != nil {
+		var err error
+
 		app.CustomerProjection, err = pksql.New(
 			db,
 			&projections.CustomerProjectionHandler{},
