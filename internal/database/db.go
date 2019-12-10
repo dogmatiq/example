@@ -38,7 +38,19 @@ func New() *sql.DB {
 			name TEXT NOT NULL,
 
 			PRIMARY KEY (id)
-		)`,
+		);
+
+		CREATE TABLE account (
+			id          TEXT NOT NULL,
+			name        TEXT NOT NULL,
+			customer_id TEXT NOT NULL,
+			balance     INTEGER NOT NULL DEFAULT 0,
+
+			PRIMARY KEY (id)
+		);
+
+		CREATE INDEX idx_account_customer ON account (customer_id);
+		`,
 	); err != nil {
 		panic(err)
 	}
