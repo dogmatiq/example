@@ -19,6 +19,8 @@ func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.Identity("account-projection", "38dcb02a-3d76-4798-9c2a-186f8764ba19")
 
 	c.ConsumesEventType(events.AccountOpened{})
+	c.ConsumesEventType(events.AccountCredited{})
+	c.ConsumesEventType(events.AccountDebited{})
 }
 
 // HandleEvent updates the in-memory records to reflect the occurence of m.
@@ -44,6 +46,24 @@ func (h *AccountProjectionHandler) HandleEvent(
 			x.AccountID,
 			x.AccountName,
 			x.CustomerID,
+		)
+		return err
+
+	case events.AccountCredited:
+		_, err := tx.ExecContext(
+			ctx,
+			`UPDATE account SET balance = balance + ? WHERE id = ?`,
+			x.Amount,
+			x.AccountID,
+		)
+		return err
+
+	case events.AccountDebited:
+		_, err := tx.ExecContext(
+			ctx,
+			`UPDATE account SET balance = balance - ? WHERE id = ?`,
+			x.Amount,
+			x.AccountID,
 		)
 		return err
 

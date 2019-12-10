@@ -5,14 +5,15 @@ import (
 
 	"github.com/dogmatiq/example/internal/database"
 	"github.com/dogmatiq/example/internal/testrunner"
-	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/events"
 	"github.com/dogmatiq/testkit"
 	"github.com/dogmatiq/testkit/engine"
 )
 
 func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
-		"when an account is opened for a new customer",
+		"when an account is opened",
 		func(t *testing.T) {
 			db := database.New()
 			defer db.Close()
@@ -21,15 +22,15 @@ func Test_AccountProjectionHandler(t *testing.T) {
 				Begin(
 					t,
 					testkit.WithOperationOptions(
+						engine.EnableProcesses(false),
 						engine.EnableProjections(true),
 					),
 				).
 				Prepare(
-					commands.OpenAccountForNewCustomer{
-						CustomerID:   "C001",
-						CustomerName: "Anna Smith",
-						AccountID:    "A001",
-						AccountName:  "Savings",
+					events.AccountOpened{
+						CustomerID:  "C001",
+						AccountID:   "A001",
+						AccountName: "Savings",
 					},
 				)
 
@@ -101,7 +102,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	)
 
 	t.Run(
-		"when an account is opened for an existing customer",
+		"when an account is credited",
 		func(t *testing.T) {
 			db := database.New()
 			defer db.Close()
@@ -110,31 +111,30 @@ func Test_AccountProjectionHandler(t *testing.T) {
 				Begin(
 					t,
 					testkit.WithOperationOptions(
+						engine.EnableProcesses(false),
 						engine.EnableProjections(true),
 					),
 				).
 				Prepare(
-					commands.OpenAccountForNewCustomer{
-						CustomerID:   "C001",
-						CustomerName: "Anna Smith",
-						AccountID:    "A001",
-						AccountName:  "Savings",
-					},
-					commands.OpenAccount{
+					events.AccountOpened{
 						CustomerID:  "C001",
-						AccountID:   "A002",
-						AccountName: "Spending",
+						AccountID:   "A001",
+						AccountName: "Savings",
+					},
+					events.AccountCredited{
+						TransactionID:   "T001",
+						AccountID:       "A001",
+						TransactionType: messages.Deposit,
+						Amount:          150,
 					},
 				)
 
 			rows, err := db.Query(
 				`SELECT
 					id,
-					name,
-					customer_id,
 					balance
 				FROM account
-				WHERE id = "A002"`,
+				WHERE id = "A001"`,
 			)
 			if err != nil {
 				t.Fatal(err)
@@ -146,45 +146,95 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			}
 
 			var (
-				id         string
-				name       string
-				customerID string
-				balance    int64
+				id      string
+				balance int64
 			)
 
 			if err := rows.Scan(
 				&id,
-				&name,
-				&customerID,
 				&balance,
 			); err != nil {
 				t.Fatal(err)
 			}
 
-			if id != "A002" {
+			if balance != 150 {
 				t.Fatalf(
-					`expected account ID to be "A002", got "%s"`,
+					`expected balance to be 150, got "%d"`,
+					balance,
+				)
+			}
+
+			if rows.Next() {
+				t.Fatal("expected no more rows")
+			}
+		},
+	)
+
+	t.Run(
+		"when an account is debited",
+		func(t *testing.T) {
+			db := database.New()
+			defer db.Close()
+
+			testrunner.New(db).
+				Begin(
+					t,
+					testkit.WithOperationOptions(
+						engine.EnableProcesses(false),
+						engine.EnableProjections(true),
+					),
+				).
+				Prepare(
+					events.AccountOpened{
+						CustomerID:  "C001",
+						AccountID:   "A001",
+						AccountName: "Savings",
+					},
+					events.AccountCredited{
+						TransactionID:   "T001",
+						AccountID:       "A001",
+						TransactionType: messages.Deposit,
+						Amount:          500,
+					},
+					events.AccountDebited{
+						TransactionID:   "T001",
+						AccountID:       "A001",
+						TransactionType: messages.Withdrawal,
+						Amount:          150,
+					},
+				)
+
+			rows, err := db.Query(
+				`SELECT
 					id,
-				)
+					balance
+				FROM account
+				WHERE id = "A001"`,
+			)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer rows.Close()
+
+			if !rows.Next() {
+				t.Fatal("expected a database row")
 			}
 
-			if name != "Spending" {
-				t.Fatalf(
-					`expected account name to be "Spending", got "%s"`,
-					name,
-				)
+			var (
+				id      string
+				balance int64
+			)
+
+			if err := rows.Scan(
+				&id,
+				&balance,
+			); err != nil {
+				t.Fatal(err)
 			}
 
-			if customerID != "C001" {
+			if balance != 350 {
 				t.Fatalf(
-					`expected customer ID to be "C001", got "%s"`,
-					customerID,
-				)
-			}
-
-			if balance != 0 {
-				t.Fatalf(
-					`expected balance to be 0, got "%d"`,
+					`expected balance to be 350, got "%d"`,
 					balance,
 				)
 			}
