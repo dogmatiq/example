@@ -21,6 +21,8 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			testrunner.New(db).
 				Begin(
 					t,
+					// TODO: Isolate test by handler.
+					// See https://github.com/dogmatiq/testkit/issues/56
 					testkit.WithOperationOptions(
 						engine.EnableProcesses(false),
 						engine.EnableProjections(true),
@@ -110,6 +112,8 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			testrunner.New(db).
 				Begin(
 					t,
+					// TODO: Isolate test by handler.
+					// See https://github.com/dogmatiq/testkit/issues/56
 					testkit.WithOperationOptions(
 						engine.EnableProcesses(false),
 						engine.EnableProjections(true),
@@ -179,6 +183,8 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			testrunner.New(db).
 				Begin(
 					t,
+					// TODO: Isolate test by handler.
+					// See https://github.com/dogmatiq/testkit/issues/56
 					testkit.WithOperationOptions(
 						engine.EnableProcesses(false),
 						engine.EnableProjections(true),
