@@ -21,8 +21,8 @@ type App struct {
 	transferProcess                  domain.TransferProcessHandler
 	withdrawalProcess                domain.WithdrawalProcessHandler
 
-	CustomerProjection dogma.ProjectionMessageHandler
-	AccountProjection  dogma.ProjectionMessageHandler
+	customerProjection dogma.ProjectionMessageHandler
+	accountProjection  dogma.ProjectionMessageHandler
 }
 
 // NewApp returns the example application.
@@ -34,7 +34,7 @@ func NewApp(db *sql.DB) (*App, error) {
 	if db != nil {
 		var err error
 
-		app.CustomerProjection, err = pksql.New(
+		app.customerProjection, err = pksql.New(
 			db,
 			&projections.CustomerProjectionHandler{},
 			nil,
@@ -43,7 +43,7 @@ func NewApp(db *sql.DB) (*App, error) {
 			return nil, err
 		}
 
-		app.AccountProjection, err = pksql.New(
+		app.accountProjection, err = pksql.New(
 			db,
 			&projections.AccountProjectionHandler{},
 			nil,
@@ -70,8 +70,8 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.RegisterProcess(a.transferProcess)
 	c.RegisterProcess(a.withdrawalProcess)
 
-	if a.CustomerProjection != nil {
-		c.RegisterProjection(a.CustomerProjection)
-		c.RegisterProjection(a.AccountProjection)
+	if a.customerProjection != nil {
+		c.RegisterProjection(a.customerProjection)
+		c.RegisterProjection(a.accountProjection)
 	}
 }
