@@ -6,7 +6,7 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/internal/database"
+	"github.com/dogmatiq/example/database"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit/engine"
@@ -18,7 +18,7 @@ func businessDayFromTime(t time.Time) string {
 }
 
 func main() {
-	db := database.New()
+	db := database.MustNew()
 	defer db.Close()
 
 	app, err := example.NewApp(db)

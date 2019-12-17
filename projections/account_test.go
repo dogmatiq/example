@@ -3,7 +3,7 @@ package projections_test
 import (
 	"testing"
 
-	"github.com/dogmatiq/example/internal/database"
+	"github.com/dogmatiq/example/database"
 	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/events"
@@ -15,7 +15,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened",
 		func(t *testing.T) {
-			db := database.New()
+			db := database.MustNew()
 			defer db.Close()
 
 			testrunner.New(db).
@@ -106,7 +106,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is credited",
 		func(t *testing.T) {
-			db := database.New()
+			db := database.MustNew()
 			defer db.Close()
 
 			testrunner.New(db).
@@ -177,7 +177,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is debited",
 		func(t *testing.T) {
-			db := database.New()
+			db := database.MustNew()
 			defer db.Close()
 
 			testrunner.New(db).

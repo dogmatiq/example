@@ -10,14 +10,14 @@ import (
 // New returns an in-memory SQLite database, with database tables necessary to
 // run the example application.
 //
-// It panics if the database is unable to be opened, or the schema is unable to be
-// created.
-func New() *sql.DB {
+// It returns an error if the database is unable to be opened, or the schema is
+// unable to be created.
+func New() (*sql.DB, error) {
 	ctx := context.Background()
 
 	db, err := sql.Open("sqlite3", "file::memory:?cache=shared")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Setup the pool to ensure the memory database survives when all
@@ -28,30 +28,26 @@ func New() *sql.DB {
 	db.SetConnMaxLifetime(-1)
 
 	if err := sqlite.CreateSchema(ctx, db); err != nil {
-		panic(err)
+		db.Close()
+		return nil, err
 	}
 
-	if _, err := db.ExecContext(
-		ctx,
-		`CREATE TABLE customer (
-			id   TEXT NOT NULL,
-			name TEXT NOT NULL,
+	if err := CreateSchema(ctx, db); err != nil {
+		db.Close()
+		return nil, err
+	}
 
-			PRIMARY KEY (id)
-		);
+	return db, nil
+}
 
-		CREATE TABLE account (
-			id          TEXT NOT NULL,
-			name        TEXT NOT NULL,
-			customer_id TEXT NOT NULL,
-			balance     INTEGER NOT NULL DEFAULT 0,
-
-			PRIMARY KEY (id)
-		);
-
-		CREATE INDEX idx_account_customer ON account (customer_id);
-		`,
-	); err != nil {
+// MustNew returns an in-memory SQLite database, with database tables necessary
+// to run the example application.
+//
+// It panics if the database is unable to be opened, or the schema is unable to
+// be created.
+func MustNew() *sql.DB {
+	db, err := New()
+	if err != nil {
 		panic(err)
 	}
 
