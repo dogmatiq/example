@@ -211,7 +211,7 @@ func (as appState) runNewCustomerMenu() string {
 	)
 
 	fmt.Println()
-	fmt.Println("Customer signed up.")
+	fmt.Println("Customer signup submitted.")
 
 	return customerID
 }
@@ -280,11 +280,9 @@ func (as appState) runCustomerMenu(customerID string) {
 		case "deposit":
 			as.runDepositMenu(customerID)
 		case "withdraw":
-			fmt.Println()
-			fmt.Println("TODO: Withdraw...")
+			as.runWithdrawMenu(customerID)
 		case "transfer":
-			fmt.Println()
-			fmt.Println("TODO: Transfer...")
+			as.runTransferMenu(customerID)
 		case "logout":
 			fmt.Println()
 			fmt.Println("Goodbye")
@@ -353,7 +351,7 @@ func (as appState) runSelectAccountMenu(forCustomerID string) string {
 			FROM account AS a
 			INNER JOIN customer AS c
 			ON c.id = a.customer_id
-			ORDER BY a.customer_id, a.name`,
+			ORDER BY c.name, a.name`,
 		)
 	} else {
 		rows, err = as.db.Query(
@@ -367,7 +365,7 @@ func (as appState) runSelectAccountMenu(forCustomerID string) string {
 			INNER JOIN customer AS c
 			ON c.id = a.customer_id
 			WHERE customer_id = ?
-			ORDER BY a.customer_id, a.name`,
+			ORDER BY c.name, a.name`,
 			forCustomerID,
 		)
 	}
@@ -407,7 +405,7 @@ func (as appState) runSelectAccountMenu(forCustomerID string) string {
 			menuItems,
 			menuItem{
 				option:      strconv.Itoa(number),
-				description: fmt.Sprintf("%.2f %s (%s)%s", dollars, accountName, accountID, customerDisplay),
+				description: fmt.Sprintf("$%.2f %s (%s)%s", dollars, accountName, accountID, customerDisplay),
 				command:     accountID,
 			},
 		)
@@ -476,7 +474,7 @@ func (as appState) runDepositMenu(customerID string) {
 	accountID := as.runSelectAccountMenu(customerID)
 
 	fmt.Println()
-	fmt.Print("Deposit amount in dollars (empty to cancel): ")
+	fmt.Print("Amount in dollars (empty to cancel): ")
 	amount := readString(as.reader)
 	if amount == "" {
 		return
@@ -490,6 +488,7 @@ func (as appState) runDepositMenu(customerID string) {
 
 	centsAmount := int64(dollarsAmount * 100)
 	if centsAmount == 0 {
+		// Nothing to do.
 		return
 	}
 
@@ -503,5 +502,113 @@ func (as appState) runDepositMenu(customerID string) {
 	)
 
 	fmt.Println()
-	fmt.Println("Deposit sent.")
+	fmt.Println("Deposit submitted.")
+}
+
+func (as appState) runWithdrawMenu(customerID string) {
+	fmt.Println()
+	fmt.Println("================================================================================")
+	fmt.Println()
+	fmt.Println("Withdraw Funds")
+	fmt.Println("--------------------")
+	fmt.Println("Enter withdrawal details.")
+
+	fmt.Println()
+	fmt.Print("Select Account: ")
+	accountID := as.runSelectAccountMenu(customerID)
+
+	fmt.Println()
+	fmt.Print("Amount in dollars (empty to cancel): ")
+	amount := readString(as.reader)
+	if amount == "" {
+		return
+	}
+
+	dollarsAmount, err := strconv.ParseFloat(amount, 64)
+	if err != nil {
+		fmt.Println("Invalid amount.")
+		return
+	}
+
+	centsAmount := int64(dollarsAmount * 100)
+	if centsAmount == 0 {
+		// Nothing to do.
+		return
+	}
+
+	as.engine.Dispatch(
+		context.Background(),
+		commands.Withdraw{
+			TransactionID: generateID(),
+			AccountID:     accountID,
+			Amount:        centsAmount,
+		},
+	)
+
+	fmt.Println()
+	fmt.Println("Withdrawal submitted.")
+}
+
+func (as appState) runTransferMenu(customerID string) {
+	fmt.Println()
+	fmt.Println("================================================================================")
+	fmt.Println()
+	fmt.Println("Transfer Funds")
+	fmt.Println("--------------------")
+	fmt.Println("Enter transfer details.")
+
+	fmt.Println()
+	fmt.Print("Select From Account: ")
+	fromAccountID := as.runSelectAccountMenu(customerID)
+
+	fmt.Println()
+	fmt.Print("Select To Account: ")
+	toAccountID := as.runSelectAccountMenu("")
+
+	fmt.Println()
+	fmt.Print("Amount in dollars (empty to cancel): ")
+	amount := readString(as.reader)
+	if amount == "" {
+		return
+	}
+
+	dollarsAmount, err := strconv.ParseFloat(amount, 64)
+	if err != nil {
+		fmt.Println("Invalid amount.")
+		return
+	}
+
+	centsAmount := int64(dollarsAmount * 100)
+	if centsAmount == 0 {
+		// Nothing to do.
+		return
+	}
+
+	fmt.Println()
+	fmt.Print("Scheduled date (YYYY-MM-DD, default now): ")
+	scheduledDate := readString(as.reader)
+	if scheduledDate == "" {
+		scheduledDate = businessDayFromTime(as.time)
+	} else {
+		t, err := time.Parse(messages.BusinessDateFormat, scheduledDate)
+		if err != nil {
+			fmt.Println("Invalid date.")
+			return
+		}
+		scheduledDate = businessDayFromTime(t)
+	}
+
+	as.engine.Dispatch(
+		context.Background(),
+		commands.Transfer{
+			TransactionID: generateID(),
+			FromAccountID: fromAccountID,
+			ToAccountID:   toAccountID,
+			Amount:        centsAmount,
+			ScheduledDate: scheduledDate,
+		},
+	)
+
+	fmt.Println()
+	fmt.Println("Transfer submitted.")
 }
