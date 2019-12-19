@@ -8,5 +8,6 @@ require (
 	github.com/dogmatiq/graphkit v0.4.0
 	github.com/dogmatiq/projectionkit v0.3.2
 	github.com/dogmatiq/testkit v0.4.0
+	github.com/google/uuid v1.1.1
 	github.com/mattn/go-sqlite3 v1.13.0
 )
