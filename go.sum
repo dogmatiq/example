@@ -7,6 +7,8 @@ github.com/dogmatiq/dapper v0.3.3/go.mod h1:wvWzpY8JYKHRZE80Mf0jdjSDkMezyv/amjgb
 github.com/dogmatiq/dogma v0.6.0/go.mod h1:Im+Z77qgdIza8H5g/rrbrxCkHkJK7hHFs49MAqMHLTc=
 github.com/dogmatiq/dogma v0.6.1 h1:0xizpaBpQIGMdcUQx4tiCS5azM8dytZsQOy/7NyUVm0=
 github.com/dogmatiq/dogma v0.6.1/go.mod h1:8TdjQ5jjV2DcCPb/jjHPgSrqU66H6092yMEIF5HGx0g=
+github.com/dogmatiq/dogma v0.6.2 h1:srGSGAu8ZpQ+c23EUVq35mDn47HZbbLr5Q9PhGRH7NE=
+github.com/dogmatiq/dogma v0.6.2/go.mod h1:8TdjQ5jjV2DcCPb/jjHPgSrqU66H6092yMEIF5HGx0g=
 github.com/dogmatiq/enginekit v0.8.0 h1:hl/OWWduW7tojy7/x+e/ModKTHKR9IkxeXpj1YsEUbo=
 github.com/dogmatiq/enginekit v0.8.0/go.mod h1:sEWG4lEnwl74og8fDTzIohCnM4c8GZLz/LvqQMipAbw=
 github.com/dogmatiq/graphkit v0.3.0 h1:YCaT/gFD/i4yFJxOF9VDBg861YPE7SbTjIlJOKh5Qrk=
