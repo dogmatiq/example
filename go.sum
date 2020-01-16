@@ -2,6 +2,8 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dogmatiq/configkit v0.2.0 h1:FlIAO+DKKr0Zj3voArdNEYzbNV/Z/vrD7SSlOkxiw7Q=
 github.com/dogmatiq/configkit v0.2.0/go.mod h1:86SjxjPQaHBYQMqj/DcRj1Dcpn7Mp/0JGDhvhyC/KAI=
+github.com/dogmatiq/configkit v0.2.1 h1:i/Wp+mHTXV4L8yOjLfgeiGamPTlw7U6aeM+xRrESaKM=
+github.com/dogmatiq/configkit v0.2.1/go.mod h1:rdU30Lpfc1IbHja7fVd7vBdMshLXDTBrtiZA8dq0rn0=
 github.com/dogmatiq/dapper v0.3.3 h1:H/nh8tyo+p12c+btiGQRD9GezlGXxQW19+nU7AbyAfU=
 github.com/dogmatiq/dapper v0.3.3/go.mod h1:wvWzpY8JYKHRZE80Mf0jdjSDkMezyv/amjgbirHUyaw=
 github.com/dogmatiq/dogma v0.6.0/go.mod h1:Im+Z77qgdIza8H5g/rrbrxCkHkJK7hHFs49MAqMHLTc=
