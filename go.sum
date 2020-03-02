@@ -20,6 +20,8 @@ github.com/dogmatiq/iago v0.4.0 h1:57nZqVT34IZxtCZEW/RFif7DNUEjMXgevfr/Mmd0N8I=
 github.com/dogmatiq/iago v0.4.0/go.mod h1:fishMWBtzYcjgis6d873VTv9kFm/wHYLOzOyO9ECBDc=
 github.com/dogmatiq/projectionkit v0.3.1 h1:r//qortTqqQcu4RTEUIeAT7UR5PENHU+fFgOdVQvY/A=
 github.com/dogmatiq/projectionkit v0.3.1/go.mod h1:+kxi5g6nRuSxPlfnaNEinYt3pst1ZKtYIZA9AfhThDE=
+github.com/dogmatiq/projectionkit v0.3.2 h1:yqsJLfy/iKuVsr2MdQ3GyOxMP4pLyFsqo5FmkwKapok=
+github.com/dogmatiq/projectionkit v0.3.2/go.mod h1:u6o4Ww0pyZSegpbwRXO8IR5aNPn2OhTRsmBiPfd5xho=
 github.com/dogmatiq/testkit v0.4.0 h1:be7NBSoI5C2V8jq//sqVe6H3QfkJq4oYNEi+CdReW14=
 github.com/dogmatiq/testkit v0.4.0/go.mod h1:WZ24jHODLeaOB34nN1UH3nTQggP1ydR3NQzA9yhV56M=
 github.com/emicklei/dot v0.10.1 h1:bkzvwgIhhw/cuxxnJy5/5+ZL3GnhFxFfv0eolHtWE2w=
@@ -28,6 +30,7 @@ github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
+github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.3.1 h1:YF8+flBXS5eO826T4nzqPrxfhQThhXl0YzfuUPu4SBg=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
