@@ -25,7 +25,7 @@ func businessDayFromTime(t time.Time) string {
 
 func readString(reader *bufio.Reader) string {
 	text, _ := reader.ReadString('\n')
-	return strings.Replace(text, "\n", "", -1)
+	return strings.TrimSuffix(text, "\n")
 }
 
 func generateID() string {
@@ -154,7 +154,7 @@ func (as appState) runMainMenu() {
 			},
 			menuItem{
 				option:      "x",
-				description: "Exit banking sytem",
+				description: "Exit banking system",
 				command:     "exit",
 			},
 		)
@@ -241,7 +241,7 @@ func (as appState) runCustomerMenu(customerID string) {
 	menuItems := []menuItem{
 		{
 			option:      "l",
-			description: "List accounts and blances",
+			description: "List accounts and balances",
 			command:     "list",
 		},
 		{
@@ -313,7 +313,7 @@ func (as appState) runListAccounts(customerID string) {
 	)
 
 	fmt.Println()
-	fmt.Println("Here are you accounts:")
+	fmt.Println("Here are your accounts:")
 	for rows.Next() {
 		if err := rows.Scan(
 			&id,
