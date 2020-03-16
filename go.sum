@@ -18,6 +18,8 @@ github.com/dogmatiq/configkit v0.4.1 h1:RfZTNFKaoXLtaEY++fSBFripxaQXKQ/3RUuSnt92
 github.com/dogmatiq/configkit v0.4.1/go.mod h1:jksKTde33ZnNdgEDpPmawSIeWsPvH8oxDgQjcwdZdj8=
 github.com/dogmatiq/configkit v0.4.2 h1:kUfzcQ0xif/uOPg+gAwzN/AwQ+BumHcrGbqv+xQSYho=
 github.com/dogmatiq/configkit v0.4.2/go.mod h1:+2OsCco+kVaHQQFMXn56sYDP+Yre4QODYvBAmBr+5EE=
+github.com/dogmatiq/configkit v0.7.1 h1:Qe1/FiPyx0J4pCRH+jQiRRaWuJfd0b9EY4o3K60gtP8=
+github.com/dogmatiq/configkit v0.7.1/go.mod h1:5PjrZ1G2OByNzuSzSIks/Q9jFu8LNx1zC5Q6emSQEuc=
 github.com/dogmatiq/dapper v0.3.5 h1:F4bCCc8KKv/USNzYa22BeelzJEhLVbVhg3/vAk+xEL4=
 github.com/dogmatiq/dapper v0.3.5/go.mod h1:U32cRxzGYI5owhc/hMKjYLgBTVCdW/s3MdFJHwfDrLQ=
 github.com/dogmatiq/dodeca v0.2.0/go.mod h1:YjUCbfmgl08gQ4QPNA0Dp9f+ge6kImQ7PgVM5K7Jtn0=
@@ -52,6 +54,7 @@ github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5y
 github.com/golang/protobuf v1.3.2/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.3.3/go.mod h1:vzj43D7+SQXF/4pzW/hwtAqwc6iTitCiVSaWz5lYuqw=
 github.com/golang/protobuf v1.3.4/go.mod h1:vzj43D7+SQXF/4pzW/hwtAqwc6iTitCiVSaWz5lYuqw=
+github.com/golang/protobuf v1.3.5/go.mod h1:6O5/vntMXwX2lRkT1hjjk0nAC1IDOTvTlVgjlRvqsdk=
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/hpcloud/tail v1.0.0 h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=
