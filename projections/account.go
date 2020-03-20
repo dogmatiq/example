@@ -16,7 +16,7 @@ type AccountProjectionHandler struct {
 
 // Configure configs the engine for this projection.
 func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
-	c.Identity("account-projection", "38dcb02a-3d76-4798-9c2a-186f8764ba19")
+	c.Identity("account-list", "38dcb02a-3d76-4798-9c2a-186f8764ba19")
 
 	c.ConsumesEventType(events.AccountOpened{})
 	c.ConsumesEventType(events.AccountCredited{})
