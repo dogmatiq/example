@@ -20,6 +20,8 @@ github.com/dogmatiq/configkit v0.4.2 h1:kUfzcQ0xif/uOPg+gAwzN/AwQ+BumHcrGbqv+xQS
 github.com/dogmatiq/configkit v0.4.2/go.mod h1:+2OsCco+kVaHQQFMXn56sYDP+Yre4QODYvBAmBr+5EE=
 github.com/dogmatiq/configkit v0.7.1 h1:Qe1/FiPyx0J4pCRH+jQiRRaWuJfd0b9EY4o3K60gtP8=
 github.com/dogmatiq/configkit v0.7.1/go.mod h1:5PjrZ1G2OByNzuSzSIks/Q9jFu8LNx1zC5Q6emSQEuc=
+github.com/dogmatiq/configkit v0.7.2 h1:8CNsybxJL94k3BCHf+xtrmvsX5IaqcAzBRQt4+yqiGY=
+github.com/dogmatiq/configkit v0.7.2/go.mod h1:W0N9v/EfQBqQ80tbv6cV+qIsqQqk9i1hcAYnrysBB/8=
 github.com/dogmatiq/dapper v0.3.5 h1:F4bCCc8KKv/USNzYa22BeelzJEhLVbVhg3/vAk+xEL4=
 github.com/dogmatiq/dapper v0.3.5/go.mod h1:U32cRxzGYI5owhc/hMKjYLgBTVCdW/s3MdFJHwfDrLQ=
 github.com/dogmatiq/dodeca v0.2.0/go.mod h1:YjUCbfmgl08gQ4QPNA0Dp9f+ge6kImQ7PgVM5K7Jtn0=
@@ -33,6 +35,7 @@ github.com/dogmatiq/graphkit v0.4.0/go.mod h1:ZTMym1P/z6anjOPWlZm6t5WxkGOig3CiX3
 github.com/dogmatiq/iago v0.4.0 h1:57nZqVT34IZxtCZEW/RFif7DNUEjMXgevfr/Mmd0N8I=
 github.com/dogmatiq/iago v0.4.0/go.mod h1:fishMWBtzYcjgis6d873VTv9kFm/wHYLOzOyO9ECBDc=
 github.com/dogmatiq/linger v0.2.0/go.mod h1:vQPEiGNtb3Qy+1IdmdSMyLxr4d9vPChknnQkClQimGM=
+github.com/dogmatiq/linger v0.2.1/go.mod h1:vQPEiGNtb3Qy+1IdmdSMyLxr4d9vPChknnQkClQimGM=
 github.com/dogmatiq/projectionkit v0.3.2 h1:yqsJLfy/iKuVsr2MdQ3GyOxMP4pLyFsqo5FmkwKapok=
 github.com/dogmatiq/projectionkit v0.3.2/go.mod h1:u6o4Ww0pyZSegpbwRXO8IR5aNPn2OhTRsmBiPfd5xho=
 github.com/dogmatiq/testkit v0.4.0 h1:be7NBSoI5C2V8jq//sqVe6H3QfkJq4oYNEi+CdReW14=
