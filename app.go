@@ -9,6 +9,9 @@ import (
 	pksql "github.com/dogmatiq/projectionkit/sql"
 )
 
+// AppKey is the example application's identity key.
+const AppKey = "22028264-0bca-43e1-8d9d-cd094efb10b7"
+
 // App is an implementation of dogma.Application for the bank example.
 type App struct {
 	accountAggregate         domain.AccountHandler
@@ -58,7 +61,7 @@ func NewApp(db *sql.DB) (*App, error) {
 
 // Configure configures the Dogma engine for this application.
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
-	c.Identity("bank", "22028264-0bca-43e1-8d9d-cd094efb10b7")
+	c.Identity("bank", AppKey)
 
 	c.RegisterAggregate(a.accountAggregate)
 	c.RegisterAggregate(a.customerAggregate)

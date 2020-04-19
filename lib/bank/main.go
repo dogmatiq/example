@@ -11,24 +11,28 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// DogmaV1 is a Dogma plugin.
-var DogmaV1 v1
-
-type v1 struct{}
-
-func (p *v1) ListApplications() []string {
-	return []string{"bank"}
+func NewDogmaPluginV1(ctx context.Context) (interface{}, error) {
+	return plugin{}, nil
 }
 
-func (p *v1) OpenApplication(
+type plugin struct{}
+
+func (plugin) ApplicationKeys() []string {
+	return []string{example.AppKey}
+}
+
+func (plugin) NewApplication(
 	ctx context.Context,
-	name string,
+	k string,
 ) (dogma.Application, io.Closer, error) {
-	if name != "bank" {
-		return nil, nil, errors.New("unknown application")
+	if k != example.AppKey {
+		return nil, nil, errors.New("unrecognized application")
 	}
 
-	db := database.MustNew()
+	db, err := database.New()
+	if err != nil {
+		return nil, nil, err
+	}
 
 	app, err := example.NewApp(db)
 	if err != nil {
