@@ -1,12 +1,14 @@
 name: CI
 on:
   push:
+    branches:
+    - '*'
   pull_request:
   schedule:
   - cron: 0 14 * * 0
 jobs:
-  test:
-    name: Make
+  ci:
+    name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go
@@ -19,7 +21,7 @@ jobs:
     - name: Make
       run: make ci
     - name: Upload Coverage Reports
-      if: success()
+      if: success() && !github.head_ref
       run: |
         test ! -z "$TOKEN"
         bash <(curl -s https://codecov.io/bash) -t "$TOKEN" -B "${{ github.ref }}"
