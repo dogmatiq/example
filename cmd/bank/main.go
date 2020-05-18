@@ -358,7 +358,7 @@ func (as *appState) createAddAccountForm(customer customerData) {
 			return
 		}
 
-		as.submitOpenNewAccount(customer, accountName)
+		as.submitOpenNewAccount(customer.id, accountName)
 
 		as.infoView.SetText("Open new account submitted.")
 		as.switchMainView(as.customerMenu)
@@ -572,11 +572,11 @@ func (as *appState) submitNewCustomerSignup(customerName, accountName string) {
 	)
 }
 
-func (as *appState) submitOpenNewAccount(customer customerData, accountName string) {
+func (as *appState) submitOpenNewAccount(customerID string, accountName string) {
 	as.engine.Dispatch(
 		context.Background(),
 		commands.OpenAccount{
-			CustomerID:  customer.id,
+			CustomerID:  customerID,
 			AccountID:   generateAccountNumber(),
 			AccountName: accountName,
 		},
