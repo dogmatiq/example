@@ -74,11 +74,6 @@ type appState struct {
 	advanceTimeMenu *tview.List
 	customerList    *tview.List
 	accountList     *tview.List
-	addCustomerForm *tview.Form
-	addAccountForm  *tview.Form
-	depositForm     *tview.Form
-	withdrawForm    *tview.Form
-	transferForm    *tview.Form
 }
 
 type customerData struct {
@@ -188,8 +183,7 @@ func (as *appState) createMainMenu() {
 	as.mainMenu.SetTitle("[ Main Menu ]")
 	as.mainMenu.SetTitleAlign(tview.AlignLeft)
 	as.mainMenu.AddItem("New Customer", "Open account for new customer", 'n', func() {
-		as.createAddCustomerForm()
-		as.switchMainView(as.addCustomerForm)
+		as.switchMainView(as.createAddCustomerForm())
 	})
 	as.mainMenu.AddItem("List Customers", "List all customers", 'l', func() {
 		as.createCustomerList()
@@ -277,38 +271,34 @@ func (as *appState) createCustomerMenu(customer customerData) {
 		as.switchMainView(as.accountList)
 	})
 	as.customerMenu.AddItem("Add Account", "Add a new account for this customer", 'a', func() {
-		as.createAddAccountForm(customer)
-		as.switchMainView(as.addAccountForm)
+		as.switchMainView(as.createAddAccountForm(customer))
 	})
 	as.customerMenu.AddItem("Deposit", "Deposit funds into an account", 'd', func() {
-		as.createDepositForm(customer)
-		as.switchMainView(as.depositForm)
+		as.switchMainView(as.createDepositForm(customer))
 	})
 	as.customerMenu.AddItem("Withdraw", "Withdraw funds from an account", 'w', func() {
-		as.createWithdrawForm(customer)
-		as.switchMainView(as.withdrawForm)
+		as.switchMainView(as.createWithdrawForm(customer))
 	})
 	as.customerMenu.AddItem("Transfer", "Transfer funds into another account", 't', func() {
-		as.createTransferForm(customer)
-		as.switchMainView(as.transferForm)
+		as.switchMainView(as.createTransferForm(customer))
 	})
 	as.customerMenu.AddItem("Quit to Customer List", "Quit and return to the customer list", 'q', func() {
 		as.switchMainView(as.customerList)
 	})
 }
 
-func (as *appState) createAddCustomerForm() {
+func (as *appState) createAddCustomerForm() *tview.Form {
 	as.infoView.SetText("Enter new customer details.")
 
-	as.addCustomerForm = tview.NewForm()
-	as.addCustomerForm.SetBorder(true)
-	as.addCustomerForm.SetTitle("[ New Customer Signup ]")
-	as.addCustomerForm.SetTitleAlign(tview.AlignLeft)
-	as.addCustomerForm.AddInputField("Customer name", "", 20, nil, nil)
-	as.addCustomerForm.AddInputField("Account name", "Savings", 20, nil, nil)
-	as.addCustomerForm.AddButton("Create", func() {
-		customerField := as.addCustomerForm.GetFormItemByLabel("Customer name").(*tview.InputField)
-		accountField := as.addCustomerForm.GetFormItemByLabel("Account name").(*tview.InputField)
+	addCustomerForm := tview.NewForm()
+	addCustomerForm.SetBorder(true)
+	addCustomerForm.SetTitle("[ New Customer Signup ]")
+	addCustomerForm.SetTitleAlign(tview.AlignLeft)
+	addCustomerForm.AddInputField("Customer name", "", 20, nil, nil)
+	addCustomerForm.AddInputField("Account name", "Savings", 20, nil, nil)
+	addCustomerForm.AddButton("Create", func() {
+		customerField := addCustomerForm.GetFormItemByLabel("Customer name").(*tview.InputField)
+		accountField := addCustomerForm.GetFormItemByLabel("Account name").(*tview.InputField)
 
 		customerName := customerField.GetText()
 		accountName := accountField.GetText()
@@ -329,26 +319,28 @@ func (as *appState) createAddCustomerForm() {
 		as.infoView.SetText("New customer details submitted.")
 		as.switchMainView(as.mainMenu)
 	})
-	as.addCustomerForm.AddButton("Cancel", func() {
+	addCustomerForm.AddButton("Cancel", func() {
 		as.infoView.SetText("New customer signup cancelled.")
 		as.switchMainView(as.mainMenu)
 	})
-	as.addCustomerForm.SetCancelFunc(func() {
+	addCustomerForm.SetCancelFunc(func() {
 		as.infoView.SetText("New customer signup cancelled.")
 		as.switchMainView(as.mainMenu)
 	})
+
+	return addCustomerForm
 }
 
-func (as *appState) createAddAccountForm(customer customerData) {
+func (as *appState) createAddAccountForm(customer customerData) *tview.Form {
 	as.infoView.SetText("Enter new account details.")
 
-	as.addAccountForm = tview.NewForm()
-	as.addAccountForm.SetBorder(true)
-	as.addAccountForm.SetTitle(fmt.Sprintf("[ Open New Account: %s]", customer.name))
-	as.addAccountForm.SetTitleAlign(tview.AlignLeft)
-	as.addAccountForm.AddInputField("Account name", "Savings", 20, nil, nil)
-	as.addAccountForm.AddButton("Create", func() {
-		accountField := as.addAccountForm.GetFormItemByLabel("Account name").(*tview.InputField)
+	addAccountForm := tview.NewForm()
+	addAccountForm.SetBorder(true)
+	addAccountForm.SetTitle(fmt.Sprintf("[ Open New Account: %s]", customer.name))
+	addAccountForm.SetTitleAlign(tview.AlignLeft)
+	addAccountForm.AddInputField("Account name", "Savings", 20, nil, nil)
+	addAccountForm.AddButton("Create", func() {
+		accountField := addAccountForm.GetFormItemByLabel("Account name").(*tview.InputField)
 
 		accountName := accountField.GetText()
 
@@ -363,33 +355,35 @@ func (as *appState) createAddAccountForm(customer customerData) {
 		as.infoView.SetText("Open new account submitted.")
 		as.switchMainView(as.customerMenu)
 	})
-	as.addAccountForm.AddButton("Cancel", func() {
+	addAccountForm.AddButton("Cancel", func() {
 		as.infoView.SetText("Open new account cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
-	as.addAccountForm.SetCancelFunc(func() {
+	addAccountForm.SetCancelFunc(func() {
 		as.infoView.SetText("Open new account cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
+
+	return addAccountForm
 }
 
-func (as *appState) createDepositForm(customer customerData) {
+func (as *appState) createDepositForm(customer customerData) *tview.Form {
 	as.infoView.SetText("Enter deposit details.")
 
-	as.depositForm = tview.NewForm()
-	as.depositForm.SetBorder(true)
-	as.depositForm.SetTitle(fmt.Sprintf("[ Deposit: %s ]", customer.name))
-	as.depositForm.SetTitleAlign(tview.AlignLeft)
+	depositForm := tview.NewForm()
+	depositForm.SetBorder(true)
+	depositForm.SetTitle(fmt.Sprintf("[ Deposit: %s ]", customer.name))
+	depositForm.SetTitleAlign(tview.AlignLeft)
 	accounts := as.fetchAccountsForCustomer(customer.id)
 	options := make([]string, 0, len(accounts))
 	for _, a := range accounts {
 		options = append(options, a.display)
 	}
-	as.depositForm.AddDropDown("Account", options, 0, nil)
-	as.depositForm.AddInputField("Amount", "0.00", 10, tview.InputFieldFloat, nil)
-	as.depositForm.AddButton("Deposit", func() {
-		accountField := as.depositForm.GetFormItemByLabel("Account").(*tview.DropDown)
-		amountField := as.depositForm.GetFormItemByLabel("Amount").(*tview.InputField)
+	depositForm.AddDropDown("Account", options, 0, nil)
+	depositForm.AddInputField("Amount", "0.00", 10, tview.InputFieldFloat, nil)
+	depositForm.AddButton("Deposit", func() {
+		accountField := depositForm.GetFormItemByLabel("Account").(*tview.DropDown)
+		amountField := depositForm.GetFormItemByLabel("Amount").(*tview.InputField)
 
 		accountIndex, _ := accountField.GetCurrentOption()
 		amountValue := amountField.GetText()
@@ -409,33 +403,35 @@ func (as *appState) createDepositForm(customer customerData) {
 		as.infoView.SetText(fmt.Sprintf("Deposit submitted for $%.2f.", dollarsAmount))
 		as.switchMainView(as.customerMenu)
 	})
-	as.depositForm.AddButton("Cancel", func() {
+	depositForm.AddButton("Cancel", func() {
 		as.infoView.SetText("Deposit cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
-	as.depositForm.SetCancelFunc(func() {
+	depositForm.SetCancelFunc(func() {
 		as.infoView.SetText("Deposit cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
+
+	return depositForm
 }
 
-func (as *appState) createWithdrawForm(customer customerData) {
+func (as *appState) createWithdrawForm(customer customerData) *tview.Form {
 	as.infoView.SetText("Enter withdrawal details.")
 
-	as.withdrawForm = tview.NewForm()
-	as.withdrawForm.SetBorder(true)
-	as.withdrawForm.SetTitle(fmt.Sprintf("[ Withdraw: %s ]", customer.name))
-	as.withdrawForm.SetTitleAlign(tview.AlignLeft)
+	withdrawForm := tview.NewForm()
+	withdrawForm.SetBorder(true)
+	withdrawForm.SetTitle(fmt.Sprintf("[ Withdraw: %s ]", customer.name))
+	withdrawForm.SetTitleAlign(tview.AlignLeft)
 	accounts := as.fetchAccountsForCustomer(customer.id)
 	options := make([]string, 0, len(accounts))
 	for _, a := range accounts {
 		options = append(options, a.display)
 	}
-	as.withdrawForm.AddDropDown("Account", options, 0, nil)
-	as.withdrawForm.AddInputField("Amount", "0.00", 10, tview.InputFieldFloat, nil)
-	as.withdrawForm.AddButton("Withdraw", func() {
-		accountField := as.withdrawForm.GetFormItemByLabel("Account").(*tview.DropDown)
-		amountField := as.withdrawForm.GetFormItemByLabel("Amount").(*tview.InputField)
+	withdrawForm.AddDropDown("Account", options, 0, nil)
+	withdrawForm.AddInputField("Amount", "0.00", 10, tview.InputFieldFloat, nil)
+	withdrawForm.AddButton("Withdraw", func() {
+		accountField := withdrawForm.GetFormItemByLabel("Account").(*tview.DropDown)
+		amountField := withdrawForm.GetFormItemByLabel("Amount").(*tview.InputField)
 
 		accountIndex, _ := accountField.GetCurrentOption()
 		amountValue := amountField.GetText()
@@ -461,42 +457,44 @@ func (as *appState) createWithdrawForm(customer customerData) {
 		as.infoView.SetText(fmt.Sprintf("Withdraw submitted for $%.2f.", dollarsAmount))
 		as.switchMainView(as.customerMenu)
 	})
-	as.withdrawForm.AddButton("Cancel", func() {
+	withdrawForm.AddButton("Cancel", func() {
 		as.infoView.SetText("Withdraw cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
-	as.withdrawForm.SetCancelFunc(func() {
+	withdrawForm.SetCancelFunc(func() {
 		as.infoView.SetText("Withdraw cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
+
+	return withdrawForm
 }
 
-func (as *appState) createTransferForm(customer customerData) {
+func (as *appState) createTransferForm(customer customerData) *tview.Form {
 	as.infoView.SetText("Enter transfer details. You may schedule it for 'Today', 'Tomorrow' or a date formatted as 'YYYY-MM-DD'.")
 
-	as.transferForm = tview.NewForm()
-	as.transferForm.SetBorder(true)
-	as.transferForm.SetTitle(fmt.Sprintf("[ Transfer: %s ]", customer.name))
-	as.transferForm.SetTitleAlign(tview.AlignLeft)
+	transferForm := tview.NewForm()
+	transferForm.SetBorder(true)
+	transferForm.SetTitle(fmt.Sprintf("[ Transfer: %s ]", customer.name))
+	transferForm.SetTitleAlign(tview.AlignLeft)
 	myAccounts := as.fetchAccountsForCustomer(customer.id)
 	fromOptions := make([]string, 0, len(myAccounts))
 	for _, a := range myAccounts {
 		fromOptions = append(fromOptions, a.display)
 	}
-	as.transferForm.AddDropDown("From Account", fromOptions, 0, nil)
+	transferForm.AddDropDown("From Account", fromOptions, 0, nil)
 	allAccounts := as.fetchAccountsForAllCustomers()
 	toOptions := make([]string, 0, len(allAccounts))
 	for _, a := range allAccounts {
 		toOptions = append(toOptions, a.display)
 	}
-	as.transferForm.AddDropDown("To Account", toOptions, 0, nil)
-	as.transferForm.AddInputField("Amount", "0.00", 10, tview.InputFieldFloat, nil)
-	as.transferForm.AddInputField("Scheduled Date", "Today", 20, nil, nil)
-	as.transferForm.AddButton("Transfer", func() {
-		fromAccountField := as.transferForm.GetFormItemByLabel("From Account").(*tview.DropDown)
-		toAccountField := as.transferForm.GetFormItemByLabel("To Account").(*tview.DropDown)
-		amountField := as.transferForm.GetFormItemByLabel("Amount").(*tview.InputField)
-		dateField := as.transferForm.GetFormItemByLabel("Scheduled Date").(*tview.InputField)
+	transferForm.AddDropDown("To Account", toOptions, 0, nil)
+	transferForm.AddInputField("Amount", "0.00", 10, tview.InputFieldFloat, nil)
+	transferForm.AddInputField("Scheduled Date", "Today", 20, nil, nil)
+	transferForm.AddButton("Transfer", func() {
+		fromAccountField := transferForm.GetFormItemByLabel("From Account").(*tview.DropDown)
+		toAccountField := transferForm.GetFormItemByLabel("To Account").(*tview.DropDown)
+		amountField := transferForm.GetFormItemByLabel("Amount").(*tview.InputField)
+		dateField := transferForm.GetFormItemByLabel("Scheduled Date").(*tview.InputField)
 
 		fromAccountIndex, _ := fromAccountField.GetCurrentOption()
 		toAccountIndex, _ := toAccountField.GetCurrentOption()
@@ -549,14 +547,16 @@ func (as *appState) createTransferForm(customer customerData) {
 		as.infoView.SetText(fmt.Sprintf("Transfer submitted for $%.2f to occur at %s.", dollarsAmount, scheduledDate))
 		as.switchMainView(as.customerMenu)
 	})
-	as.transferForm.AddButton("Cancel", func() {
+	transferForm.AddButton("Cancel", func() {
 		as.infoView.SetText("Transfer cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
-	as.transferForm.SetCancelFunc(func() {
+	transferForm.SetCancelFunc(func() {
 		as.infoView.SetText("Transfer cancelled.")
 		as.switchMainView(as.customerMenu)
 	})
+
+	return transferForm
 }
 
 func (as *appState) submitNewCustomerSignup(customerName, accountName string) {
