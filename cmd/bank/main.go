@@ -1,12 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"database/sql"
 	"fmt"
 	"math/rand"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -47,11 +45,6 @@ func businessDayFromTime(t time.Time) string {
 	return t.Format(messages.BusinessDateFormat)
 }
 
-func readString(reader *bufio.Reader) string {
-	text, _ := reader.ReadString('\n')
-	return strings.TrimSuffix(text, "\n")
-}
-
 func generateID() string {
 	return uuid.New().String()
 }
@@ -67,7 +60,6 @@ func generateAccountNumber() string {
 type appState struct {
 	db     *sql.DB
 	engine *engine.Engine
-	reader *bufio.Reader
 	time   time.Time
 
 	// ui ...
@@ -132,7 +124,6 @@ func main() {
 	as := appState{
 		db:     db,
 		engine: en,
-		reader: bufio.NewReader(os.Stdin),
 		time:   time.Date(2001, 10, 20, 11, 22, 33, 44, time.UTC),
 	}
 
