@@ -134,8 +134,6 @@ func main() {
 	if err := as.guiApp.SetRoot(as.layoutView, true).Run(); err != nil {
 		panic(err)
 	}
-
-	fmt.Println(as.infoView.GetText(true))
 }
 
 func (as *appState) switchMainView(view tview.Primitive) {
