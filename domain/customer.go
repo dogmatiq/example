@@ -6,10 +6,21 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
-// CustomerHandler implements the business logic for a bank customer.
-type CustomerHandler struct {
-	dogma.StatelessAggregateBehavior
+// customer is the aggregate root for a bank customer.
+type customer struct {
+	// Acquired is the acquired state of the customer.
+	Acquired bool
 }
+
+func (c *customer) ApplyEvent(m dogma.Message) {
+	switch m.(type) {
+	case events.CustomerAcquired:
+		c.Acquired = true
+	}
+}
+
+// CustomerHandler implements the business logic for a bank customer.
+type CustomerHandler struct{}
 
 // Configure configures the behavior of the engine as it relates to this
 // handler.
@@ -19,6 +30,11 @@ func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
 	c.ConsumesCommandType(commands.OpenAccountForNewCustomer{})
 
 	c.ProducesEventType(events.CustomerAcquired{})
+}
+
+// New returns a new customer instance.
+func (CustomerHandler) New() dogma.AggregateRoot {
+	return &customer{}
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
@@ -33,17 +49,23 @@ func (CustomerHandler) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (CustomerHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (CustomerHandler) HandleCommand(
+	r dogma.AggregateRoot,
+	s dogma.AggregateCommandScope,
+	m dogma.Message,
+) {
+	c := r.(*customer)
+
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
-		acquire(s, x)
+		acquire(c, s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
 }
 
-func acquire(s dogma.AggregateCommandScope, m commands.OpenAccountForNewCustomer) {
-	if !s.Create() {
+func acquire(c *customer, s dogma.AggregateCommandScope, m commands.OpenAccountForNewCustomer) {
+	if c.Acquired {
 		s.Log("customer has already been acquired")
 		return
 	}

@@ -308,8 +308,8 @@ func Test_Transfer(t *testing.T) {
 							},
 							NoneOf(EventRecorded(&events.TransferApproved{})),
 						).
-						AdvanceTimeTo(
-							time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
+						AdvanceTime(
+							ToTime(time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC)),
 							EventRecorded(
 								events.TransferApproved{
 									TransactionID: "T001",

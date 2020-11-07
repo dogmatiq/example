@@ -15,10 +15,10 @@ type dailyDebitLimit struct {
 	UsedAmount int64
 }
 
-func (r *dailyDebitLimit) ApplyEvent(m dogma.Message) {
+func (d *dailyDebitLimit) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.DailyDebitLimitConsumed:
-		r.UsedAmount = x.Amount
+		d.UsedAmount = x.Amount
 	}
 }
 
@@ -58,27 +58,29 @@ func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (DailyDebitLimitHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (DailyDebitLimitHandler) HandleCommand(
+	r dogma.AggregateRoot,
+	s dogma.AggregateCommandScope,
+	m dogma.Message,
+) {
+	d := r.(*dailyDebitLimit)
+
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
-		consume(s, x)
+		consume(d, s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
 }
 
-func consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
-	s.Create()
-
-	r := s.Root().(*dailyDebitLimit)
-
-	if r.wouldExceedLimit(m.Amount) {
+func consume(d *dailyDebitLimit, s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
+	if d.wouldExceedLimit(m.Amount) {
 		s.RecordEvent(events.DailyDebitLimitExceeded{
 			TransactionID: m.TransactionID,
 			AccountID:     m.AccountID,
 			DebitType:     m.DebitType,
 			Amount:        m.Amount,
-			LimitUsed:     r.UsedAmount,
+			LimitUsed:     d.UsedAmount,
 			LimitMaximum:  maximumDailyDebitLimit,
 		})
 	} else {
@@ -87,14 +89,14 @@ func consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
 			AccountID:     m.AccountID,
 			DebitType:     m.DebitType,
 			Amount:        m.Amount,
-			LimitUsed:     r.UsedAmount + m.Amount,
+			LimitUsed:     d.UsedAmount + m.Amount,
 			LimitMaximum:  maximumDailyDebitLimit,
 		})
 	}
 }
 
-func (r *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
-	return r.UsedAmount+amount > maximumDailyDebitLimit
+func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
+	return d.UsedAmount+amount > maximumDailyDebitLimit
 }
 
 // Limit amount, in cents.
