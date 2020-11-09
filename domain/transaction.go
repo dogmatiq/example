@@ -8,18 +8,18 @@ import (
 
 // transaction is the aggregate root for a bank transaction.
 type transaction struct {
-	// Recorded is the recorded state of the transaction.
-	Recorded bool
+	// Started is true if the transaction has started.
+	Started bool
 }
 
 func (t *transaction) ApplyEvent(m dogma.Message) {
 	switch m.(type) {
 	case events.DepositStarted:
-		t.Recorded = true
+		t.Started = true
 	case events.WithdrawalStarted:
-		t.Recorded = true
+		t.Started = true
 	case events.TransferStarted:
-		t.Recorded = true
+		t.Started = true
 	}
 }
 
@@ -115,7 +115,7 @@ func (TransactionHandler) HandleCommand(
 }
 
 func startDeposit(t *transaction, s dogma.AggregateCommandScope, m commands.Deposit) {
-	if t.Recorded {
+	if t.Started {
 		s.Log("transaction already exists")
 		return
 	}
@@ -136,7 +136,7 @@ func approveDeposit(t *transaction, s dogma.AggregateCommandScope, m commands.Ap
 }
 
 func startWithdraw(t *transaction, s dogma.AggregateCommandScope, m commands.Withdraw) {
-	if t.Recorded {
+	if t.Started {
 		s.Log("transaction already exists")
 		return
 	}
@@ -172,7 +172,7 @@ func startTransfer(t *transaction, s dogma.AggregateCommandScope, m commands.Tra
 		return
 	}
 
-	if t.Recorded {
+	if t.Started {
 		s.Log("transaction already exists")
 		return
 	}
