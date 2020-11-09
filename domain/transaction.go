@@ -116,7 +116,7 @@ func (TransactionHandler) HandleCommand(
 
 func startDeposit(t *transaction, s dogma.AggregateCommandScope, m commands.Deposit) {
 	if t.Started {
-		s.Log("transaction already exists")
+		s.Log("transaction already started")
 		return
 	}
 
@@ -137,7 +137,7 @@ func approveDeposit(t *transaction, s dogma.AggregateCommandScope, m commands.Ap
 
 func startWithdraw(t *transaction, s dogma.AggregateCommandScope, m commands.Withdraw) {
 	if t.Started {
-		s.Log("transaction already exists")
+		s.Log("transaction already started")
 		return
 	}
 
@@ -173,7 +173,7 @@ func startTransfer(t *transaction, s dogma.AggregateCommandScope, m commands.Tra
 	}
 
 	if t.Started {
-		s.Log("transaction already exists")
+		s.Log("transaction already started")
 		return
 	}
 
