@@ -8,7 +8,7 @@ import (
 
 // customer is the aggregate root for a bank customer.
 type customer struct {
-	// Acquired is the acquired state of the customer.
+	// Acquired is true if the customer has been acquired.
 	Acquired bool
 }
 

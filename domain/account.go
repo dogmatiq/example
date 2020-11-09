@@ -9,7 +9,7 @@ import (
 
 // account is the aggregate root for a bank account.
 type account struct {
-	// Opened is the opened state of the account.
+	// Opened is true if the account has been opened.
 	Opened bool
 
 	// Balance is the current account balance, in cents.
