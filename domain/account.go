@@ -9,16 +9,21 @@ import (
 
 // account is the aggregate root for a bank account.
 type account struct {
+	// Opened is true if the account has been opened.
+	Opened bool
+
 	// Balance is the current account balance, in cents.
 	Balance int64
 }
 
-func (r *account) ApplyEvent(m dogma.Message) {
+func (a *account) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
+	case events.AccountOpened:
+		a.Opened = true
 	case events.AccountCredited:
-		r.Balance += x.Amount
+		a.Balance += x.Amount
 	case events.AccountDebited:
-		r.Balance -= x.Amount
+		a.Balance -= x.Amount
 	}
 }
 
@@ -64,21 +69,27 @@ func (AccountHandler) RouteCommandToInstance(m dogma.Message) string {
 }
 
 // HandleCommand handles a command message that has been routed to this handler.
-func (AccountHandler) HandleCommand(s dogma.AggregateCommandScope, m dogma.Message) {
+func (AccountHandler) HandleCommand(
+	r dogma.AggregateRoot,
+	s dogma.AggregateCommandScope,
+	m dogma.Message,
+) {
+	a := r.(*account)
+
 	switch x := m.(type) {
 	case commands.OpenAccount:
-		openAccount(s, x)
+		openAccount(a, s, x)
 	case commands.CreditAccount:
-		creditAccount(s, x)
+		creditAccount(a, s, x)
 	case commands.DebitAccount:
-		debitAccount(s, x)
+		debitAccount(a, s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
 }
 
-func openAccount(s dogma.AggregateCommandScope, m commands.OpenAccount) {
-	if !s.Create() {
+func openAccount(a *account, s dogma.AggregateCommandScope, m commands.OpenAccount) {
+	if a.Opened {
 		s.Log("account has already been opened")
 		return
 	}
@@ -90,7 +101,7 @@ func openAccount(s dogma.AggregateCommandScope, m commands.OpenAccount) {
 	})
 }
 
-func creditAccount(s dogma.AggregateCommandScope, m commands.CreditAccount) {
+func creditAccount(a *account, s dogma.AggregateCommandScope, m commands.CreditAccount) {
 	s.RecordEvent(events.AccountCredited{
 		TransactionID:   m.TransactionID,
 		AccountID:       m.AccountID,
@@ -99,10 +110,8 @@ func creditAccount(s dogma.AggregateCommandScope, m commands.CreditAccount) {
 	})
 }
 
-func debitAccount(s dogma.AggregateCommandScope, m commands.DebitAccount) {
-	r := s.Root().(*account)
-
-	if r.hasSufficientFunds(m.Amount) {
+func debitAccount(a *account, s dogma.AggregateCommandScope, m commands.DebitAccount) {
+	if a.hasSufficientFunds(m.Amount) {
 		s.RecordEvent(events.AccountDebited{
 			TransactionID:   m.TransactionID,
 			AccountID:       m.AccountID,
@@ -121,6 +130,6 @@ func debitAccount(s dogma.AggregateCommandScope, m commands.DebitAccount) {
 	}
 }
 
-func (r *account) hasSufficientFunds(amount int64) bool {
-	return r.Balance >= amount
+func (a *account) hasSufficientFunds(amount int64) bool {
+	return a.Balance >= amount
 }
