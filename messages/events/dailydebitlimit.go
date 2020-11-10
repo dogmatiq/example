@@ -1,6 +1,10 @@
 package events
 
-import "github.com/dogmatiq/example/messages"
+import (
+	"fmt"
+
+	"github.com/dogmatiq/example/messages"
+)
 
 // DailyDebitLimitConsumed is an event that indicates an amount of an account
 // daily debit limit has been consumed.
@@ -22,4 +26,22 @@ type DailyDebitLimitExceeded struct {
 	Amount        int64
 	LimitUsed     int64
 	LimitMaximum  int64
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m *DailyDebitLimitConsumed) MessageDescription() string {
+	return fmt.Sprintf(
+		"consumed %s from daily debit limit of account %s",
+		messages.FormatAmount(m.Amount),
+		messages.FormatID(m.AccountID),
+	)
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m *DailyDebitLimitExceeded) MessageDescription() string {
+	return fmt.Sprintf(
+		"consuming %s from daily debit limit of account %s was denied for exceeding limit",
+		messages.FormatAmount(m.Amount),
+		messages.FormatID(m.AccountID),
+	)
 }
