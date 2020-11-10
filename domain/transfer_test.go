@@ -339,4 +339,60 @@ func Test_Transfer(t *testing.T) {
 			)
 		},
 	)
+
+	t.Run(
+		"when the transfer is to the same account",
+		func(t *testing.T) {
+			t.Run(
+				"it does not start the transfer",
+				func(t *testing.T) {
+					cmd := commands.Transfer{
+						TransactionID: "T001",
+						FromAccountID: "A001",
+						ToAccountID:   "A001",
+						Amount:        100,
+						ScheduledDate: "2001-02-04",
+					}
+
+					testrunner.New(nil).
+						Begin(t).
+						Prepare(cmd).
+						ExecuteCommand(
+							cmd,
+							NoneOf(
+								EventTypeRecorded(events.WithdrawalApproved{}),
+							),
+						)
+				},
+			)
+		},
+	)
+
+	t.Run(
+		"when the transfer has already started",
+		func(t *testing.T) {
+			t.Run(
+				"it does not start the transfer again",
+				func(t *testing.T) {
+					cmd := commands.Transfer{
+						TransactionID: "T001",
+						FromAccountID: "A001",
+						ToAccountID:   "A002",
+						Amount:        100,
+						ScheduledDate: "2001-02-04",
+					}
+
+					testrunner.New(nil).
+						Begin(t).
+						Prepare(cmd).
+						ExecuteCommand(
+							cmd,
+							NoneOf(
+								EventTypeRecorded(events.WithdrawalApproved{}),
+							),
+						)
+				},
+			)
+		},
+	)
 }

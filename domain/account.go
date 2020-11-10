@@ -16,6 +16,52 @@ type account struct {
 	Balance int64
 }
 
+func (a *account) OpenAccount(s dogma.AggregateCommandScope, m commands.OpenAccount) {
+	if a.Opened {
+		s.Log("account has already been opened")
+		return
+	}
+
+	s.RecordEvent(events.AccountOpened{
+		CustomerID:  m.CustomerID,
+		AccountID:   m.AccountID,
+		AccountName: m.AccountName,
+	})
+}
+
+func (a *account) CreditAccount(s dogma.AggregateCommandScope, m commands.CreditAccount) {
+	s.RecordEvent(events.AccountCredited{
+		TransactionID:   m.TransactionID,
+		AccountID:       m.AccountID,
+		TransactionType: m.TransactionType,
+		Amount:          m.Amount,
+	})
+}
+
+func (a *account) DebitAccount(s dogma.AggregateCommandScope, m commands.DebitAccount) {
+	if a.hasSufficientFunds(m.Amount) {
+		s.RecordEvent(events.AccountDebited{
+			TransactionID:   m.TransactionID,
+			AccountID:       m.AccountID,
+			TransactionType: m.TransactionType,
+			Amount:          m.Amount,
+			ScheduledDate:   m.ScheduledDate,
+		})
+	} else {
+		s.RecordEvent(events.AccountDebitDeclined{
+			TransactionID:   m.TransactionID,
+			AccountID:       m.AccountID,
+			TransactionType: m.TransactionType,
+			Amount:          m.Amount,
+			Reason:          messages.InsufficientFunds,
+		})
+	}
+}
+
+func (a *account) hasSufficientFunds(amount int64) bool {
+	return a.Balance >= amount
+}
+
 func (a *account) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.AccountOpened:
@@ -78,58 +124,12 @@ func (AccountHandler) HandleCommand(
 
 	switch x := m.(type) {
 	case commands.OpenAccount:
-		openAccount(a, s, x)
+		a.OpenAccount(s, x)
 	case commands.CreditAccount:
-		creditAccount(a, s, x)
+		a.CreditAccount(s, x)
 	case commands.DebitAccount:
-		debitAccount(a, s, x)
+		a.DebitAccount(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
-}
-
-func openAccount(a *account, s dogma.AggregateCommandScope, m commands.OpenAccount) {
-	if a.Opened {
-		s.Log("account has already been opened")
-		return
-	}
-
-	s.RecordEvent(events.AccountOpened{
-		CustomerID:  m.CustomerID,
-		AccountID:   m.AccountID,
-		AccountName: m.AccountName,
-	})
-}
-
-func creditAccount(a *account, s dogma.AggregateCommandScope, m commands.CreditAccount) {
-	s.RecordEvent(events.AccountCredited{
-		TransactionID:   m.TransactionID,
-		AccountID:       m.AccountID,
-		TransactionType: m.TransactionType,
-		Amount:          m.Amount,
-	})
-}
-
-func debitAccount(a *account, s dogma.AggregateCommandScope, m commands.DebitAccount) {
-	if a.hasSufficientFunds(m.Amount) {
-		s.RecordEvent(events.AccountDebited{
-			TransactionID:   m.TransactionID,
-			AccountID:       m.AccountID,
-			TransactionType: m.TransactionType,
-			Amount:          m.Amount,
-			ScheduledDate:   m.ScheduledDate,
-		})
-	} else {
-		s.RecordEvent(events.AccountDebitDeclined{
-			TransactionID:   m.TransactionID,
-			AccountID:       m.AccountID,
-			TransactionType: m.TransactionType,
-			Amount:          m.Amount,
-			Reason:          messages.InsufficientFunds,
-		})
-	}
-}
-
-func (a *account) hasSufficientFunds(amount int64) bool {
-	return a.Balance >= amount
 }
