@@ -12,6 +12,20 @@ type customer struct {
 	Acquired bool
 }
 
+func (c *customer) Acquire(s dogma.AggregateCommandScope, m commands.OpenAccountForNewCustomer) {
+	if c.Acquired {
+		s.Log("customer has already been acquired")
+		return
+	}
+
+	s.RecordEvent(events.CustomerAcquired{
+		CustomerID:   m.CustomerID,
+		CustomerName: m.CustomerName,
+		AccountID:    m.AccountID,
+		AccountName:  m.AccountName,
+	})
+}
+
 func (c *customer) ApplyEvent(m dogma.Message) {
 	switch m.(type) {
 	case events.CustomerAcquired:
@@ -58,22 +72,8 @@ func (CustomerHandler) HandleCommand(
 
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
-		acquire(c, s, x)
+		c.Acquire(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
-}
-
-func acquire(c *customer, s dogma.AggregateCommandScope, m commands.OpenAccountForNewCustomer) {
-	if c.Acquired {
-		s.Log("customer has already been acquired")
-		return
-	}
-
-	s.RecordEvent(events.CustomerAcquired{
-		CustomerID:   m.CustomerID,
-		CustomerName: m.CustomerName,
-		AccountID:    m.AccountID,
-		AccountName:  m.AccountName,
-	})
 }

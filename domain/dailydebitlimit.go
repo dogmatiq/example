@@ -8,11 +8,40 @@ import (
 	"github.com/dogmatiq/example/messages/events"
 )
 
+// Limit amount, in cents.
+const maximumDailyDebitLimit = 900000
+
 // dailyDebitLimit is the aggregate root for an account daily debit limit
 // policy.
 type dailyDebitLimit struct {
 	// UsedAmount is the sum of debit amounts used during the period, in cents.
 	UsedAmount int64
+}
+
+func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
+	if d.wouldExceedLimit(m.Amount) {
+		s.RecordEvent(events.DailyDebitLimitExceeded{
+			TransactionID: m.TransactionID,
+			AccountID:     m.AccountID,
+			DebitType:     m.DebitType,
+			Amount:        m.Amount,
+			LimitUsed:     d.UsedAmount,
+			LimitMaximum:  maximumDailyDebitLimit,
+		})
+	} else {
+		s.RecordEvent(events.DailyDebitLimitConsumed{
+			TransactionID: m.TransactionID,
+			AccountID:     m.AccountID,
+			DebitType:     m.DebitType,
+			Amount:        m.Amount,
+			LimitUsed:     d.UsedAmount + m.Amount,
+			LimitMaximum:  maximumDailyDebitLimit,
+		})
+	}
+}
+
+func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
+	return d.UsedAmount+amount > maximumDailyDebitLimit
 }
 
 func (d *dailyDebitLimit) ApplyEvent(m dogma.Message) {
@@ -67,37 +96,8 @@ func (DailyDebitLimitHandler) HandleCommand(
 
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
-		consume(d, s, x)
+		d.Consume(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
 }
-
-func consume(d *dailyDebitLimit, s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
-	if d.wouldExceedLimit(m.Amount) {
-		s.RecordEvent(events.DailyDebitLimitExceeded{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			DebitType:     m.DebitType,
-			Amount:        m.Amount,
-			LimitUsed:     d.UsedAmount,
-			LimitMaximum:  maximumDailyDebitLimit,
-		})
-	} else {
-		s.RecordEvent(events.DailyDebitLimitConsumed{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			DebitType:     m.DebitType,
-			Amount:        m.Amount,
-			LimitUsed:     d.UsedAmount + m.Amount,
-			LimitMaximum:  maximumDailyDebitLimit,
-		})
-	}
-}
-
-func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
-	return d.UsedAmount+amount > maximumDailyDebitLimit
-}
-
-// Limit amount, in cents.
-const maximumDailyDebitLimit = 900000

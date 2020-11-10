@@ -12,6 +12,97 @@ type transaction struct {
 	Started bool
 }
 
+func (t *transaction) StartDeposit(s dogma.AggregateCommandScope, m commands.Deposit) {
+	if t.Started {
+		s.Log("transaction already started")
+		return
+	}
+
+	s.RecordEvent(events.DepositStarted{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+	})
+}
+
+func (t *transaction) ApproveDeposit(s dogma.AggregateCommandScope, m commands.ApproveDeposit) {
+	s.RecordEvent(events.DepositApproved{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+	})
+}
+
+func (t *transaction) StartWithdraw(s dogma.AggregateCommandScope, m commands.Withdraw) {
+	if t.Started {
+		s.Log("transaction already started")
+		return
+	}
+
+	s.RecordEvent(events.WithdrawalStarted{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+		ScheduledDate: m.ScheduledDate,
+	})
+}
+
+func (t *transaction) ApproveWithdrawal(s dogma.AggregateCommandScope, m commands.ApproveWithdrawal) {
+	s.RecordEvent(events.WithdrawalApproved{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+	})
+}
+
+func (t *transaction) DeclineWithdrawal(s dogma.AggregateCommandScope, m commands.DeclineWithdrawal) {
+	s.RecordEvent(events.WithdrawalDeclined{
+		TransactionID: m.TransactionID,
+		AccountID:     m.AccountID,
+		Amount:        m.Amount,
+		Reason:        m.Reason,
+	})
+}
+
+func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m commands.Transfer) {
+	if m.FromAccountID == m.ToAccountID {
+		s.Log("cannot transfer to same account")
+		return
+	}
+
+	if t.Started {
+		s.Log("transaction already started")
+		return
+	}
+
+	s.RecordEvent(events.TransferStarted{
+		TransactionID: m.TransactionID,
+		FromAccountID: m.FromAccountID,
+		ToAccountID:   m.ToAccountID,
+		Amount:        m.Amount,
+		ScheduledDate: m.ScheduledDate,
+	})
+}
+
+func (t *transaction) ApproveTransfer(s dogma.AggregateCommandScope, m commands.ApproveTransfer) {
+	s.RecordEvent(events.TransferApproved{
+		TransactionID: m.TransactionID,
+		FromAccountID: m.FromAccountID,
+		ToAccountID:   m.ToAccountID,
+		Amount:        m.Amount,
+	})
+}
+
+func (t *transaction) DeclineTransfer(s dogma.AggregateCommandScope, m commands.DeclineTransfer) {
+	s.RecordEvent(events.TransferDeclined{
+		TransactionID: m.TransactionID,
+		FromAccountID: m.FromAccountID,
+		ToAccountID:   m.ToAccountID,
+		Amount:        m.Amount,
+		Reason:        m.Reason,
+	})
+}
+
 func (t *transaction) ApplyEvent(m dogma.Message) {
 	switch m.(type) {
 	case events.DepositStarted:
@@ -94,113 +185,22 @@ func (TransactionHandler) HandleCommand(
 
 	switch x := m.(type) {
 	case commands.Deposit:
-		startDeposit(t, s, x)
+		t.StartDeposit(s, x)
 	case commands.ApproveDeposit:
-		approveDeposit(t, s, x)
+		t.ApproveDeposit(s, x)
 	case commands.Withdraw:
-		startWithdraw(t, s, x)
+		t.StartWithdraw(s, x)
 	case commands.ApproveWithdrawal:
-		approveWithdrawal(t, s, x)
+		t.ApproveWithdrawal(s, x)
 	case commands.DeclineWithdrawal:
-		declineWithdrawal(t, s, x)
+		t.DeclineWithdrawal(s, x)
 	case commands.Transfer:
-		startTransfer(t, s, x)
+		t.StartTransfer(s, x)
 	case commands.ApproveTransfer:
-		approveTransfer(t, s, x)
+		t.ApproveTransfer(s, x)
 	case commands.DeclineTransfer:
-		declineTransfer(t, s, x)
+		t.DeclineTransfer(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
-}
-
-func startDeposit(t *transaction, s dogma.AggregateCommandScope, m commands.Deposit) {
-	if t.Started {
-		s.Log("transaction already started")
-		return
-	}
-
-	s.RecordEvent(events.DepositStarted{
-		TransactionID: m.TransactionID,
-		AccountID:     m.AccountID,
-		Amount:        m.Amount,
-	})
-}
-
-func approveDeposit(t *transaction, s dogma.AggregateCommandScope, m commands.ApproveDeposit) {
-	s.RecordEvent(events.DepositApproved{
-		TransactionID: m.TransactionID,
-		AccountID:     m.AccountID,
-		Amount:        m.Amount,
-	})
-}
-
-func startWithdraw(t *transaction, s dogma.AggregateCommandScope, m commands.Withdraw) {
-	if t.Started {
-		s.Log("transaction already started")
-		return
-	}
-
-	s.RecordEvent(events.WithdrawalStarted{
-		TransactionID: m.TransactionID,
-		AccountID:     m.AccountID,
-		Amount:        m.Amount,
-		ScheduledDate: m.ScheduledDate,
-	})
-}
-
-func approveWithdrawal(t *transaction, s dogma.AggregateCommandScope, m commands.ApproveWithdrawal) {
-	s.RecordEvent(events.WithdrawalApproved{
-		TransactionID: m.TransactionID,
-		AccountID:     m.AccountID,
-		Amount:        m.Amount,
-	})
-}
-
-func declineWithdrawal(t *transaction, s dogma.AggregateCommandScope, m commands.DeclineWithdrawal) {
-	s.RecordEvent(events.WithdrawalDeclined{
-		TransactionID: m.TransactionID,
-		AccountID:     m.AccountID,
-		Amount:        m.Amount,
-		Reason:        m.Reason,
-	})
-}
-
-func startTransfer(t *transaction, s dogma.AggregateCommandScope, m commands.Transfer) {
-	if m.FromAccountID == m.ToAccountID {
-		s.Log("cannot transfer to same account")
-		return
-	}
-
-	if t.Started {
-		s.Log("transaction already started")
-		return
-	}
-
-	s.RecordEvent(events.TransferStarted{
-		TransactionID: m.TransactionID,
-		FromAccountID: m.FromAccountID,
-		ToAccountID:   m.ToAccountID,
-		Amount:        m.Amount,
-		ScheduledDate: m.ScheduledDate,
-	})
-}
-
-func approveTransfer(t *transaction, s dogma.AggregateCommandScope, m commands.ApproveTransfer) {
-	s.RecordEvent(events.TransferApproved{
-		TransactionID: m.TransactionID,
-		FromAccountID: m.FromAccountID,
-		ToAccountID:   m.ToAccountID,
-		Amount:        m.Amount,
-	})
-}
-
-func declineTransfer(t *transaction, s dogma.AggregateCommandScope, m commands.DeclineTransfer) {
-	s.RecordEvent(events.TransferDeclined{
-		TransactionID: m.TransactionID,
-		FromAccountID: m.FromAccountID,
-		ToAccountID:   m.ToAccountID,
-		Amount:        m.Amount,
-		Reason:        m.Reason,
-	})
 }
