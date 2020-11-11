@@ -26,3 +26,15 @@ const (
 	// because it will exceed the account daily debit limit.
 	DailyDebitLimitExceeded DebitFailureReason = "daily-debit-limit-exceeded"
 )
+
+// String returns a human-readable description of the reason.
+func (r DebitFailureReason) String() string {
+	switch r {
+	case InsufficientFunds:
+		return "insufficent funds"
+	case DailyDebitLimitExceeded:
+		return "daily debit limit exceeded"
+	default:
+		panic("unknown reason")
+	}
+}

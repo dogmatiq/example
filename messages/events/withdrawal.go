@@ -53,9 +53,9 @@ func (m *WithdrawalApproved) MessageDescription() string {
 // MessageDescription returns a human-readable description of the message.
 func (m *WithdrawalDeclined) MessageDescription() string {
 	return fmt.Sprintf(
-		"declined withdrawal of %s from account %s for reason %s",
+		"declined withdrawal of %s from account %s: %s",
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
-		m.Reason,
+		m.Reason.String(),
 	)
 }

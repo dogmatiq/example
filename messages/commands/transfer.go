@@ -56,10 +56,10 @@ func (m *ApproveTransfer) MessageDescription() string {
 // MessageDescription returns a human-readable description of the message.
 func (m *DeclineTransfer) MessageDescription() string {
 	return fmt.Sprintf(
-		"declining transfer of %s from account %s to account %s for reason %s",
+		"declining transfer of %s from account %s to account %s: %s",
 		messages.FormatAmount(m.Amount),
 		m.FromAccountID,
 		m.ToAccountID,
-		m.Reason,
+		m.Reason.String(),
 	)
 }

@@ -71,9 +71,9 @@ func (m *AccountDebited) MessageDescription() string {
 // MessageDescription returns a human-readable description of the message.
 func (m *AccountDebitDeclined) MessageDescription() string {
 	return fmt.Sprintf(
-		"declined debit of %s from account %s for reason %s",
+		"declined debit of %s from account %s: %s",
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
-		m.Reason,
+		m.Reason.String(),
 	)
 }
