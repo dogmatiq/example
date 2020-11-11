@@ -23,7 +23,7 @@ type DepositApproved struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *DepositStarted) String() string {
+func (m *DepositStarted) MessageDescription() string {
 	return fmt.Sprintf(
 		"started deposit of %s into account %s",
 		messages.FormatAmount(m.Amount),
@@ -32,7 +32,7 @@ func (m *DepositStarted) String() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *DepositApproved) String() string {
+func (m *DepositApproved) MessageDescription() string {
 	return fmt.Sprintf(
 		"approved deposit of %s into account %s",
 		messages.FormatAmount(m.Amount),

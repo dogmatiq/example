@@ -52,7 +52,7 @@ func (m *OpenAccountForNewCustomer) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *OpenAccount) String() string {
+func (m *OpenAccount) MessageDescription() string {
 	return fmt.Sprintf(
 		"account %s %s is being opened for customer %s",
 		m.AccountID,
@@ -62,7 +62,7 @@ func (m *OpenAccount) String() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *CreditAccount) String() string {
+func (m *CreditAccount) MessageDescription() string {
 	return fmt.Sprintf(
 		"crediting %s to account %s",
 		messages.FormatAmount(m.Amount),
@@ -71,7 +71,7 @@ func (m *CreditAccount) String() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *DebitAccount) String() string {
+func (m *DebitAccount) MessageDescription() string {
 	return fmt.Sprintf(
 		"debiting %s from account %s",
 		messages.FormatAmount(m.Amount),
