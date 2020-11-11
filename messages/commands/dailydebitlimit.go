@@ -21,7 +21,7 @@ func (m *ConsumeDailyDebitLimit) MessageDescription() string {
 	return fmt.Sprintf(
 		"consuming %s from daily debit limit of account %s on date %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 		m.ScheduledDate,
 	)
 }

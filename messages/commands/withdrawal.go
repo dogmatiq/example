@@ -34,7 +34,7 @@ func (m *Withdraw) MessageDescription() string {
 	return fmt.Sprintf(
 		"withdrawing %s from account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }
 
@@ -43,7 +43,7 @@ func (m *ApproveWithdrawal) MessageDescription() string {
 	return fmt.Sprintf(
 		"approving withdrawal of %s from account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }
 
@@ -52,7 +52,7 @@ func (m *DeclineWithdrawal) MessageDescription() string {
 	return fmt.Sprintf(
 		"declining withdrawal of %s from account %s for reason %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 		m.Reason,
 	)
 }

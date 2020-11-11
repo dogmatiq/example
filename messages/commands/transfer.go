@@ -38,8 +38,8 @@ func (m *Transfer) MessageDescription() string {
 	return fmt.Sprintf(
 		"transfering %s from account %s to account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.FromAccountID),
-		messages.FormatID(m.ToAccountID),
+		m.FromAccountID,
+		m.ToAccountID,
 	)
 }
 
@@ -48,8 +48,8 @@ func (m *ApproveTransfer) MessageDescription() string {
 	return fmt.Sprintf(
 		"approving transfer of %s from account %s to account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.FromAccountID),
-		messages.FormatID(m.ToAccountID),
+		m.FromAccountID,
+		m.ToAccountID,
 	)
 }
 
@@ -58,8 +58,8 @@ func (m *DeclineTransfer) MessageDescription() string {
 	return fmt.Sprintf(
 		"declining transfer of %s from account %s to account %s for reason %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.FromAccountID),
-		messages.FormatID(m.ToAccountID),
+		m.FromAccountID,
+		m.ToAccountID,
 		m.Reason,
 	)
 }

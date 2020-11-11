@@ -2,8 +2,6 @@ package events
 
 import (
 	"fmt"
-
-	"github.com/dogmatiq/example/messages"
 )
 
 // CustomerAcquired is an event indicating that a new customer has been
@@ -19,9 +17,9 @@ type CustomerAcquired struct {
 func (m *CustomerAcquired) MessageDescription() string {
 	return fmt.Sprintf(
 		"acquired customer %s %s with first account %s %s",
-		messages.FormatID(m.CustomerID),
+		m.CustomerID,
 		m.CustomerName,
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 		m.AccountName,
 	)
 }

@@ -33,7 +33,7 @@ func (m *DailyDebitLimitConsumed) MessageDescription() string {
 	return fmt.Sprintf(
 		"consumed %s from daily debit limit of account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }
 
@@ -42,6 +42,6 @@ func (m *DailyDebitLimitExceeded) MessageDescription() string {
 	return fmt.Sprintf(
 		"consuming %s from daily debit limit of account %s was denied for exceeding limit",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }

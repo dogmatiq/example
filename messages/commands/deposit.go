@@ -25,7 +25,7 @@ func (m *Deposit) MessageDescription() string {
 	return fmt.Sprintf(
 		"depositing %s into account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }
 
@@ -34,6 +34,6 @@ func (m *ApproveDeposit) MessageDescription() string {
 	return fmt.Sprintf(
 		"approving deposit of %s into account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }

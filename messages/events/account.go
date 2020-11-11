@@ -44,9 +44,9 @@ type AccountDebitDeclined struct {
 func (m *AccountOpened) MessageDescription() string {
 	return fmt.Sprintf(
 		"account %s %s opened for customer %s",
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 		m.AccountName,
-		messages.FormatID(m.CustomerID),
+		m.CustomerID,
 	)
 }
 
@@ -55,7 +55,7 @@ func (m *AccountCredited) MessageDescription() string {
 	return fmt.Sprintf(
 		"credited %s to account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }
 
@@ -64,7 +64,7 @@ func (m *AccountDebited) MessageDescription() string {
 	return fmt.Sprintf(
 		"debited %s from account %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 	)
 }
 
@@ -73,7 +73,7 @@ func (m *AccountDebitDeclined) MessageDescription() string {
 	return fmt.Sprintf(
 		"declined debit of %s from account %s for reason %s",
 		messages.FormatAmount(m.Amount),
-		messages.FormatID(m.AccountID),
+		m.AccountID,
 		m.Reason,
 	)
 }
