@@ -41,7 +41,7 @@ type DebitAccount struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *OpenAccountForNewCustomer) MessageDescription() string {
+func (m OpenAccountForNewCustomer) MessageDescription() string {
 	return fmt.Sprintf(
 		"customer %s %s is opening their first account %s %s",
 		m.CustomerID,
@@ -52,7 +52,7 @@ func (m *OpenAccountForNewCustomer) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *OpenAccount) MessageDescription() string {
+func (m OpenAccount) MessageDescription() string {
 	return fmt.Sprintf(
 		"account %s %s is being opened for customer %s",
 		m.AccountID,
@@ -62,18 +62,22 @@ func (m *OpenAccount) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *CreditAccount) MessageDescription() string {
+func (m CreditAccount) MessageDescription() string {
 	return fmt.Sprintf(
-		"crediting %s to account %s",
+		"%s %s: crediting %s to account %s",
+		m.TransactionType,
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *DebitAccount) MessageDescription() string {
+func (m DebitAccount) MessageDescription() string {
 	return fmt.Sprintf(
-		"debiting %s from account %s",
+		"%s %s: debiting %s from account %s",
+		m.TransactionType,
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)

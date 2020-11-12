@@ -36,9 +36,10 @@ type TransferDeclined struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *TransferStarted) MessageDescription() string {
+func (m TransferStarted) MessageDescription() string {
 	return fmt.Sprintf(
-		"started transfer of %s from account %s to account %s",
+		"transfer %s: started transfer of %s from account %s to account %s",
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.FromAccountID,
 		m.ToAccountID,
@@ -46,9 +47,10 @@ func (m *TransferStarted) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *TransferApproved) MessageDescription() string {
+func (m TransferApproved) MessageDescription() string {
 	return fmt.Sprintf(
-		"approved transfer of %s from account %s to account %s",
+		"transfer %s: approved transfer of %s from account %s to account %s",
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.FromAccountID,
 		m.ToAccountID,
@@ -56,9 +58,10 @@ func (m *TransferApproved) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *TransferDeclined) MessageDescription() string {
+func (m TransferDeclined) MessageDescription() string {
 	return fmt.Sprintf(
-		"declined transfer of %s from account %s to account %s: %s",
+		"transfer %s: declined transfer of %s from account %s to account %s: %s",
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.FromAccountID,
 		m.ToAccountID,

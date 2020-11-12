@@ -41,7 +41,7 @@ type AccountDebitDeclined struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *AccountOpened) MessageDescription() string {
+func (m AccountOpened) MessageDescription() string {
 	return fmt.Sprintf(
 		"account %s %s opened for customer %s",
 		m.AccountID,
@@ -51,27 +51,33 @@ func (m *AccountOpened) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *AccountCredited) MessageDescription() string {
+func (m AccountCredited) MessageDescription() string {
 	return fmt.Sprintf(
-		"credited %s to account %s",
+		"%s %s: credited %s to account %s",
+		m.TransactionType,
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *AccountDebited) MessageDescription() string {
+func (m AccountDebited) MessageDescription() string {
 	return fmt.Sprintf(
-		"debited %s from account %s",
+		"%s %s: debited %s from account %s",
+		m.TransactionType,
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *AccountDebitDeclined) MessageDescription() string {
+func (m AccountDebitDeclined) MessageDescription() string {
 	return fmt.Sprintf(
-		"declined debit of %s from account %s: %s",
+		"%s %s: declined debit of %s from account %s: %s",
+		m.TransactionType,
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 		m.Reason,

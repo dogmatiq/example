@@ -17,9 +17,11 @@ type ConsumeDailyDebitLimit struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *ConsumeDailyDebitLimit) MessageDescription() string {
+func (m ConsumeDailyDebitLimit) MessageDescription() string {
 	return fmt.Sprintf(
-		"consuming %s from %s daily debit limit for account %s",
+		"%s %s: consuming %s from %s daily debit limit of account %s",
+		m.DebitType,
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.ScheduledDate,
 		m.AccountID,

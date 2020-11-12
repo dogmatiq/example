@@ -29,19 +29,23 @@ type DailyDebitLimitExceeded struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *DailyDebitLimitConsumed) MessageDescription() string {
+func (m DailyDebitLimitConsumed) MessageDescription() string {
 	return fmt.Sprintf(
-		"consumed %s from daily debit limit for account %s",
+		"%s %s: consumed %s from daily debit limit of account %s",
+		m.DebitType,
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *DailyDebitLimitExceeded) MessageDescription() string {
+func (m DailyDebitLimitExceeded) MessageDescription() string {
 	return fmt.Sprintf(
-		"consuming %s from daily debit limit for account %s was denied for exceeding limit",
-		messages.FormatAmount(m.Amount),
+		"%s %s: exceeded daily debit limit of account %s by %s",
+		m.DebitType,
+		m.TransactionID,
 		m.AccountID,
+		messages.FormatAmount((m.LimitUsed+m.Amount)-m.LimitMaximum),
 	)
 }

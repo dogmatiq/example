@@ -14,7 +14,7 @@ type CustomerAcquired struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *CustomerAcquired) MessageDescription() string {
+func (m CustomerAcquired) MessageDescription() string {
 	return fmt.Sprintf(
 		"acquired customer %s %s with first account %s %s",
 		m.CustomerID,

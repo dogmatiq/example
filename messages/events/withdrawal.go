@@ -33,27 +33,30 @@ type WithdrawalDeclined struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *WithdrawalStarted) MessageDescription() string {
+func (m WithdrawalStarted) MessageDescription() string {
 	return fmt.Sprintf(
-		"started withdrawal of %s from account %s",
+		"withdrawal %s: started withdrawal of %s from account %s",
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *WithdrawalApproved) MessageDescription() string {
+func (m WithdrawalApproved) MessageDescription() string {
 	return fmt.Sprintf(
-		"approved withdrawal of %s from account %s",
+		"withdrawal %s: approved withdrawal of %s from account %s",
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m *WithdrawalDeclined) MessageDescription() string {
+func (m WithdrawalDeclined) MessageDescription() string {
 	return fmt.Sprintf(
-		"declined withdrawal of %s from account %s: %s",
+		"withdrawal %s: declined withdrawal of %s from account %s: %s",
+		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 		m.Reason,
