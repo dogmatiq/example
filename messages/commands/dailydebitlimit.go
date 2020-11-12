@@ -1,6 +1,10 @@
 package commands
 
-import "github.com/dogmatiq/example/messages"
+import (
+	"fmt"
+
+	"github.com/dogmatiq/example/messages"
+)
 
 // ConsumeDailyDebitLimit is a command requesting that an amount of an account
 // daily debit limit be consumed.
@@ -10,4 +14,16 @@ type ConsumeDailyDebitLimit struct {
 	DebitType     messages.TransactionType
 	Amount        int64
 	ScheduledDate string
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m ConsumeDailyDebitLimit) MessageDescription() string {
+	return fmt.Sprintf(
+		"%s %s: consuming %s from %s daily debit limit of account %s",
+		m.DebitType,
+		m.TransactionID,
+		messages.FormatAmount(m.Amount),
+		m.ScheduledDate,
+		m.AccountID,
+	)
 }

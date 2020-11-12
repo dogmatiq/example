@@ -1,6 +1,10 @@
 package commands
 
-import "github.com/dogmatiq/example/messages"
+import (
+	"fmt"
+
+	"github.com/dogmatiq/example/messages"
+)
 
 // OpenAccountForNewCustomer is a command requesting that a new bank account be
 // opened for a new customer.
@@ -34,4 +38,47 @@ type DebitAccount struct {
 	TransactionType messages.TransactionType
 	Amount          int64
 	ScheduledDate   string
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m OpenAccountForNewCustomer) MessageDescription() string {
+	return fmt.Sprintf(
+		"customer %s %s is opening their first account %s %s",
+		m.CustomerID,
+		m.CustomerName,
+		m.AccountID,
+		m.AccountName,
+	)
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m OpenAccount) MessageDescription() string {
+	return fmt.Sprintf(
+		"opening account %s %s for customer %s",
+		m.AccountID,
+		m.AccountName,
+		m.CustomerID,
+	)
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m CreditAccount) MessageDescription() string {
+	return fmt.Sprintf(
+		"%s %s: crediting %s to account %s",
+		m.TransactionType,
+		m.TransactionID,
+		messages.FormatAmount(m.Amount),
+		m.AccountID,
+	)
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m DebitAccount) MessageDescription() string {
+	return fmt.Sprintf(
+		"%s %s: debiting %s from account %s",
+		m.TransactionType,
+		m.TransactionID,
+		messages.FormatAmount(m.Amount),
+		m.AccountID,
+	)
 }

@@ -1,6 +1,10 @@
 package events
 
-import "github.com/dogmatiq/example/messages"
+import (
+	"fmt"
+
+	"github.com/dogmatiq/example/messages"
+)
 
 // AccountOpened is an event indicating that a new bank account has been opened.
 type AccountOpened struct {
@@ -34,4 +38,48 @@ type AccountDebitDeclined struct {
 	TransactionType messages.TransactionType
 	Amount          int64
 	Reason          messages.DebitFailureReason
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m AccountOpened) MessageDescription() string {
+	return fmt.Sprintf(
+		"opened account %s %s for customer %s",
+		m.AccountID,
+		m.AccountName,
+		m.CustomerID,
+	)
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m AccountCredited) MessageDescription() string {
+	return fmt.Sprintf(
+		"%s %s: credited %s to account %s",
+		m.TransactionType,
+		m.TransactionID,
+		messages.FormatAmount(m.Amount),
+		m.AccountID,
+	)
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m AccountDebited) MessageDescription() string {
+	return fmt.Sprintf(
+		"%s %s: debited %s from account %s",
+		m.TransactionType,
+		m.TransactionID,
+		messages.FormatAmount(m.Amount),
+		m.AccountID,
+	)
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m AccountDebitDeclined) MessageDescription() string {
+	return fmt.Sprintf(
+		"%s %s: declined debit of %s from account %s: %s",
+		m.TransactionType,
+		m.TransactionID,
+		messages.FormatAmount(m.Amount),
+		m.AccountID,
+		m.Reason,
+	)
 }
