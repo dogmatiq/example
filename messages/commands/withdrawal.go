@@ -53,6 +53,6 @@ func (m *DeclineWithdrawal) MessageDescription() string {
 		"declining withdrawal of %s from account %s: %s",
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
-		m.Reason.String(),
+		m.Reason,
 	)
 }

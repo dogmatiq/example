@@ -74,6 +74,6 @@ func (m *AccountDebitDeclined) MessageDescription() string {
 		"declined debit of %s from account %s: %s",
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
-		m.Reason.String(),
+		m.Reason,
 	)
 }

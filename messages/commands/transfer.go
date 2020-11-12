@@ -60,6 +60,6 @@ func (m *DeclineTransfer) MessageDescription() string {
 		messages.FormatAmount(m.Amount),
 		m.FromAccountID,
 		m.ToAccountID,
-		m.Reason.String(),
+		m.Reason,
 	)
 }
