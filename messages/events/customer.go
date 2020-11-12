@@ -16,7 +16,7 @@ type CustomerAcquired struct {
 // MessageDescription returns a human-readable description of the message.
 func (m CustomerAcquired) MessageDescription() string {
 	return fmt.Sprintf(
-		"acquired customer %s %s,
+		"acquired customer %s %s",
 		m.CustomerID,
 		m.CustomerName,
 	)
