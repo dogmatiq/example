@@ -12,6 +12,7 @@ import (
 // managed by the bank.
 type AccountProjectionHandler struct {
 	dogma.NoTimeoutHintBehavior
+	dogma.NoCompactBehavior
 }
 
 // Configure configs the engine for this projection.
