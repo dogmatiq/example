@@ -43,7 +43,7 @@ type AccountDebitDeclined struct {
 // MessageDescription returns a human-readable description of the message.
 func (m AccountOpened) MessageDescription() string {
 	return fmt.Sprintf(
-		"account %s %s opened for customer %s",
+		"opened account %s %s for customer %s",
 		m.AccountID,
 		m.AccountName,
 		m.CustomerID,

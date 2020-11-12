@@ -54,7 +54,7 @@ func (m OpenAccountForNewCustomer) MessageDescription() string {
 // MessageDescription returns a human-readable description of the message.
 func (m OpenAccount) MessageDescription() string {
 	return fmt.Sprintf(
-		"account %s %s is being opened for customer %s",
+		"opening account %s %s for customer %s",
 		m.AccountID,
 		m.AccountName,
 		m.CustomerID,
