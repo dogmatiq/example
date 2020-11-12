@@ -25,6 +25,7 @@ func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.Cons
 			AccountID:     m.AccountID,
 			DebitType:     m.DebitType,
 			Amount:        m.Amount,
+			Date:          m.ScheduledDate,
 			LimitUsed:     d.UsedAmount,
 			LimitMaximum:  maximumDailyDebitLimit,
 		})
@@ -34,6 +35,7 @@ func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.Cons
 			AccountID:     m.AccountID,
 			DebitType:     m.DebitType,
 			Amount:        m.Amount,
+			Date:          m.ScheduledDate,
 			LimitUsed:     d.UsedAmount + m.Amount,
 			LimitMaximum:  maximumDailyDebitLimit,
 		})
