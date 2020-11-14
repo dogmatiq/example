@@ -6,12 +6,14 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages/events"
+	pksql "github.com/dogmatiq/projectionkit/sql"
 )
 
 // CustomerProjectionHandler is a projection that builds a report of customers
 // acquired by the bank.
 type CustomerProjectionHandler struct {
 	dogma.NoTimeoutHintBehavior
+	pksql.NoCompactBehavior
 }
 
 // Configure configs the engine for this projection.
