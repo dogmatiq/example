@@ -37,8 +37,8 @@ github.com/dogmatiq/linger v0.2.1 h1:ecVwiFlTcQuQ7ygQXH5bUPkWNve8n5BmVnCYMGMQ3zc
 github.com/dogmatiq/linger v0.2.1/go.mod h1:vQPEiGNtb3Qy+1IdmdSMyLxr4d9vPChknnQkClQimGM=
 github.com/dogmatiq/projectionkit v0.5.1 h1:dQu9EH/VJiXV80RrajH39fLyajcWqh67BAI1MQnP7mY=
 github.com/dogmatiq/projectionkit v0.5.1/go.mod h1:hbUuNG1N1XtIjgo3QaikVeG6ZH7NajJOPE3PaXNX1TE=
-github.com/dogmatiq/testkit v0.9.0 h1:IOAZkQmOxVT5VXWS01jt46QBxAcl49PD75O2mAwN5Oo=
-github.com/dogmatiq/testkit v0.9.0/go.mod h1:wfUhgCEXHKKegueDTDxfhZheskxfPd/TippkR98fsLw=
+github.com/dogmatiq/testkit v0.10.0 h1:E5EP6NEG2Z4rx+GBOc7WWth6mPJLulL4zqcCI+iFQxQ=
+github.com/dogmatiq/testkit v0.10.0/go.mod h1:g9cuRPWmKkzz7U9VJJ17Ghqssq/dpVwHWjbNlSm688c=
 github.com/emicklei/dot v0.10.1 h1:bkzvwgIhhw/cuxxnJy5/5+ZL3GnhFxFfv0eolHtWE2w=
 github.com/emicklei/dot v0.10.1/go.mod h1:kZg82Ikwc4pqb31Ct2yb0B7RUqxh3JESIXw2uWSv/xY=
 github.com/emicklei/dot v0.15.0 h1:XDBW0Xco1QNyRb33cqLe10cT04yMWL1XpCZfa98Q6Og=
