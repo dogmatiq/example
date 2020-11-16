@@ -21,9 +21,8 @@ func main() {
 	db := database.MustNew()
 	defer db.Close()
 
-	app, err := example.NewApp(db)
-	if err != nil {
-		panic(err)
+	app := &example.App{
+		ReadDB: db,
 	}
 
 	en, err := engine.New(app)

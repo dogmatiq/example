@@ -3,8 +3,8 @@ package projections_test
 import (
 	"testing"
 
+	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/database"
-	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit"
 	"github.com/dogmatiq/testkit/engine"
@@ -17,7 +17,9 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testrunner.New(db).
+			testkit.New(&example.App{
+				ReadDB: db,
+			}).
 				Begin(
 					t,
 					testkit.WithOperationOptions(

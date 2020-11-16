@@ -3,8 +3,8 @@ package projections_test
 import (
 	"testing"
 
+	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/database"
-	"github.com/dogmatiq/example/internal/testrunner"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/events"
 	"github.com/dogmatiq/testkit"
@@ -18,7 +18,9 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testrunner.New(db).
+			testkit.New(&example.App{
+				ReadDB: db,
+			}).
 				Begin(
 					t,
 					// TODO: Isolate test by handler.
@@ -109,7 +111,9 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testrunner.New(db).
+			testkit.New(&example.App{
+				ReadDB: db,
+			}).
 				Begin(
 					t,
 					// TODO: Isolate test by handler.
@@ -180,7 +184,9 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testrunner.New(db).
+			testkit.New(&example.App{
+				ReadDB: db,
+			}).
 				Begin(
 					t,
 					// TODO: Isolate test by handler.
