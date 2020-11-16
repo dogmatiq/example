@@ -14,8 +14,9 @@ const maximumDailyDebitLimit = 900000
 // dailyDebitLimit is the aggregate root for an account daily debit limit
 // policy.
 type dailyDebitLimit struct {
-	// UsedAmount is the sum of debit amounts used during the period, in cents.
-	UsedAmount int64
+	// ConsumedAmount is the sum of debit amounts consumed during the period, in
+	// cents.
+	ConsumedAmount int64
 }
 
 func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
@@ -26,7 +27,7 @@ func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.Cons
 			DebitType:     m.DebitType,
 			Amount:        m.Amount,
 			Date:          m.ScheduledDate,
-			LimitUsed:     d.UsedAmount,
+			LimitConsumed: d.ConsumedAmount,
 			LimitMaximum:  maximumDailyDebitLimit,
 		})
 	} else {
@@ -36,20 +37,20 @@ func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.Cons
 			DebitType:     m.DebitType,
 			Amount:        m.Amount,
 			Date:          m.ScheduledDate,
-			LimitUsed:     d.UsedAmount + m.Amount,
+			LimitConsumed: d.ConsumedAmount + m.Amount,
 			LimitMaximum:  maximumDailyDebitLimit,
 		})
 	}
 }
 
 func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
-	return d.UsedAmount+amount > maximumDailyDebitLimit
+	return d.ConsumedAmount+amount > maximumDailyDebitLimit
 }
 
 func (d *dailyDebitLimit) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.DailyDebitLimitConsumed:
-		d.UsedAmount = x.Amount
+		d.ConsumedAmount = x.Amount
 	}
 }
 

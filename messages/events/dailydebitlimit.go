@@ -14,7 +14,7 @@ type DailyDebitLimitConsumed struct {
 	DebitType     messages.TransactionType
 	Amount        int64
 	Date          string
-	LimitUsed     int64
+	LimitConsumed int64
 	LimitMaximum  int64
 }
 
@@ -26,7 +26,7 @@ type DailyDebitLimitExceeded struct {
 	DebitType     messages.TransactionType
 	Amount        int64
 	Date          string
-	LimitUsed     int64
+	LimitConsumed int64
 	LimitMaximum  int64
 }
 
@@ -50,6 +50,6 @@ func (m DailyDebitLimitExceeded) MessageDescription() string {
 		m.TransactionID,
 		m.Date,
 		m.AccountID,
-		messages.FormatAmount((m.LimitUsed+m.Amount)-m.LimitMaximum),
+		messages.FormatAmount((m.LimitConsumed+m.Amount)-m.LimitMaximum),
 	)
 }
