@@ -34,9 +34,8 @@ func (plugin) NewApplication(
 		return nil, nil, err
 	}
 
-	app, err := example.NewApp(db)
-	if err != nil {
-		return nil, nil, err
+	app := &example.App{
+		ReadDB: db,
 	}
 
 	return app, db, nil

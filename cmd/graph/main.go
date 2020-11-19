@@ -9,10 +9,7 @@ import (
 )
 
 func main() {
-	app, err := example.NewApp(nil)
-	if err != nil {
-		panic(err)
-	}
+	app := &example.App{}
 
 	cfg := configkit.FromApplication(app)
 

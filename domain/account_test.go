@@ -3,9 +3,10 @@ package domain_test
 import (
 	"testing"
 
-	"github.com/dogmatiq/example/internal/testrunner"
+	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
+	"github.com/dogmatiq/testkit"
 	. "github.com/dogmatiq/testkit/assert"
 )
 
@@ -16,7 +17,7 @@ func Test_OpenAccount(t *testing.T) {
 			t.Run(
 				"the new account is opened",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						ExecuteCommand(
 							commands.OpenAccount{
@@ -43,7 +44,7 @@ func Test_OpenAccount(t *testing.T) {
 			t.Run(
 				"nothing happens to the existing account",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(
 							commands.OpenAccount{

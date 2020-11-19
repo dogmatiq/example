@@ -3,9 +3,10 @@ package domain_test
 import (
 	"testing"
 
-	"github.com/dogmatiq/example/internal/testrunner"
+	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
+	"github.com/dogmatiq/testkit"
 	. "github.com/dogmatiq/testkit/assert"
 )
 
@@ -16,7 +17,7 @@ func Test_Deposit(t *testing.T) {
 			t.Run(
 				"it deposits the funds into the account",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(
 							commands.OpenAccount{
@@ -71,7 +72,7 @@ func Test_Deposit(t *testing.T) {
 						Amount:        500,
 					}
 
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(cmd).
 						ExecuteCommand(

@@ -4,10 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dogmatiq/example/internal/testrunner"
+	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
+	"github.com/dogmatiq/testkit"
 	. "github.com/dogmatiq/testkit"
 	. "github.com/dogmatiq/testkit/assert"
 )
@@ -19,7 +20,7 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(
 							commands.OpenAccount{
@@ -82,7 +83,7 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it does not transfer any funds from the account",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(
 							commands.OpenAccount{
@@ -146,7 +147,7 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(
 							commands.OpenAccount{
@@ -209,7 +210,7 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it does not transfer any funds from the account",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(
 							commands.OpenAccount{
@@ -274,7 +275,7 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds after the scheduled time",
 				func(t *testing.T) {
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(
 							t,
 							WithStartTime(
@@ -354,7 +355,7 @@ func Test_Transfer(t *testing.T) {
 						ScheduledDate: "2001-02-04",
 					}
 
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(cmd).
 						ExecuteCommand(
@@ -382,7 +383,7 @@ func Test_Transfer(t *testing.T) {
 						ScheduledDate: "2001-02-04",
 					}
 
-					testrunner.New(nil).
+					testkit.New(&example.App{}).
 						Begin(t).
 						Prepare(cmd).
 						ExecuteCommand(
