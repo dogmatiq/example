@@ -15,18 +15,18 @@ const AppKey = "22028264-0bca-43e1-8d9d-cd094efb10b7"
 
 // App is a dogma.Application implementation for the example "bank" domain.
 type App struct {
-	accountAggregate         domain.AccountHandler
-	customerAggregate        domain.CustomerHandler
-	dailyDebitLimitAggregate domain.DailyDebitLimitHandler
-	transactionAggregate     domain.TransactionHandler
+	AccountAggregate         domain.AccountHandler
+	CustomerAggregate        domain.CustomerHandler
+	DailyDebitLimitAggregate domain.DailyDebitLimitHandler
+	TransactionAggregate     domain.TransactionHandler
 
-	depositProcess                   domain.DepositProcessHandler
-	openAccountForNewCustomerProcess domain.OpenAccountForNewCustomerProcessHandler
-	transferProcess                  domain.TransferProcessHandler
-	withdrawalProcess                domain.WithdrawalProcessHandler
+	DepositProcess                   domain.DepositProcessHandler
+	OpenAccountForNewCustomerProcess domain.OpenAccountForNewCustomerProcessHandler
+	TransferProcess                  domain.TransferProcessHandler
+	WithdrawalProcess                domain.WithdrawalProcessHandler
 
-	accountProjection  projections.AccountProjectionHandler
-	customerProjection projections.CustomerProjectionHandler
+	AccountProjection  projections.AccountProjectionHandler
+	CustomerProjection projections.CustomerProjectionHandler
 
 	// ReadDB is the database to use for read-models. If it is nil the
 	// projection message handlers are omitted from the application
@@ -38,28 +38,28 @@ type App struct {
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.Identity("bank", AppKey)
 
-	c.RegisterAggregate(a.accountAggregate)
-	c.RegisterAggregate(a.customerAggregate)
-	c.RegisterAggregate(a.dailyDebitLimitAggregate)
-	c.RegisterAggregate(a.transactionAggregate)
+	c.RegisterAggregate(a.AccountAggregate)
+	c.RegisterAggregate(a.CustomerAggregate)
+	c.RegisterAggregate(a.DailyDebitLimitAggregate)
+	c.RegisterAggregate(a.TransactionAggregate)
 
-	c.RegisterProcess(a.depositProcess)
-	c.RegisterProcess(a.openAccountForNewCustomerProcess)
-	c.RegisterProcess(a.transferProcess)
-	c.RegisterProcess(a.withdrawalProcess)
+	c.RegisterProcess(a.DepositProcess)
+	c.RegisterProcess(a.OpenAccountForNewCustomerProcess)
+	c.RegisterProcess(a.TransferProcess)
+	c.RegisterProcess(a.WithdrawalProcess)
 
 	if a.ReadDB != nil {
 		c.RegisterProjection(
 			pksql.MustNew(
 				a.ReadDB,
-				&a.accountProjection,
+				&a.AccountProjection,
 				&pkmysql.Driver{},
 			),
 		)
 		c.RegisterProjection(
 			pksql.MustNew(
 				a.ReadDB,
-				&a.customerProjection,
+				&a.CustomerProjection,
 				&pkmysql.Driver{},
 			),
 		)
