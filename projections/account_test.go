@@ -18,9 +18,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testkit.New(&example.App{
-				ReadDB: db,
-			}).
+			testkit.New(&example.App{ReadDB: db}).
 				Begin(
 					t,
 					// TODO: Isolate test by handler.
@@ -111,9 +109,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testkit.New(&example.App{
-				ReadDB: db,
-			}).
+			testkit.New(&example.App{ReadDB: db}).
 				Begin(
 					t,
 					// TODO: Isolate test by handler.
@@ -184,9 +180,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testkit.New(&example.App{
-				ReadDB: db,
-			}).
+			testkit.New(&example.App{ReadDB: db}).
 				Begin(
 					t,
 					// TODO: Isolate test by handler.

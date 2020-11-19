@@ -17,9 +17,7 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 			db := database.MustNew()
 			defer db.Close()
 
-			testkit.New(&example.App{
-				ReadDB: db,
-			}).
+			testkit.New(&example.App{ReadDB: db}).
 				Begin(
 					t,
 					testkit.WithOperationOptions(
