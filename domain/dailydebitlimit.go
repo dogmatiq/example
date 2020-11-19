@@ -14,43 +14,42 @@ const maximumDailyDebitLimit = 900000
 // dailyDebitLimit is the aggregate root for an account daily debit limit
 // policy.
 type dailyDebitLimit struct {
-	// ConsumedAmount is the sum of debit amounts consumed during the period, in
-	// cents.
-	ConsumedAmount int64
+	// TotalDebitsForDay is the total of all debits for the day, in cents.
+	TotalDebitsForDay int64
 }
 
 func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
 	if d.wouldExceedLimit(m.Amount) {
 		s.RecordEvent(events.DailyDebitLimitExceeded{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			DebitType:     m.DebitType,
-			Amount:        m.Amount,
-			Date:          m.ScheduledDate,
-			LimitConsumed: d.ConsumedAmount,
-			LimitMaximum:  maximumDailyDebitLimit,
+			TransactionID:     m.TransactionID,
+			AccountID:         m.AccountID,
+			DebitType:         m.DebitType,
+			Amount:            m.Amount,
+			Date:              m.ScheduledDate,
+			TotalDebitsForDay: d.TotalDebitsForDay,
+			DailyLimit:        maximumDailyDebitLimit,
 		})
 	} else {
 		s.RecordEvent(events.DailyDebitLimitConsumed{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			DebitType:     m.DebitType,
-			Amount:        m.Amount,
-			Date:          m.ScheduledDate,
-			LimitConsumed: d.ConsumedAmount + m.Amount,
-			LimitMaximum:  maximumDailyDebitLimit,
+			TransactionID:     m.TransactionID,
+			AccountID:         m.AccountID,
+			DebitType:         m.DebitType,
+			Amount:            m.Amount,
+			Date:              m.ScheduledDate,
+			TotalDebitsForDay: d.TotalDebitsForDay + m.Amount,
+			DailyLimit:        maximumDailyDebitLimit,
 		})
 	}
 }
 
 func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
-	return d.ConsumedAmount+amount > maximumDailyDebitLimit
+	return d.TotalDebitsForDay+amount > maximumDailyDebitLimit
 }
 
 func (d *dailyDebitLimit) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.DailyDebitLimitConsumed:
-		d.ConsumedAmount = x.Amount
+		d.TotalDebitsForDay = x.Amount
 	}
 }
 
