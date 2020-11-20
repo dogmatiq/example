@@ -9,25 +9,25 @@ import (
 // DailyDebitLimitConsumed is an event that indicates an amount of an account
 // daily debit limit has been consumed.
 type DailyDebitLimitConsumed struct {
-	TransactionID string
-	AccountID     string
-	DebitType     messages.TransactionType
-	Amount        int64
-	Date          string
-	LimitUsed     int64
-	LimitMaximum  int64
+	TransactionID     string
+	AccountID         string
+	DebitType         messages.TransactionType
+	Amount            int64
+	Date              string
+	TotalDebitsForDay int64
+	DailyLimit        int64
 }
 
 // DailyDebitLimitExceeded is an event that indicates an attempt to consume from
 // an account daily debit limit has been rejected due to reaching the limit.
 type DailyDebitLimitExceeded struct {
-	TransactionID string
-	AccountID     string
-	DebitType     messages.TransactionType
-	Amount        int64
-	Date          string
-	LimitUsed     int64
-	LimitMaximum  int64
+	TransactionID     string
+	AccountID         string
+	DebitType         messages.TransactionType
+	Amount            int64
+	Date              string
+	TotalDebitsForDay int64
+	DailyLimit        int64
 }
 
 // MessageDescription returns a human-readable description of the message.
@@ -50,6 +50,6 @@ func (m DailyDebitLimitExceeded) MessageDescription() string {
 		m.TransactionID,
 		m.Date,
 		m.AccountID,
-		messages.FormatAmount((m.LimitUsed+m.Amount)-m.LimitMaximum),
+		messages.FormatAmount((m.TotalDebitsForDay+m.Amount)-m.DailyLimit),
 	)
 }

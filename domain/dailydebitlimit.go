@@ -14,42 +14,42 @@ const maximumDailyDebitLimit = 900000
 // dailyDebitLimit is the aggregate root for an account daily debit limit
 // policy.
 type dailyDebitLimit struct {
-	// UsedAmount is the sum of debit amounts used during the period, in cents.
-	UsedAmount int64
+	// TotalDebitsForDay is the total of all debits for the day, in cents.
+	TotalDebitsForDay int64
 }
 
 func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.ConsumeDailyDebitLimit) {
 	if d.wouldExceedLimit(m.Amount) {
 		s.RecordEvent(events.DailyDebitLimitExceeded{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			DebitType:     m.DebitType,
-			Amount:        m.Amount,
-			Date:          m.ScheduledDate,
-			LimitUsed:     d.UsedAmount,
-			LimitMaximum:  maximumDailyDebitLimit,
+			TransactionID:     m.TransactionID,
+			AccountID:         m.AccountID,
+			DebitType:         m.DebitType,
+			Amount:            m.Amount,
+			Date:              m.ScheduledDate,
+			TotalDebitsForDay: d.TotalDebitsForDay,
+			DailyLimit:        maximumDailyDebitLimit,
 		})
 	} else {
 		s.RecordEvent(events.DailyDebitLimitConsumed{
-			TransactionID: m.TransactionID,
-			AccountID:     m.AccountID,
-			DebitType:     m.DebitType,
-			Amount:        m.Amount,
-			Date:          m.ScheduledDate,
-			LimitUsed:     d.UsedAmount + m.Amount,
-			LimitMaximum:  maximumDailyDebitLimit,
+			TransactionID:     m.TransactionID,
+			AccountID:         m.AccountID,
+			DebitType:         m.DebitType,
+			Amount:            m.Amount,
+			Date:              m.ScheduledDate,
+			TotalDebitsForDay: d.TotalDebitsForDay + m.Amount,
+			DailyLimit:        maximumDailyDebitLimit,
 		})
 	}
 }
 
 func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
-	return d.UsedAmount+amount > maximumDailyDebitLimit
+	return d.TotalDebitsForDay+amount > maximumDailyDebitLimit
 }
 
 func (d *dailyDebitLimit) ApplyEvent(m dogma.Message) {
 	switch x := m.(type) {
 	case events.DailyDebitLimitConsumed:
-		d.UsedAmount = x.Amount
+		d.TotalDebitsForDay = x.Amount
 	}
 }
 
