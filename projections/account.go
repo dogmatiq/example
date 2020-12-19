@@ -6,14 +6,14 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages/events"
-	pksql "github.com/dogmatiq/projectionkit/sql"
+	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
 
 // AccountProjectionHandler is a projection that builds a report of accounts
 // managed by the bank.
 type AccountProjectionHandler struct {
 	dogma.NoTimeoutHintBehavior
-	pksql.NoCompactBehavior
+	sqlprojection.NoCompactBehavior
 }
 
 // Configure configs the engine for this projection.
