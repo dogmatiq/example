@@ -23,6 +23,8 @@ github.com/dogmatiq/cosyne v0.1.0 h1:j7b5WEZz7d+jfTP3JRgKpCWTsfaf4E1Z0s65A6yW9ic
 github.com/dogmatiq/cosyne v0.1.0/go.mod h1:/OyJ0EHpWAZFt8/793nFrn6JIr7WSG4Zf+jlowBnCtw=
 github.com/dogmatiq/dapper v0.4.0 h1:WshL6xcW56jxkh1XE/x7sXyzxOvjBFjMcxz1jdjwn60=
 github.com/dogmatiq/dapper v0.4.0/go.mod h1:U32cRxzGYI5owhc/hMKjYLgBTVCdW/s3MdFJHwfDrLQ=
+github.com/dogmatiq/dapper v0.4.1 h1:HULzWJulT93izao/24QUpQYRDTG0ELSL4c13+BRbw5g=
+github.com/dogmatiq/dapper v0.4.1/go.mod h1:U32cRxzGYI5owhc/hMKjYLgBTVCdW/s3MdFJHwfDrLQ=
 github.com/dogmatiq/dogma v0.6.2 h1:srGSGAu8ZpQ+c23EUVq35mDn47HZbbLr5Q9PhGRH7NE=
 github.com/dogmatiq/dogma v0.6.2/go.mod h1:8TdjQ5jjV2DcCPb/jjHPgSrqU66H6092yMEIF5HGx0g=
 github.com/dogmatiq/dogma v0.9.0 h1:PGRUqBPVI76HhkxulEEvzxe+693pq9cfQxJWBCpV730=
@@ -41,6 +43,8 @@ github.com/dogmatiq/sqltest v0.3.0 h1:DCwyLWfVk/ZHsqq5Itq3H/Lqsh/CIQ6nIRwI4YLywF
 github.com/dogmatiq/sqltest v0.3.0/go.mod h1:a8Da8NhU4m3lq5Sybhiv+ZQowSnGHWTIJHFNInVtffg=
 github.com/dogmatiq/testkit v0.10.0 h1:E5EP6NEG2Z4rx+GBOc7WWth6mPJLulL4zqcCI+iFQxQ=
 github.com/dogmatiq/testkit v0.10.0/go.mod h1:g9cuRPWmKkzz7U9VJJ17Ghqssq/dpVwHWjbNlSm688c=
+github.com/dogmatiq/testkit v0.11.0 h1:OG55pj2UUPB0FGQtMsZECT3DI9DHrM/vHNBIAwTzgik=
+github.com/dogmatiq/testkit v0.11.0/go.mod h1:orX8/1sMxJqvUIZ1IoBSXVUUtdo1WiiFcqO9ijumOdo=
 github.com/emicklei/dot v0.10.1 h1:bkzvwgIhhw/cuxxnJy5/5+ZL3GnhFxFfv0eolHtWE2w=
 github.com/emicklei/dot v0.10.1/go.mod h1:kZg82Ikwc4pqb31Ct2yb0B7RUqxh3JESIXw2uWSv/xY=
 github.com/emicklei/dot v0.15.0 h1:XDBW0Xco1QNyRb33cqLe10cT04yMWL1XpCZfa98Q6Og=
