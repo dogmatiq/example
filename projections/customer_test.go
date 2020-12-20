@@ -1,10 +1,10 @@
 package projections_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/database"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit"
 	"github.com/dogmatiq/testkit/engine"
@@ -14,8 +14,8 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened for a new customer",
 		func(t *testing.T) {
-			db := database.MustNew()
-			defer db.Close()
+			database, db := openDB(context.Background())
+			defer database.Close()
 
 			testkit.New(&example.App{ReadDB: db}).
 				Begin(
