@@ -14,7 +14,7 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened for a new customer",
 		func(t *testing.T) {
-			database, db := OpenDB(context.Background())
+			database, db := openDB(context.Background())
 			defer database.Close()
 
 			testkit.New(&example.App{ReadDB: db}).

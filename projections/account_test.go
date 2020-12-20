@@ -15,7 +15,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened",
 		func(t *testing.T) {
-			database, db := OpenDB(context.Background())
+			database, db := openDB(context.Background())
 			defer database.Close()
 
 			testkit.New(&example.App{ReadDB: db}).
@@ -106,7 +106,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is credited",
 		func(t *testing.T) {
-			database, db := OpenDB(context.Background())
+			database, db := openDB(context.Background())
 			defer database.Close()
 
 			testkit.New(&example.App{ReadDB: db}).
@@ -177,7 +177,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is debited",
 		func(t *testing.T) {
-			database, db := OpenDB(context.Background())
+			database, db := openDB(context.Background())
 			defer database.Close()
 
 			testkit.New(&example.App{ReadDB: db}).
