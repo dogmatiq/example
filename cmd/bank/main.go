@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/dogmatiq/configkit"
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/database"
@@ -25,7 +26,7 @@ func main() {
 		ReadDB: db,
 	}
 
-	en, err := engine.New(app)
+	en, err := engine.New(configkit.FromApplication(app))
 	if err != nil {
 		panic(err)
 	}

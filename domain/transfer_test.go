@@ -8,9 +8,7 @@ import (
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
-	"github.com/dogmatiq/testkit"
 	. "github.com/dogmatiq/testkit"
-	. "github.com/dogmatiq/testkit/assert"
 )
 
 func Test_Transfer(t *testing.T) {
@@ -20,34 +18,41 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(t).
+					Begin(t, &example.App{}).
 						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							},
-							commands.OpenAccount{
-								CustomerID:  "C002",
-								AccountID:   "A002",
-								AccountName: "Bob Jones",
-							},
-							commands.Deposit{
-								TransactionID: "D001",
-								AccountID:     "A001",
-								Amount:        500,
-							},
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C002",
+									AccountID:   "A002",
+									AccountName: "Bob Jones",
+								},
+							),
+							ExecuteCommand(
+								commands.Deposit{
+									TransactionID: "D001",
+									AccountID:     "A001",
+									Amount:        500,
+								},
+							),
 						).
-						ExecuteCommand(
-							commands.Transfer{
-								TransactionID: "T001",
-								FromAccountID: "A001",
-								ToAccountID:   "A002",
-								Amount:        100,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Transfer{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        100,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.TransferApproved{
 									TransactionID: "T001",
 									FromAccountID: "A001",
@@ -57,14 +62,16 @@ func Test_Transfer(t *testing.T) {
 							),
 						).
 						// verify that funds are availalbe
-						ExecuteCommand(
-							commands.Withdraw{
-								TransactionID: "W001",
-								AccountID:     "A002",
-								Amount:        100,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Withdraw{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A002",
@@ -83,34 +90,41 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it does not transfer any funds from the account",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(t).
+					Begin(t, &example.App{}).
 						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							},
-							commands.OpenAccount{
-								CustomerID:  "C002",
-								AccountID:   "A002",
-								AccountName: "Bob Jones",
-							},
-							commands.Deposit{
-								TransactionID: "D001",
-								AccountID:     "A001",
-								Amount:        500,
-							},
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C002",
+									AccountID:   "A002",
+									AccountName: "Bob Jones",
+								},
+							),
+							ExecuteCommand(
+								commands.Deposit{
+									TransactionID: "D001",
+									AccountID:     "A001",
+									Amount:        500,
+								},
+							),
 						).
-						ExecuteCommand(
-							commands.Transfer{
-								TransactionID: "T001",
-								FromAccountID: "A001",
-								ToAccountID:   "A002",
-								Amount:        1000,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Transfer{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        1000,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.TransferDeclined{
 									TransactionID: "T001",
 									FromAccountID: "A001",
@@ -121,13 +135,15 @@ func Test_Transfer(t *testing.T) {
 							),
 						).
 						// verify that funds are not availalbe
-						ExecuteCommand(
-							commands.Withdraw{
-								TransactionID: "W001",
-								AccountID:     "A002",
-								Amount:        100,
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Withdraw{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+								},
+							),
+							ToRecordEvent(
 								events.WithdrawalDeclined{
 									TransactionID: "W001",
 									AccountID:     "A002",
@@ -147,34 +163,41 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(t).
+					Begin(t, &example.App{}).
 						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							},
-							commands.OpenAccount{
-								CustomerID:  "C002",
-								AccountID:   "A002",
-								AccountName: "Bob Jones",
-							},
-							commands.Deposit{
-								TransactionID: "T001",
-								AccountID:     "A001",
-								Amount:        expectedDailyDebitLimit + 10000,
-							},
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C002",
+									AccountID:   "A002",
+									AccountName: "Bob Jones",
+								},
+							),
+							ExecuteCommand(
+								commands.Deposit{
+									TransactionID: "T001",
+									AccountID:     "A001",
+									Amount:        expectedDailyDebitLimit + 10000,
+								},
+							),
 						).
-						ExecuteCommand(
-							commands.Transfer{
-								TransactionID: "T002",
-								FromAccountID: "A001",
-								ToAccountID:   "A002",
-								Amount:        500,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Transfer{
+									TransactionID: "T002",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        500,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.TransferApproved{
 									TransactionID: "T002",
 									FromAccountID: "A001",
@@ -184,14 +207,16 @@ func Test_Transfer(t *testing.T) {
 							),
 						).
 						// verify that funds are availalbe
-						ExecuteCommand(
-							commands.Withdraw{
-								TransactionID: "W001",
-								AccountID:     "A002",
-								Amount:        100,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Withdraw{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A002",
@@ -210,34 +235,41 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it does not transfer any funds from the account",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(t).
+					Begin(t, &example.App{}).
 						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							},
-							commands.OpenAccount{
-								CustomerID:  "C002",
-								AccountID:   "A002",
-								AccountName: "Bob Jones",
-							},
-							commands.Deposit{
-								TransactionID: "D001",
-								AccountID:     "A001",
-								Amount:        expectedDailyDebitLimit + 10000,
-							},
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C002",
+									AccountID:   "A002",
+									AccountName: "Bob Jones",
+								},
+							),
+							ExecuteCommand(
+								commands.Deposit{
+									TransactionID: "D001",
+									AccountID:     "A001",
+									Amount:        expectedDailyDebitLimit + 10000,
+								},
+							),
 						).
-						ExecuteCommand(
-							commands.Transfer{
-								TransactionID: "T001",
-								FromAccountID: "A001",
-								ToAccountID:   "A002",
-								Amount:        expectedDailyDebitLimit + 1,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Transfer{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        expectedDailyDebitLimit + 1,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.TransferDeclined{
 									TransactionID: "T001",
 									FromAccountID: "A001",
@@ -248,14 +280,16 @@ func Test_Transfer(t *testing.T) {
 							),
 						).
 						// verify that funds are not availalbe
-						ExecuteCommand(
-							commands.Withdraw{
-								TransactionID: "W001",
-								AccountID:     "A002",
-								Amount:        100,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Withdraw{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.WithdrawalDeclined{
 									TransactionID: "W001",
 									AccountID:     "A002",
@@ -275,43 +309,55 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds after the scheduled time",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(
-							t,
-							WithStartTime(
-								time.Date(2001, time.February, 3, 11, 22, 33, 0, time.UTC),
+					Begin(
+						t,
+						&example.App{},
+						StartTimeAt(
+							time.Date(2001, time.February, 3, 11, 22, 33, 0, time.UTC),
+						),
+					).
+						Prepare(
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C002",
+									AccountID:   "A002",
+									AccountName: "Bob Jones",
+								},
+							),
+							ExecuteCommand(
+								commands.Deposit{
+									TransactionID: "D001",
+									AccountID:     "A001",
+									Amount:        500,
+								},
 							),
 						).
-						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							},
-							commands.OpenAccount{
-								CustomerID:  "C002",
-								AccountID:   "A002",
-								AccountName: "Bob Jones",
-							},
-							commands.Deposit{
-								TransactionID: "D001",
-								AccountID:     "A001",
-								Amount:        500,
-							},
+						Expect(
+							ExecuteCommand(
+								commands.Transfer{
+									TransactionID: "T001",
+									FromAccountID: "A001",
+									ToAccountID:   "A002",
+									Amount:        100,
+									ScheduledDate: "2001-02-04",
+								},
+							),
+							NoneOf(
+								ToRecordEventOfType(events.TransferApproved{}),
+							),
 						).
-						ExecuteCommand(
-							commands.Transfer{
-								TransactionID: "T001",
-								FromAccountID: "A001",
-								ToAccountID:   "A002",
-								Amount:        100,
-								ScheduledDate: "2001-02-04",
-							},
-							NoneOf(EventRecorded(&events.TransferApproved{})),
-						).
-						AdvanceTime(
-							ToTime(time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC)),
-							EventRecorded(
+						Expect(
+							AdvanceTime(
+								ToTime(time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC)),
+							),
+							ToRecordEvent(
 								events.TransferApproved{
 									TransactionID: "T001",
 									FromAccountID: "A001",
@@ -321,14 +367,16 @@ func Test_Transfer(t *testing.T) {
 							),
 						).
 						// verify that funds are availalbe
-						ExecuteCommand(
-							commands.Withdraw{
-								TransactionID: "W001",
-								AccountID:     "A002",
-								Amount:        100,
-								ScheduledDate: "2001-02-04",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Withdraw{
+									TransactionID: "W001",
+									AccountID:     "A002",
+									Amount:        100,
+									ScheduledDate: "2001-02-04",
+								},
+							),
+							ToRecordEvent(
 								events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A002",
@@ -355,13 +403,14 @@ func Test_Transfer(t *testing.T) {
 						ScheduledDate: "2001-02-04",
 					}
 
-					testkit.New(&example.App{}).
-						Begin(t).
-						Prepare(cmd).
-						ExecuteCommand(
-							cmd,
+					Begin(t, &example.App{}).
+						Prepare(
+							ExecuteCommand(cmd),
+						).
+						Expect(
+							ExecuteCommand(cmd),
 							NoneOf(
-								EventTypeRecorded(events.WithdrawalApproved{}),
+								ToRecordEventOfType(events.WithdrawalApproved{}),
 							),
 						)
 				},
@@ -383,13 +432,14 @@ func Test_Transfer(t *testing.T) {
 						ScheduledDate: "2001-02-04",
 					}
 
-					testkit.New(&example.App{}).
-						Begin(t).
-						Prepare(cmd).
-						ExecuteCommand(
-							cmd,
+					Begin(t, &example.App{}).
+						Prepare(
+							ExecuteCommand(cmd),
+						).
+						Expect(
+							ExecuteCommand(cmd),
 							NoneOf(
-								EventTypeRecorded(events.WithdrawalApproved{}),
+								ToRecordEventOfType(events.WithdrawalApproved{}),
 							),
 						)
 				},

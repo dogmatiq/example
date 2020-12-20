@@ -6,8 +6,7 @@ import (
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
-	"github.com/dogmatiq/testkit"
-	. "github.com/dogmatiq/testkit/assert"
+	. "github.com/dogmatiq/testkit"
 )
 
 func Test_Deposit(t *testing.T) {
@@ -17,21 +16,25 @@ func Test_Deposit(t *testing.T) {
 			t.Run(
 				"it deposits the funds into the account",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(t).
+					Begin(t, &example.App{}).
 						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							}).
-						ExecuteCommand(
-							commands.Deposit{
-								TransactionID: "T001",
-								AccountID:     "A001",
-								Amount:        500,
-							},
-							EventRecorded(
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+						).
+						Expect(
+							ExecuteCommand(
+								commands.Deposit{
+									TransactionID: "T001",
+									AccountID:     "A001",
+									Amount:        500,
+								},
+							),
+							ToRecordEvent(
 								events.DepositApproved{
 									TransactionID: "T001",
 									AccountID:     "A001",
@@ -40,14 +43,16 @@ func Test_Deposit(t *testing.T) {
 							),
 						).
 						// verify that funds are availalbe
-						ExecuteCommand(
-							commands.Withdraw{
-								TransactionID: "W001",
-								AccountID:     "A001",
-								Amount:        100,
-								ScheduledDate: "2001-02-03",
-							},
-							EventRecorded(
+						Expect(
+							ExecuteCommand(
+								commands.Withdraw{
+									TransactionID: "W001",
+									AccountID:     "A001",
+									Amount:        100,
+									ScheduledDate: "2001-02-03",
+								},
+							),
+							ToRecordEvent(
 								events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A001",
@@ -72,13 +77,14 @@ func Test_Deposit(t *testing.T) {
 						Amount:        500,
 					}
 
-					testkit.New(&example.App{}).
-						Begin(t).
-						Prepare(cmd).
-						ExecuteCommand(
-							cmd,
+					Begin(t, &example.App{}).
+						Prepare(
+							ExecuteCommand(cmd),
+						).
+						Expect(
+							ExecuteCommand(cmd),
 							NoneOf(
-								EventTypeRecorded(events.DepositApproved{}),
+								ToRecordEventOfType(events.DepositApproved{}),
 							),
 						)
 				},

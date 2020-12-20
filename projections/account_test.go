@@ -7,7 +7,7 @@ import (
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/events"
-	"github.com/dogmatiq/testkit"
+	. "github.com/dogmatiq/testkit"
 	"github.com/dogmatiq/testkit/engine"
 )
 
@@ -18,23 +18,24 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			database, db := openDB(context.Background())
 			defer database.Close()
 
-			testkit.New(&example.App{ReadDB: db}).
-				Begin(
-					t,
-					// TODO: Isolate test by handler.
-					// See https://github.com/dogmatiq/testkit/issues/56
-					testkit.WithOperationOptions(
-						engine.EnableProcesses(false),
-						engine.EnableProjections(true),
-					),
-				).
-				Prepare(
+			Begin(
+				t,
+				&example.App{ReadDB: db},
+				// TODO: Isolate test by handler.
+				// See https://github.com/dogmatiq/testkit/issues/56
+				WithUnsafeOperationOptions(
+					engine.EnableProcesses(false),
+					engine.EnableProjections(true),
+				),
+			).Prepare(
+				RecordEvent(
 					events.AccountOpened{
 						CustomerID:  "C001",
 						AccountID:   "A001",
 						AccountName: "Savings",
 					},
-				)
+				),
+			)
 
 			rows, err := db.Query(
 				`SELECT
@@ -109,29 +110,32 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			database, db := openDB(context.Background())
 			defer database.Close()
 
-			testkit.New(&example.App{ReadDB: db}).
-				Begin(
-					t,
-					// TODO: Isolate test by handler.
-					// See https://github.com/dogmatiq/testkit/issues/56
-					testkit.WithOperationOptions(
-						engine.EnableProcesses(false),
-						engine.EnableProjections(true),
-					),
-				).
-				Prepare(
+			Begin(
+				t,
+				&example.App{ReadDB: db},
+				// TODO: Isolate test by handler.
+				// See https://github.com/dogmatiq/testkit/issues/56
+				WithUnsafeOperationOptions(
+					engine.EnableProcesses(false),
+					engine.EnableProjections(true),
+				),
+			).Prepare(
+				RecordEvent(
 					events.AccountOpened{
 						CustomerID:  "C001",
 						AccountID:   "A001",
 						AccountName: "Savings",
 					},
+				),
+				RecordEvent(
 					events.AccountCredited{
 						TransactionID:   "T001",
 						AccountID:       "A001",
 						TransactionType: messages.Deposit,
 						Amount:          150,
 					},
-				)
+				),
+			)
 
 			rows, err := db.Query(
 				`SELECT
@@ -180,35 +184,40 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			database, db := openDB(context.Background())
 			defer database.Close()
 
-			testkit.New(&example.App{ReadDB: db}).
-				Begin(
-					t,
-					// TODO: Isolate test by handler.
-					// See https://github.com/dogmatiq/testkit/issues/56
-					testkit.WithOperationOptions(
-						engine.EnableProcesses(false),
-						engine.EnableProjections(true),
-					),
-				).
-				Prepare(
+			Begin(
+				t,
+				&example.App{ReadDB: db},
+				// TODO: Isolate test by handler.
+				// See https://github.com/dogmatiq/testkit/issues/56
+				WithUnsafeOperationOptions(
+					engine.EnableProcesses(false),
+					engine.EnableProjections(true),
+				),
+			).Prepare(
+				RecordEvent(
 					events.AccountOpened{
 						CustomerID:  "C001",
 						AccountID:   "A001",
 						AccountName: "Savings",
 					},
+				),
+				RecordEvent(
 					events.AccountCredited{
 						TransactionID:   "T001",
 						AccountID:       "A001",
 						TransactionType: messages.Deposit,
 						Amount:          500,
 					},
+				),
+				RecordEvent(
 					events.AccountDebited{
 						TransactionID:   "T001",
 						AccountID:       "A001",
 						TransactionType: messages.Withdrawal,
 						Amount:          150,
 					},
-				)
+				),
+			)
 
 			rows, err := db.Query(
 				`SELECT
