@@ -5,7 +5,7 @@ import (
 	"database/sql"
 
 	. "github.com/dogmatiq/example/database"
-	"github.com/dogmatiq/projectionkit/sql/sqlite"
+	"github.com/dogmatiq/projectionkit/sqlprojection"
 	"github.com/dogmatiq/sqltest"
 )
 
@@ -20,7 +20,7 @@ func openDB(ctx context.Context) (*sqltest.Database, *sql.DB) {
 		panic(err)
 	}
 
-	if err := sqlite.CreateSchema(ctx, db); err != nil {
+	if err := sqlprojection.CreateSchema(ctx, db); err != nil {
 		database.Close()
 		panic(err)
 	}

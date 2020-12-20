@@ -4,7 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/dogmatiq/projectionkit/sql/sqlite"
+	"github.com/dogmatiq/projectionkit/sqlprojection"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // New returns an in-memory SQLite database, with database tables necessary to
@@ -27,7 +28,7 @@ func New() (*sql.DB, error) {
 	db.SetMaxIdleConns(1)
 	db.SetConnMaxLifetime(-1)
 
-	if err := sqlite.CreateSchema(ctx, db); err != nil {
+	if err := sqlprojection.CreateSchema(ctx, db); err != nil {
 		db.Close()
 		return nil, err
 	}

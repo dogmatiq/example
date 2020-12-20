@@ -6,8 +6,7 @@ import (
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/domain"
 	"github.com/dogmatiq/example/projections"
-	pksql "github.com/dogmatiq/projectionkit/sql"
-	pkmysql "github.com/dogmatiq/projectionkit/sql/mysql"
+	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
 
 // AppKey is the example application's identity key.
@@ -48,19 +47,17 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.RegisterProcess(a.TransferProcess)
 	c.RegisterProcess(a.WithdrawalProcess)
 
-	if a.ReadDB != nil {
+	if a.ReadDB != nil { // TODO: Remove this when testkit is updated
 		c.RegisterProjection(
-			pksql.MustNew(
+			sqlprojection.New(
 				a.ReadDB,
 				&a.AccountProjection,
-				&pkmysql.Driver{},
 			),
 		)
 		c.RegisterProjection(
-			pksql.MustNew(
+			sqlprojection.New(
 				a.ReadDB,
 				&a.CustomerProjection,
-				&pkmysql.Driver{},
 			),
 		)
 	}
