@@ -7,7 +7,6 @@ import (
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
 	. "github.com/dogmatiq/testkit"
-	"github.com/dogmatiq/testkit/engine"
 )
 
 func Test_CustomerProjectionHandler(t *testing.T) {
@@ -17,22 +16,18 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 			database, db := openDB(context.Background())
 			defer database.Close()
 
-			Begin(
-				t,
-				&example.App{ReadDB: db},
-				WithUnsafeOperationOptions(
-					engine.EnableProjections(true),
-				),
-			).Prepare(
-				ExecuteCommand(
-					commands.OpenAccountForNewCustomer{
-						CustomerID:   "C001",
-						CustomerName: "Anna Smith",
-						AccountID:    "A001",
-						AccountName:  "Savings",
-					},
-				),
-			)
+			Begin(t, &example.App{ReadDB: db}).
+				EnableHandlers("customer-list").
+				Prepare(
+					ExecuteCommand(
+						commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
+						},
+					),
+				)
 
 			rows, err := db.Query(
 				`SELECT
