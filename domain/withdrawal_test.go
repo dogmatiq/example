@@ -304,32 +304,4 @@ func Test_Withdraw(t *testing.T) {
 			)
 		},
 	)
-
-	t.Run(
-		"when the withdrawal has already started",
-		func(t *testing.T) {
-			t.Run(
-				"it does not start the withdrawal again",
-				func(t *testing.T) {
-					cmd := commands.Withdraw{
-						TransactionID: "T001",
-						AccountID:     "A001",
-						Amount:        expectedDailyDebitLimit + 1,
-						ScheduledDate: "2001-02-03",
-					}
-
-					Begin(t, &example.App{}).
-						Prepare(
-							ExecuteCommand(cmd),
-						).
-						Expect(
-							ExecuteCommand(cmd),
-							NoneOf(
-								ToRecordEventOfType(events.WithdrawalApproved{}),
-							),
-						)
-				},
-			)
-		},
-	)
 }

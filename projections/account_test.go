@@ -5,8 +5,7 @@ import (
 	"testing"
 
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/events"
+	"github.com/dogmatiq/example/messages/commands"
 	. "github.com/dogmatiq/testkit"
 )
 
@@ -20,11 +19,12 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("account-list").
 				Prepare(
-					RecordEvent(
-						events.AccountOpened{
-							CustomerID:  "C001",
-							AccountID:   "A001",
-							AccountName: "Savings",
+					ExecuteCommand(
+						commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
 						},
 					),
 				)
@@ -105,19 +105,19 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("account-list").
 				Prepare(
-					RecordEvent(
-						events.AccountOpened{
-							CustomerID:  "C001",
-							AccountID:   "A001",
-							AccountName: "Savings",
+					ExecuteCommand(
+						commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
 						},
 					),
-					RecordEvent(
-						events.AccountCredited{
-							TransactionID:   "T001",
-							AccountID:       "A001",
-							TransactionType: messages.Deposit,
-							Amount:          150,
+					ExecuteCommand(
+						commands.Deposit{
+							TransactionID: "T001",
+							AccountID:     "A001",
+							Amount:        150,
 						},
 					),
 				)
@@ -172,27 +172,27 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("account-list").
 				Prepare(
-					RecordEvent(
-						events.AccountOpened{
-							CustomerID:  "C001",
-							AccountID:   "A001",
-							AccountName: "Savings",
+					ExecuteCommand(
+						commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
 						},
 					),
-					RecordEvent(
-						events.AccountCredited{
-							TransactionID:   "T001",
-							AccountID:       "A001",
-							TransactionType: messages.Deposit,
-							Amount:          500,
+					ExecuteCommand(
+						commands.Deposit{
+							TransactionID: "T001",
+							AccountID:     "A001",
+							Amount:        500,
 						},
 					),
-					RecordEvent(
-						events.AccountDebited{
-							TransactionID:   "T001",
-							AccountID:       "A001",
-							TransactionType: messages.Withdrawal,
-							Amount:          150,
+					ExecuteCommand(
+						commands.Withdraw{
+							TransactionID: "T002",
+							AccountID:     "A001",
+							Amount:        150,
+							ScheduledDate: "2001-02-03",
 						},
 					),
 				)

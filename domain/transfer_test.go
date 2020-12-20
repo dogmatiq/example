@@ -141,6 +141,7 @@ func Test_Transfer(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
+									ScheduledDate: "2001-02-03",
 								},
 							),
 							ToRecordEvent(
@@ -382,64 +383,6 @@ func Test_Transfer(t *testing.T) {
 									AccountID:     "A002",
 									Amount:        100,
 								},
-							),
-						)
-				},
-			)
-		},
-	)
-
-	t.Run(
-		"when the transfer is to the same account",
-		func(t *testing.T) {
-			t.Run(
-				"it does not start the transfer",
-				func(t *testing.T) {
-					cmd := commands.Transfer{
-						TransactionID: "T001",
-						FromAccountID: "A001",
-						ToAccountID:   "A001",
-						Amount:        100,
-						ScheduledDate: "2001-02-04",
-					}
-
-					Begin(t, &example.App{}).
-						Prepare(
-							ExecuteCommand(cmd),
-						).
-						Expect(
-							ExecuteCommand(cmd),
-							NoneOf(
-								ToRecordEventOfType(events.WithdrawalApproved{}),
-							),
-						)
-				},
-			)
-		},
-	)
-
-	t.Run(
-		"when the transfer has already started",
-		func(t *testing.T) {
-			t.Run(
-				"it does not start the transfer again",
-				func(t *testing.T) {
-					cmd := commands.Transfer{
-						TransactionID: "T001",
-						FromAccountID: "A001",
-						ToAccountID:   "A002",
-						Amount:        100,
-						ScheduledDate: "2001-02-04",
-					}
-
-					Begin(t, &example.App{}).
-						Prepare(
-							ExecuteCommand(cmd),
-						).
-						Expect(
-							ExecuteCommand(cmd),
-							NoneOf(
-								ToRecordEventOfType(events.WithdrawalApproved{}),
 							),
 						)
 				},

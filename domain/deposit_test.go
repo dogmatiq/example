@@ -64,31 +64,4 @@ func Test_Deposit(t *testing.T) {
 			)
 		},
 	)
-
-	t.Run(
-		"when the deposit has already started",
-		func(t *testing.T) {
-			t.Run(
-				"it does not start the deposit again",
-				func(t *testing.T) {
-					cmd := commands.Deposit{
-						TransactionID: "T001",
-						AccountID:     "A001",
-						Amount:        500,
-					}
-
-					Begin(t, &example.App{}).
-						Prepare(
-							ExecuteCommand(cmd),
-						).
-						Expect(
-							ExecuteCommand(cmd),
-							NoneOf(
-								ToRecordEventOfType(events.DepositApproved{}),
-							),
-						)
-				},
-			)
-		},
-	)
 }
