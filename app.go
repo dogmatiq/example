@@ -47,16 +47,18 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.RegisterProcess(a.TransferProcess)
 	c.RegisterProcess(a.WithdrawalProcess)
 
-	c.RegisterProjection(
-		sqlprojection.New(
-			a.ReadDB,
-			&a.AccountProjection,
-		),
-	)
-	c.RegisterProjection(
-		sqlprojection.New(
-			a.ReadDB,
-			&a.CustomerProjection,
-		),
-	)
+	if a.ReadDB != nil { // TODO: Remove this when testkit is updated
+		c.RegisterProjection(
+			sqlprojection.New(
+				a.ReadDB,
+				&a.AccountProjection,
+			),
+		)
+		c.RegisterProjection(
+			sqlprojection.New(
+				a.ReadDB,
+				&a.CustomerProjection,
+			),
+		)
+	}
 }
