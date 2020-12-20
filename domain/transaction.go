@@ -14,8 +14,7 @@ type transaction struct {
 
 func (t *transaction) StartDeposit(s dogma.AggregateCommandScope, m commands.Deposit) {
 	if t.Started {
-		s.Log("transaction already started")
-		return
+		panic("transaction already started")
 	}
 
 	s.RecordEvent(events.DepositStarted{
@@ -35,8 +34,7 @@ func (t *transaction) ApproveDeposit(s dogma.AggregateCommandScope, m commands.A
 
 func (t *transaction) StartWithdraw(s dogma.AggregateCommandScope, m commands.Withdraw) {
 	if t.Started {
-		s.Log("transaction already started")
-		return
+		panic("transaction already started")
 	}
 
 	s.RecordEvent(events.WithdrawalStarted{
@@ -66,13 +64,11 @@ func (t *transaction) DeclineWithdrawal(s dogma.AggregateCommandScope, m command
 
 func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m commands.Transfer) {
 	if m.FromAccountID == m.ToAccountID {
-		s.Log("cannot transfer to same account")
-		return
+		panic("cannot transfer to same account")
 	}
 
 	if t.Started {
-		s.Log("transaction already started")
-		return
+		panic("transaction already started")
 	}
 
 	s.RecordEvent(events.TransferStarted{

@@ -6,8 +6,7 @@ import (
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
-	"github.com/dogmatiq/testkit"
-	. "github.com/dogmatiq/testkit/assert"
+	. "github.com/dogmatiq/testkit"
 )
 
 func Test_OpenAccount(t *testing.T) {
@@ -17,15 +16,16 @@ func Test_OpenAccount(t *testing.T) {
 			t.Run(
 				"the new account is opened",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(t).
-						ExecuteCommand(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							},
-							EventRecorded(
+					Begin(t, &example.App{}).
+						Expect(
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+							ToRecordEvent(
 								events.AccountOpened{
 									CustomerID:  "C001",
 									AccountID:   "A001",
@@ -44,22 +44,26 @@ func Test_OpenAccount(t *testing.T) {
 			t.Run(
 				"nothing happens to the existing account",
 				func(t *testing.T) {
-					testkit.New(&example.App{}).
-						Begin(t).
+					Begin(t, &example.App{}).
 						Prepare(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							}).
-						ExecuteCommand(
-							commands.OpenAccount{
-								CustomerID:  "C001",
-								AccountID:   "A001",
-								AccountName: "Anna Smith",
-							},
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+						).
+						Expect(
+							ExecuteCommand(
+								commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
 							NoneOf(
-								EventTypeRecorded(events.AccountOpened{}),
+								ToRecordEventOfType(events.AccountOpened{}),
 							),
 						)
 				},

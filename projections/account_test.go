@@ -5,10 +5,8 @@ import (
 	"testing"
 
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/events"
-	"github.com/dogmatiq/testkit"
-	"github.com/dogmatiq/testkit/engine"
+	"github.com/dogmatiq/example/messages/commands"
+	. "github.com/dogmatiq/testkit"
 )
 
 func Test_AccountProjectionHandler(t *testing.T) {
@@ -18,22 +16,17 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			database, db := openDB(context.Background())
 			defer database.Close()
 
-			testkit.New(&example.App{ReadDB: db}).
-				Begin(
-					t,
-					// TODO: Isolate test by handler.
-					// See https://github.com/dogmatiq/testkit/issues/56
-					testkit.WithOperationOptions(
-						engine.EnableProcesses(false),
-						engine.EnableProjections(true),
-					),
-				).
+			Begin(t, &example.App{ReadDB: db}).
+				EnableHandlers("account-list").
 				Prepare(
-					events.AccountOpened{
-						CustomerID:  "C001",
-						AccountID:   "A001",
-						AccountName: "Savings",
-					},
+					ExecuteCommand(
+						commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
+						},
+					),
 				)
 
 			rows, err := db.Query(
@@ -109,28 +102,24 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			database, db := openDB(context.Background())
 			defer database.Close()
 
-			testkit.New(&example.App{ReadDB: db}).
-				Begin(
-					t,
-					// TODO: Isolate test by handler.
-					// See https://github.com/dogmatiq/testkit/issues/56
-					testkit.WithOperationOptions(
-						engine.EnableProcesses(false),
-						engine.EnableProjections(true),
-					),
-				).
+			Begin(t, &example.App{ReadDB: db}).
+				EnableHandlers("account-list").
 				Prepare(
-					events.AccountOpened{
-						CustomerID:  "C001",
-						AccountID:   "A001",
-						AccountName: "Savings",
-					},
-					events.AccountCredited{
-						TransactionID:   "T001",
-						AccountID:       "A001",
-						TransactionType: messages.Deposit,
-						Amount:          150,
-					},
+					ExecuteCommand(
+						commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
+						},
+					),
+					ExecuteCommand(
+						commands.Deposit{
+							TransactionID: "T001",
+							AccountID:     "A001",
+							Amount:        150,
+						},
+					),
 				)
 
 			rows, err := db.Query(
@@ -180,34 +169,32 @@ func Test_AccountProjectionHandler(t *testing.T) {
 			database, db := openDB(context.Background())
 			defer database.Close()
 
-			testkit.New(&example.App{ReadDB: db}).
-				Begin(
-					t,
-					// TODO: Isolate test by handler.
-					// See https://github.com/dogmatiq/testkit/issues/56
-					testkit.WithOperationOptions(
-						engine.EnableProcesses(false),
-						engine.EnableProjections(true),
-					),
-				).
+			Begin(t, &example.App{ReadDB: db}).
+				EnableHandlers("account-list").
 				Prepare(
-					events.AccountOpened{
-						CustomerID:  "C001",
-						AccountID:   "A001",
-						AccountName: "Savings",
-					},
-					events.AccountCredited{
-						TransactionID:   "T001",
-						AccountID:       "A001",
-						TransactionType: messages.Deposit,
-						Amount:          500,
-					},
-					events.AccountDebited{
-						TransactionID:   "T001",
-						AccountID:       "A001",
-						TransactionType: messages.Withdrawal,
-						Amount:          150,
-					},
+					ExecuteCommand(
+						commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
+						},
+					),
+					ExecuteCommand(
+						commands.Deposit{
+							TransactionID: "T001",
+							AccountID:     "A001",
+							Amount:        500,
+						},
+					),
+					ExecuteCommand(
+						commands.Withdraw{
+							TransactionID: "T002",
+							AccountID:     "A001",
+							Amount:        150,
+							ScheduledDate: "2001-02-03",
+						},
+					),
 				)
 
 			rows, err := db.Query(
