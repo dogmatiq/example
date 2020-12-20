@@ -5,7 +5,6 @@ import (
 	"database/sql"
 
 	"github.com/dogmatiq/projectionkit/sqlprojection"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // New returns an in-memory SQLite database, with database tables necessary to
@@ -20,13 +19,6 @@ func New() (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// Setup the pool to ensure the memory database survives when all
-	// connections are returned to the pool.
-	//
-	// See https://github.com/mattn/go-sqlite3#faq.
-	db.SetMaxIdleConns(1)
-	db.SetConnMaxLifetime(-1)
 
 	if err := sqlprojection.CreateSchema(ctx, db); err != nil {
 		db.Close()
