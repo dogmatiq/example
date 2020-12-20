@@ -15,7 +15,7 @@ import (
 func New() (*sql.DB, error) {
 	ctx := context.Background()
 
-	db, err := sql.Open("sqlite3", "file::memory:?cache=shared")
+	db, err := sql.Open("sqlite3", "file:artifacts/bank.sqlite3?mode=rwc")
 	if err != nil {
 		return nil, err
 	}
