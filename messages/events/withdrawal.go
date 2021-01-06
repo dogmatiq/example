@@ -1,6 +1,7 @@
 package events
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
@@ -61,4 +62,55 @@ func (m WithdrawalDeclined) MessageDescription() string {
 		m.AccountID,
 		m.Reason,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m WithdrawalStarted) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("WithdrawalStarted needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("WithdrawalStarted needs a valid account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("WithdrawalStarted needs a valid amount")
+	}
+	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+		return errors.New("WithdrawalStarted needs a valid scheduled date")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m WithdrawalApproved) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("WithdrawalApproved needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("WithdrawalApproved needs a valid account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("WithdrawalApproved needs a valid amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m WithdrawalDeclined) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("WithdrawalDeclined needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("WithdrawalDeclined needs a valid account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("WithdrawalDeclined needs a valid amount")
+	}
+	if m.Reason == "" {
+		return errors.New("WithdrawalDeclined needs a valid reason")
+	}
+
+	return nil
 }

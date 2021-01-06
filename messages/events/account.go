@@ -1,6 +1,7 @@
 package events
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
@@ -82,4 +83,79 @@ func (m AccountDebitDeclined) MessageDescription() string {
 		m.AccountID,
 		m.Reason,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m AccountOpened) Validate() error {
+	if m.CustomerID == "" {
+		return errors.New("AccountOpened needs a valid customer ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("AccountOpened needs a valid account ID")
+	}
+	if m.AccountName == "" {
+		return errors.New("AccountOpened needs a valid account name")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m AccountCredited) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("AccountCredited needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("AccountCredited needs a valid account ID")
+	}
+	if m.TransactionType == "" {
+		return errors.New("AccountCredited needs a valid transaction type")
+	}
+	if m.Amount < 1 {
+		return errors.New("AccountCredited needs a valid amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m AccountDebited) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("AccountDebited needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("AccountDebited needs a valid account ID")
+	}
+	if m.TransactionType == "" {
+		return errors.New("AccountDebited needs a valid transaction type")
+	}
+	if m.Amount < 1 {
+		return errors.New("AccountDebited needs a valid amount")
+	}
+	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+		return errors.New("AccountDebited needs a valid scheduled date")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m AccountDebitDeclined) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("AccountDebitDeclined needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("AccountDebitDeclined needs a valid account ID")
+	}
+	if m.TransactionType == "" {
+		return errors.New("AccountDebitDeclined needs a valid transaction type")
+	}
+	if m.Amount < 1 {
+		return errors.New("AccountDebitDeclineAccountDebitDeclined a valid amount")
+	}
+	if m.Reason == "" {
+		return errors.New("AccountDebitDeclined needs a valid reason")
+	}
+
+	return nil
 }

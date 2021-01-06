@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
@@ -65,4 +66,67 @@ func (m DeclineTransfer) MessageDescription() string {
 		m.ToAccountID,
 		m.Reason,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m Transfer) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("Transfer needs a valid transaction ID")
+	}
+	if m.FromAccountID == "" {
+		return errors.New("Transfer needs a valid from account ID")
+	}
+	if m.ToAccountID == "" {
+		return errors.New("Transfer needs a valid to account ID")
+	}
+	if m.FromAccountID == m.ToAccountID {
+		return errors.New("Transfer from account ID and to account ID must be different")
+	}
+	if m.Amount < 1 {
+		return errors.New("Transfer needs a valid amount")
+	}
+	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+		return errors.New("Transfer needs a valid scheduled date")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m ApproveTransfer) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("ApproveTransfer needs a valid transaction ID")
+	}
+	if m.FromAccountID == "" {
+		return errors.New("ApproveTransfer needs a valid from account ID")
+	}
+	if m.ToAccountID == "" {
+		return errors.New("ApproveTransfer needs a valid to account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("ApproveTransfer needs a valid amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DeclineTransfer) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DeclineTransfer needs a valid transaction ID")
+	}
+	if m.FromAccountID == "" {
+		return errors.New("DeclineTransfer needs a valid from account ID")
+	}
+	if m.ToAccountID == "" {
+		return errors.New("DeclineTransfer needs a valid to account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("DeclineTransfer needs a valid amount")
+	}
+	if m.Reason == "" {
+		return errors.New("DeclineTransfer needs a valid reason")
+	}
+
+	return nil
 }

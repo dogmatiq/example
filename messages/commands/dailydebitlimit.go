@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
@@ -26,4 +27,25 @@ func (m ConsumeDailyDebitLimit) MessageDescription() string {
 		m.ScheduledDate,
 		m.AccountID,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m ConsumeDailyDebitLimit) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("ConsumeDailyDebitLimit needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("ConsumeDailyDebitLimit needs a valid account ID")
+	}
+	if m.DebitType == "" {
+		return errors.New("ConsumeDailyDebitLimit needs a valid debit type")
+	}
+	if m.Amount < 1 {
+		return errors.New("ConsumeDailyDebitLimit needs a valid amount")
+	}
+	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+		return errors.New("ConsumeDailyDebitLimit needs a valid scheduled date")
+	}
+
+	return nil
 }

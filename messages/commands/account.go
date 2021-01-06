@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
@@ -81,4 +82,76 @@ func (m DebitAccount) MessageDescription() string {
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m OpenAccountForNewCustomer) Validate() error {
+	if m.CustomerID == "" {
+		return errors.New("OpenAccountForNewCustomer needs a valid customer ID")
+	}
+	if m.CustomerName == "" {
+		return errors.New("OpenAccountForNewCustomer needs a valid name")
+	}
+	if m.AccountID == "" {
+		return errors.New("OpenAccountForNewCustomer needs a valid account ID")
+	}
+	if m.AccountName == "" {
+		return errors.New("OpenAccountForNewCustomer needs a valid account name")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m OpenAccount) Validate() error {
+	if m.CustomerID == "" {
+		return errors.New("OpenAccount needs a valid customer ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("OpenAccount needs a valid account ID")
+	}
+	if m.AccountName == "" {
+		return errors.New("OpenAccount needs a valid account name")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m CreditAccount) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("CreditAccount needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("CreditAccount needs a valid account ID")
+	}
+	if m.TransactionType == "" {
+		return errors.New("CreditAccount needs a valid transaction type")
+	}
+	if m.Amount < 1 {
+		return errors.New("CreditAccount needs a valid amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DebitAccount) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DebitAccount needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("DebitAccount needs a valid account ID")
+	}
+	if m.TransactionType == "" {
+		return errors.New("DebitAccount needs a valid transaction type")
+	}
+	if m.Amount < 1 {
+		return errors.New("DebitAccount needs a valid amount")
+	}
+	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+		return errors.New("DebitAccount needs a valid scheduled date")
+	}
+
+	return nil
 }

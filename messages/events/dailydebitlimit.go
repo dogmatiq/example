@@ -1,6 +1,7 @@
 package events
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
@@ -52,4 +53,58 @@ func (m DailyDebitLimitExceeded) MessageDescription() string {
 		m.AccountID,
 		messages.FormatAmount((m.TotalDebitsForDay+m.Amount)-m.DailyLimit),
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DailyDebitLimitConsumed) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DailyDebitLimitConsumed needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("DailyDebitLimitConsumed needs a valid account ID")
+	}
+	if m.DebitType == "" {
+		return errors.New("DailyDebitLimitConsumed needs a valid debit type")
+	}
+	if m.Amount < 1 {
+		return errors.New("DailyDebitLimitConsumed needs a valid amount")
+	}
+	if !messages.IsValidBusinessDate(m.Date) {
+		return errors.New("DailyDebitLimitConsumed needs a valid date")
+	}
+	if m.TotalDebitsForDay < 1 {
+		return errors.New("DailyDebitLimitConsumed needs a valid total debits for day")
+	}
+	if m.DailyLimit < 0 {
+		return errors.New("DailyDebitLimitConsumed needs a valid daily limit")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DailyDebitLimitExceeded) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DailyDebitLimitExceeded needs a valid transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("DailyDebitLimitExceeded needs a valid account ID")
+	}
+	if m.DebitType == "" {
+		return errors.New("DailyDebitLimitExceeded needs a valid debit type")
+	}
+	if m.Amount < 1 {
+		return errors.New("DailyDebitLimitExceeded needs a valid amount")
+	}
+	if !messages.IsValidBusinessDate(m.Date) {
+		return errors.New("DailyDebitLimitExceeded needs a valid date")
+	}
+	if m.TotalDebitsForDay < 0 {
+		return errors.New("DailyDebitLimitExceeded needs a valid total debits for day")
+	}
+	if m.DailyLimit < 0 {
+		return errors.New("DailyDebitLimitExceeded needs a valid daily limit")
+	}
+
+	return nil
 }
