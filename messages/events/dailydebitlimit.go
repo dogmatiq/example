@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // DailyDebitLimitConsumed is an event that indicates an amount of an account
@@ -69,7 +70,7 @@ func (m DailyDebitLimitConsumed) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("DailyDebitLimitConsumed needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.Date) {
+	if !validation.IsValidBusinessDate(m.Date) {
 		return errors.New("DailyDebitLimitConsumed needs a valid date")
 	}
 	if m.TotalDebitsForDay < 1 {
@@ -96,7 +97,7 @@ func (m DailyDebitLimitExceeded) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("DailyDebitLimitExceeded needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.Date) {
+	if !validation.IsValidBusinessDate(m.Date) {
 		return errors.New("DailyDebitLimitExceeded needs a valid date")
 	}
 	if m.TotalDebitsForDay < 0 {

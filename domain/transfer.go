@@ -88,7 +88,6 @@ func (TransferProcessHandler) HandleEvent(
 		r.FromAccountID = x.FromAccountID
 		r.ToAccountID = x.ToAccountID
 
-		mustValidateDate(x.ScheduledDate)
 		s.ScheduleTimeout(
 			TransferReadyToProceed{
 				TransactionID: x.TransactionID,

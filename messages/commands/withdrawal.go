@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // Withdraw is a command requesting that funds be withdrawn from a bank account.
@@ -72,7 +73,7 @@ func (m Withdraw) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("Withdraw needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+	if !validation.IsValidBusinessDate(m.ScheduledDate) {
 		return errors.New("Withdraw needs a valid scheduled date")
 	}
 

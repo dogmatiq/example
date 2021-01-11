@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // OpenAccountForNewCustomer is a command requesting that a new bank account be
@@ -149,7 +150,7 @@ func (m DebitAccount) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("DebitAccount needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+	if !validation.IsValidBusinessDate(m.ScheduledDate) {
 		return errors.New("DebitAccount needs a valid scheduled date")
 	}
 

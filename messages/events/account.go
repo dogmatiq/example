@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // AccountOpened is an event indicating that a new bank account has been opened.
@@ -132,7 +133,7 @@ func (m AccountDebited) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("AccountDebited needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+	if !validation.IsValidBusinessDate(m.ScheduledDate) {
 		return errors.New("AccountDebited needs a valid scheduled date")
 	}
 

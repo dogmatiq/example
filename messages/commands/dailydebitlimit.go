@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // ConsumeDailyDebitLimit is a command requesting that an amount of an account
@@ -43,7 +44,7 @@ func (m ConsumeDailyDebitLimit) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("ConsumeDailyDebitLimit needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+	if !validation.IsValidBusinessDate(m.ScheduledDate) {
 		return errors.New("ConsumeDailyDebitLimit needs a valid scheduled date")
 	}
 

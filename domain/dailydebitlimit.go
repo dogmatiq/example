@@ -81,7 +81,6 @@ func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
-		mustValidateDate(x.ScheduledDate)
 		return fmt.Sprintf("%s:%s", x.ScheduledDate, x.AccountID)
 	default:
 		panic(dogma.UnexpectedMessage)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // Transfer is a command requesting that funds be transferred from one bank
@@ -85,7 +86,7 @@ func (m Transfer) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("Transfer needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+	if !validation.IsValidBusinessDate(m.ScheduledDate) {
 		return errors.New("Transfer needs a valid scheduled date")
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // TransferStarted is an event indicating that the process of transferring funds
@@ -87,7 +88,7 @@ func (m TransferStarted) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("TransferStarted needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+	if !validation.IsValidBusinessDate(m.ScheduledDate) {
 		return errors.New("TransferStarted needs a valid scheduled date")
 	}
 

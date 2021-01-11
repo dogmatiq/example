@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // WithdrawalStarted is an event indicating that the process of withdrawing
@@ -75,7 +76,7 @@ func (m WithdrawalStarted) Validate() error {
 	if m.Amount < 1 {
 		return errors.New("WithdrawalStarted needs a valid amount")
 	}
-	if !messages.IsValidBusinessDate(m.ScheduledDate) {
+	if !validation.IsValidBusinessDate(m.ScheduledDate) {
 		return errors.New("WithdrawalStarted needs a valid scheduled date")
 	}
 

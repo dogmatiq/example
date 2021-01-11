@@ -14,10 +14,3 @@ func startOfBusinessDay(date string) time.Time {
 
 	return t
 }
-
-func mustValidateDate(date string) {
-	_, err := time.Parse(messages.BusinessDateFormat, date)
-	if err != nil {
-		panic(err)
-	}
-}
