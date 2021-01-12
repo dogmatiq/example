@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -13,7 +14,7 @@ type ConsumeDailyDebitLimit struct {
 	AccountID     string
 	DebitType     messages.TransactionType
 	Amount        int64
-	ScheduledDate string
+	ScheduledDate time.Time
 }
 
 // MessageDescription returns a human-readable description of the message.
@@ -23,7 +24,7 @@ func (m ConsumeDailyDebitLimit) MessageDescription() string {
 		m.DebitType,
 		m.TransactionID,
 		messages.FormatAmount(m.Amount),
-		m.ScheduledDate,
+		messages.FormatDate(m.ScheduledDate),
 		m.AccountID,
 	)
 }

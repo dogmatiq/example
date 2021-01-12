@@ -2,6 +2,7 @@ package events
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -27,7 +28,7 @@ type AccountDebited struct {
 	AccountID       string
 	TransactionType messages.TransactionType
 	Amount          int64
-	ScheduledDate   string
+	ScheduledDate   time.Time
 }
 
 // AccountDebitDeclined is an event indicating that a bank account debit was

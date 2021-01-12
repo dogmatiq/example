@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -13,7 +14,7 @@ type Transfer struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate string
+	ScheduledDate time.Time
 }
 
 // ApproveTransfer is a command that approves an account transfer.

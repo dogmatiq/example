@@ -2,6 +2,7 @@ package events
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -12,7 +13,7 @@ type WithdrawalStarted struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate string
+	ScheduledDate time.Time
 }
 
 // WithdrawalApproved is an event that indicates a requested withdrawal has been

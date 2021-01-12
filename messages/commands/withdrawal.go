@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -11,7 +12,7 @@ type Withdraw struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate string
+	ScheduledDate time.Time
 }
 
 // ApproveWithdrawal is a command that approves an account withdrawal.

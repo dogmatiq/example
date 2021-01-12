@@ -2,6 +2,7 @@ package events
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -13,7 +14,7 @@ type TransferStarted struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate string
+	ScheduledDate time.Time
 }
 
 // TransferApproved is an event that indicates a requested transfer has been

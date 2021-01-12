@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -37,7 +38,7 @@ type DebitAccount struct {
 	AccountID       string
 	TransactionType messages.TransactionType
 	Amount          int64
-	ScheduledDate   string
+	ScheduledDate   time.Time
 }
 
 // MessageDescription returns a human-readable description of the message.

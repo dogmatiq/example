@@ -2,6 +2,7 @@ package events
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
 )
@@ -13,7 +14,7 @@ type DailyDebitLimitConsumed struct {
 	AccountID         string
 	DebitType         messages.TransactionType
 	Amount            int64
-	Date              string
+	Date              time.Time
 	TotalDebitsForDay int64
 	DailyLimit        int64
 }
@@ -25,7 +26,7 @@ type DailyDebitLimitExceeded struct {
 	AccountID         string
 	DebitType         messages.TransactionType
 	Amount            int64
-	Date              string
+	Date              time.Time
 	TotalDebitsForDay int64
 	DailyLimit        int64
 }
@@ -36,7 +37,7 @@ func (m DailyDebitLimitConsumed) MessageDescription() string {
 		"%s %s: consumed %s from %s daily debit limit of account %s",
 		m.DebitType,
 		m.TransactionID,
-		m.Date,
+		messages.FormatDate(m.Date),
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
@@ -48,7 +49,7 @@ func (m DailyDebitLimitExceeded) MessageDescription() string {
 		"%s %s: exceeded %s daily debit limit of account %s by %s",
 		m.DebitType,
 		m.TransactionID,
-		m.Date,
+		messages.FormatDate(m.Date),
 		m.AccountID,
 		messages.FormatAmount((m.TotalDebitsForDay+m.Amount)-m.DailyLimit),
 	)

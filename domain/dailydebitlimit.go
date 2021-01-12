@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
 )
@@ -81,8 +82,7 @@ func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
-		mustValidateDate(x.ScheduledDate)
-		return fmt.Sprintf("%s:%s", x.ScheduledDate, x.AccountID)
+		return fmt.Sprintf("%s:%s", messages.FormatDate(x.ScheduledDate), x.AccountID)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
