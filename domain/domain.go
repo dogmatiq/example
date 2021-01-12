@@ -7,7 +7,7 @@ import (
 )
 
 func startOfBusinessDay(date string) time.Time {
-	t, err := time.Parse(messages.BusinessDateFormat, date)
+	t, err := messages.UnmarshalDate(date)
 	if err != nil {
 		panic(err)
 	}

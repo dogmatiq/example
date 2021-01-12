@@ -15,7 +15,7 @@ import (
 )
 
 func businessDayFromTime(t time.Time) string {
-	return t.Format(messages.BusinessDateFormat)
+	return messages.MarshalDate(t)
 }
 
 func main() {
