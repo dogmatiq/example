@@ -14,7 +14,7 @@ type Transfer struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledTime time.Time
 }
 
 // ApproveTransfer is a command that approves an account transfer.

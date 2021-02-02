@@ -49,7 +49,7 @@ func Test_Transfer(t *testing.T) {
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -68,7 +68,7 @@ func Test_Transfer(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -121,7 +121,7 @@ func Test_Transfer(t *testing.T) {
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
 									Amount:        1000,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -141,7 +141,7 @@ func Test_Transfer(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -195,7 +195,7 @@ func Test_Transfer(t *testing.T) {
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
 									Amount:        500,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -214,7 +214,7 @@ func Test_Transfer(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -267,7 +267,7 @@ func Test_Transfer(t *testing.T) {
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
 									Amount:        expectedDailyDebitLimit + 1,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -287,7 +287,7 @@ func Test_Transfer(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -347,7 +347,7 @@ func Test_Transfer(t *testing.T) {
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							NoneOf(
@@ -374,7 +374,7 @@ func Test_Transfer(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(

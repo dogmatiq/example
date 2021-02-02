@@ -41,7 +41,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -79,7 +79,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -125,7 +125,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -179,7 +179,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -196,7 +196,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T002",
 									AccountID:     "A002",
 									Amount:        expectedDailyDebitLimit,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -234,7 +234,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 						).
@@ -244,7 +244,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
-									ScheduledDate: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(
@@ -289,7 +289,7 @@ func Test_Withdraw(t *testing.T) {
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 1,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(

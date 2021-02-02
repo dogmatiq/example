@@ -13,7 +13,7 @@ type WithdrawalStarted struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledTime time.Time
 }
 
 // WithdrawalApproved is an event that indicates a requested withdrawal has been

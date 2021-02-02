@@ -28,7 +28,7 @@ type AccountDebited struct {
 	AccountID       string
 	TransactionType messages.TransactionType
 	Amount          int64
-	ScheduledDate   time.Time
+	ScheduledTime   time.Time
 }
 
 // AccountDebitDeclined is an event indicating that a bank account debit was

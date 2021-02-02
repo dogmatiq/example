@@ -38,7 +38,7 @@ type DebitAccount struct {
 	AccountID       string
 	TransactionType messages.TransactionType
 	Amount          int64
-	ScheduledDate   time.Time
+	ScheduledTime   time.Time
 }
 
 // MessageDescription returns a human-readable description of the message.

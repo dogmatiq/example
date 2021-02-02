@@ -12,7 +12,7 @@ type Withdraw struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledTime time.Time
 }
 
 // ApproveWithdrawal is a command that approves an account withdrawal.

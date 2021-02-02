@@ -50,7 +50,7 @@ func Test_Deposit(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A001",
 									Amount:        100,
-									ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(

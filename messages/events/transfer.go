@@ -14,7 +14,7 @@ type TransferStarted struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledTime time.Time
 }
 
 // TransferApproved is an event that indicates a requested transfer has been

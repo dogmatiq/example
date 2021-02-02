@@ -193,7 +193,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 							TransactionID: "T002",
 							AccountID:     "A001",
 							Amount:        150,
-							ScheduledDate: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+							ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 						},
 					),
 				)

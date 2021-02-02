@@ -1,5 +1,7 @@
 package messages
 
+import "time"
+
 // TransactionType defines types of debits.
 type TransactionType string
 
@@ -26,3 +28,8 @@ const (
 	// because it will exceed the account daily debit limit.
 	DailyDebitLimitExceeded DebitFailureReason = "daily debit limit exceeded"
 )
+
+// DailyDebitLimitDate formats a time value as a daily debit limit date.
+func DailyDebitLimitDate(t time.Time) string {
+	return t.In(time.UTC).Format("2006-01-02")
+}

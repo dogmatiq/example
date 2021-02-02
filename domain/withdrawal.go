@@ -77,7 +77,7 @@ func (WithdrawalProcessHandler) HandleEvent(
 			AccountID:       x.AccountID,
 			TransactionType: messages.Withdrawal,
 			Amount:          x.Amount,
-			ScheduledDate:   x.ScheduledDate,
+			ScheduledTime:   x.ScheduledTime,
 		})
 
 	case events.AccountDebited:
@@ -86,7 +86,7 @@ func (WithdrawalProcessHandler) HandleEvent(
 			AccountID:     x.AccountID,
 			DebitType:     messages.Withdrawal,
 			Amount:        x.Amount,
-			ScheduledDate: x.ScheduledDate,
+			Date:          messages.DailyDebitLimitDate(x.ScheduledTime),
 		})
 
 	case events.AccountDebitDeclined:
