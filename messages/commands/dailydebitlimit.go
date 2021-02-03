@@ -13,7 +13,7 @@ type ConsumeDailyDebitLimit struct {
 	AccountID     string
 	DebitType     messages.TransactionType
 	Amount        int64
-	ScheduledDate string
+	Date          string
 }
 
 // MessageDescription returns a human-readable description of the message.
@@ -23,7 +23,7 @@ func (m ConsumeDailyDebitLimit) MessageDescription() string {
 		m.DebitType,
 		m.TransactionID,
 		messages.FormatAmount(m.Amount),
-		m.ScheduledDate,
+		m.Date,
 		m.AccountID,
 	)
 }

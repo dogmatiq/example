@@ -3,6 +3,7 @@ package projections_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
@@ -192,7 +193,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 							TransactionID: "T002",
 							AccountID:     "A001",
 							Amount:        150,
-							ScheduledDate: "2001-02-03",
+							ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 						},
 					),
 				)

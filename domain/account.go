@@ -45,7 +45,7 @@ func (a *account) DebitAccount(s dogma.AggregateCommandScope, m commands.DebitAc
 			AccountID:       m.AccountID,
 			TransactionType: m.TransactionType,
 			Amount:          m.Amount,
-			ScheduledDate:   m.ScheduledDate,
+			ScheduledTime:   m.ScheduledTime,
 		})
 	} else {
 		s.RecordEvent(events.AccountDebitDeclined{

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
@@ -88,15 +89,14 @@ func (TransferProcessHandler) HandleEvent(
 		r.FromAccountID = x.FromAccountID
 		r.ToAccountID = x.ToAccountID
 
-		mustValidateDate(x.ScheduledDate)
 		s.ScheduleTimeout(
 			TransferReadyToProceed{
 				TransactionID: x.TransactionID,
 				FromAccountID: x.FromAccountID,
 				Amount:        x.Amount,
-				ScheduledDate: x.ScheduledDate,
+				ScheduledFor:  x.ScheduledTime,
 			},
-			startOfBusinessDay(x.ScheduledDate),
+			x.ScheduledTime,
 		)
 
 	case events.AccountDebited:
@@ -105,7 +105,7 @@ func (TransferProcessHandler) HandleEvent(
 			AccountID:     x.AccountID,
 			DebitType:     messages.Transfer,
 			Amount:        x.Amount,
-			ScheduledDate: x.ScheduledDate,
+			Date:          messages.DailyDebitLimitDate(x.ScheduledTime),
 		})
 
 	case events.AccountDebitDeclined:
@@ -189,7 +189,7 @@ func (TransferProcessHandler) HandleTimeout(
 			AccountID:       x.FromAccountID,
 			TransactionType: messages.Transfer,
 			Amount:          x.Amount,
-			ScheduledDate:   x.ScheduledDate,
+			ScheduledTime:   x.ScheduledFor,
 		})
 
 	default:
@@ -206,5 +206,5 @@ type TransferReadyToProceed struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate string
+	ScheduledFor  time.Time
 }
