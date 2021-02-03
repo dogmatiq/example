@@ -3,9 +3,9 @@ package events
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // AccountOpened is an event indicating that a new bank account has been opened.
@@ -29,7 +29,7 @@ type AccountDebited struct {
 	AccountID       string
 	TransactionType messages.TransactionType
 	Amount          int64
-	ScheduledDate   string
+	ScheduledTime   time.Time
 }
 
 // AccountDebitDeclined is an event indicating that a bank account debit was
@@ -132,9 +132,6 @@ func (m AccountDebited) Validate() error {
 	}
 	if m.Amount < 1 {
 		return errors.New("AccountDebited needs a valid amount")
-	}
-	if !validation.IsValidBusinessDate(m.ScheduledDate) {
-		return errors.New("AccountDebited needs a valid scheduled date")
 	}
 
 	return nil

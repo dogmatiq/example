@@ -3,9 +3,9 @@ package events
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // WithdrawalStarted is an event indicating that the process of withdrawing
@@ -14,7 +14,7 @@ type WithdrawalStarted struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate string
+	ScheduledTime time.Time
 }
 
 // WithdrawalApproved is an event that indicates a requested withdrawal has been
@@ -75,9 +75,6 @@ func (m WithdrawalStarted) Validate() error {
 	}
 	if m.Amount < 1 {
 		return errors.New("WithdrawalStarted needs a valid amount")
-	}
-	if !validation.IsValidBusinessDate(m.ScheduledDate) {
-		return errors.New("WithdrawalStarted needs a valid scheduled date")
 	}
 
 	return nil

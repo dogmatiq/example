@@ -3,9 +3,9 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // Withdraw is a command requesting that funds be withdrawn from a bank account.
@@ -13,7 +13,7 @@ type Withdraw struct {
 	TransactionID string
 	AccountID     string
 	Amount        int64
-	ScheduledDate string
+	ScheduledTime time.Time
 }
 
 // ApproveWithdrawal is a command that approves an account withdrawal.
@@ -72,9 +72,6 @@ func (m Withdraw) Validate() error {
 	}
 	if m.Amount < 1 {
 		return errors.New("Withdraw needs a valid amount")
-	}
-	if !validation.IsValidBusinessDate(m.ScheduledDate) {
-		return errors.New("Withdraw needs a valid scheduled date")
 	}
 
 	return nil

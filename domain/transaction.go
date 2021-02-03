@@ -41,7 +41,7 @@ func (t *transaction) StartWithdraw(s dogma.AggregateCommandScope, m commands.Wi
 		TransactionID: m.TransactionID,
 		AccountID:     m.AccountID,
 		Amount:        m.Amount,
-		ScheduledDate: m.ScheduledDate,
+		ScheduledTime: m.ScheduledTime,
 	})
 }
 
@@ -76,7 +76,7 @@ func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m commands.Tr
 		FromAccountID: m.FromAccountID,
 		ToAccountID:   m.ToAccountID,
 		Amount:        m.Amount,
-		ScheduledDate: m.ScheduledDate,
+		ScheduledTime: m.ScheduledTime,
 	})
 }
 

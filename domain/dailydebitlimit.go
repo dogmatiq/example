@@ -25,7 +25,7 @@ func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.Cons
 			AccountID:         m.AccountID,
 			DebitType:         m.DebitType,
 			Amount:            m.Amount,
-			Date:              m.ScheduledDate,
+			Date:              m.Date,
 			TotalDebitsForDay: d.TotalDebitsForDay,
 			DailyLimit:        maximumDailyDebitLimit,
 		})
@@ -35,7 +35,7 @@ func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m commands.Cons
 			AccountID:         m.AccountID,
 			DebitType:         m.DebitType,
 			Amount:            m.Amount,
-			Date:              m.ScheduledDate,
+			Date:              m.Date,
 			TotalDebitsForDay: d.TotalDebitsForDay + m.Amount,
 			DailyLimit:        maximumDailyDebitLimit,
 		})
@@ -81,7 +81,7 @@ func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
-		return fmt.Sprintf("%s:%s", x.ScheduledDate, x.AccountID)
+		return fmt.Sprintf("%s:%s", x.Date, x.AccountID)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}

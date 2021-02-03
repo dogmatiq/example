@@ -2,6 +2,7 @@ package domain_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
@@ -49,7 +50,7 @@ func Test_Deposit(t *testing.T) {
 									TransactionID: "W001",
 									AccountID:     "A001",
 									Amount:        100,
-									ScheduledDate: "2001-02-03",
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
 								},
 							),
 							ToRecordEvent(

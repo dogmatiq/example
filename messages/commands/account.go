@@ -3,9 +3,9 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // OpenAccountForNewCustomer is a command requesting that a new bank account be
@@ -39,7 +39,7 @@ type DebitAccount struct {
 	AccountID       string
 	TransactionType messages.TransactionType
 	Amount          int64
-	ScheduledDate   string
+	ScheduledTime   time.Time
 }
 
 // MessageDescription returns a human-readable description of the message.
@@ -149,9 +149,6 @@ func (m DebitAccount) Validate() error {
 	}
 	if m.Amount < 1 {
 		return errors.New("DebitAccount needs a valid amount")
-	}
-	if !validation.IsValidBusinessDate(m.ScheduledDate) {
-		return errors.New("DebitAccount needs a valid scheduled date")
 	}
 
 	return nil

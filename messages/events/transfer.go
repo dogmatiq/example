@@ -3,9 +3,9 @@ package events
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // TransferStarted is an event indicating that the process of transferring funds
@@ -15,7 +15,7 @@ type TransferStarted struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate string
+	ScheduledTime time.Time
 }
 
 // TransferApproved is an event that indicates a requested transfer has been
@@ -87,9 +87,6 @@ func (m TransferStarted) Validate() error {
 	}
 	if m.Amount < 1 {
 		return errors.New("TransferStarted needs a valid amount")
-	}
-	if !validation.IsValidBusinessDate(m.ScheduledDate) {
-		return errors.New("TransferStarted needs a valid scheduled date")
 	}
 
 	return nil

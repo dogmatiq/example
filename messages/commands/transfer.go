@@ -3,9 +3,9 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/dogmatiq/example/messages"
-	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // Transfer is a command requesting that funds be transferred from one bank
@@ -15,7 +15,7 @@ type Transfer struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate string
+	ScheduledTime time.Time
 }
 
 // ApproveTransfer is a command that approves an account transfer.
@@ -85,9 +85,6 @@ func (m Transfer) Validate() error {
 	}
 	if m.Amount < 1 {
 		return errors.New("Transfer needs a valid amount")
-	}
-	if !validation.IsValidBusinessDate(m.ScheduledDate) {
-		return errors.New("Transfer needs a valid scheduled date")
 	}
 
 	return nil
