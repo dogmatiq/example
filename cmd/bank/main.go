@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/dogmatiq/configkit"
@@ -10,6 +11,7 @@ import (
 	"github.com/dogmatiq/example/database"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit/engine"
+	"github.com/dogmatiq/testkit/fact"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -70,12 +72,11 @@ func main() {
 		err := en.Dispatch(
 			context.Background(),
 			m,
-			// engine.WithObserver(
-			// 	fact.ObserverFunc(func(f fact.Fact) {
-			// 		dapper.Print(f)
-			// 		fmt.Print("\n\n")
-			// 	}),
-			// ),
+			engine.WithObserver(
+				fact.NewLogger(func(s string) {
+					fmt.Println(s)
+				}),
+			),
 			engine.EnableProjections(true),
 		)
 		if err != nil {
