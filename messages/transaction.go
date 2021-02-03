@@ -29,7 +29,12 @@ const (
 	DailyDebitLimitExceeded DebitFailureReason = "daily debit limit exceeded"
 )
 
-// DailyDebitLimitDate formats a time value as a daily debit limit date.
+// DailyDebitLimitDate returns the date of a transaction for the purposes of
+// checking daily debit limits.
+//
+// It normalizes the date to the UTC timezone so that regardless of which
+// timezone is used to schedule the transaction two equivalent times always
+// contribute towards the same day's limit.
 func DailyDebitLimitDate(t time.Time) string {
 	return t.In(time.UTC).Format("2006-01-02")
 }
