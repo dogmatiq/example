@@ -94,7 +94,7 @@ func (TransferProcessHandler) HandleEvent(
 				TransactionID: x.TransactionID,
 				FromAccountID: x.FromAccountID,
 				Amount:        x.Amount,
-				ScheduledDate: x.ScheduledTime,
+				ScheduledFor:  x.ScheduledTime,
 			},
 			x.ScheduledTime,
 		)
@@ -189,7 +189,7 @@ func (TransferProcessHandler) HandleTimeout(
 			AccountID:       x.FromAccountID,
 			TransactionType: messages.Transfer,
 			Amount:          x.Amount,
-			ScheduledTime:   x.ScheduledDate,
+			ScheduledTime:   x.ScheduledFor,
 		})
 
 	default:
@@ -206,5 +206,5 @@ type TransferReadyToProceed struct {
 	FromAccountID string
 	ToAccountID   string
 	Amount        int64
-	ScheduledDate time.Time
+	ScheduledFor  time.Time
 }
