@@ -65,13 +65,13 @@ func (m DeclineWithdrawal) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m Withdraw) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("Withdraw needs a valid transaction ID")
+		return errors.New("Withdraw must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("Withdraw needs a valid account ID")
+		return errors.New("Withdraw must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("Withdraw needs a valid amount")
+		return errors.New("Withdraw must have a positive amount")
 	}
 
 	return nil
@@ -80,13 +80,13 @@ func (m Withdraw) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m ApproveWithdrawal) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("ApproveWithdrawal needs a valid transaction ID")
+		return errors.New("ApproveWithdrawal must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("ApproveWithdrawal needs a valid account ID")
+		return errors.New("ApproveWithdrawal must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("ApproveWithdrawal needs a valid amount")
+		return errors.New("ApproveWithdrawal must have a positive amount")
 	}
 
 	return nil
@@ -95,16 +95,16 @@ func (m ApproveWithdrawal) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m DeclineWithdrawal) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("DeclineWithdrawal needs a valid transaction ID")
+		return errors.New("DeclineWithdrawal must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("DeclineWithdrawal needs a valid account ID")
+		return errors.New("DeclineWithdrawal must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("DeclineWithdrawal needs a valid amount")
+		return errors.New("DeclineWithdrawal must have a positive amount")
 	}
-	if m.Reason == "" {
-		return errors.New("DeclineWithdrawal needs a valid reason")
+	if err := m.Reason.Validate(); err != nil {
+		return fmt.Errorf("DeclineWithdrawal must have a valid reason: %w", err)
 	}
 
 	return nil

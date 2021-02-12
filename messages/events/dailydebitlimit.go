@@ -59,25 +59,25 @@ func (m DailyDebitLimitExceeded) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m DailyDebitLimitConsumed) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("DailyDebitLimitConsumed needs a valid transaction ID")
+		return errors.New("DailyDebitLimitConsumed must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("DailyDebitLimitConsumed needs a valid account ID")
+		return errors.New("DailyDebitLimitConsumed must not have an empty account ID")
 	}
-	if m.DebitType == "" {
-		return errors.New("DailyDebitLimitConsumed needs a valid debit type")
+	if err := m.DebitType.Validate(); err != nil && !m.DebitType.IsDebit() {
+		return errors.New("DailyDebitLimitConsumed must have a valid debit type")
 	}
 	if m.Amount < 1 {
-		return errors.New("DailyDebitLimitConsumed needs a valid amount")
+		return errors.New("DailyDebitLimitConsumed must have a positive amount")
 	}
-	if !validation.IsValidBusinessDate(m.Date) {
-		return errors.New("DailyDebitLimitConsumed needs a valid date")
+	if !validation.IsValidDate(m.Date) {
+		return errors.New("DailyDebitLimitConsumed must have a valid date")
 	}
 	if m.TotalDebitsForDay < 1 {
-		return errors.New("DailyDebitLimitConsumed needs a valid total debits for day")
+		return errors.New("DailyDebitLimitConsumed must have consumed 1 or more total debits for day")
 	}
 	if m.DailyLimit < 0 {
-		return errors.New("DailyDebitLimitConsumed needs a valid daily limit")
+		return errors.New("DailyDebitLimitConsumed must not have a negative daily limit")
 	}
 
 	return nil
@@ -86,25 +86,25 @@ func (m DailyDebitLimitConsumed) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m DailyDebitLimitExceeded) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("DailyDebitLimitExceeded needs a valid transaction ID")
+		return errors.New("DailyDebitLimitExceeded must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("DailyDebitLimitExceeded needs a valid account ID")
+		return errors.New("DailyDebitLimitExceeded must not have an empty account ID")
 	}
-	if m.DebitType == "" {
-		return errors.New("DailyDebitLimitExceeded needs a valid debit type")
+	if err := m.DebitType.Validate(); err != nil && !m.DebitType.IsDebit() {
+		return errors.New("DailyDebitLimitExceeded must have a valid debit type")
 	}
 	if m.Amount < 1 {
-		return errors.New("DailyDebitLimitExceeded needs a valid amount")
+		return errors.New("DailyDebitLimitExceeded must have a positive amount")
 	}
-	if !validation.IsValidBusinessDate(m.Date) {
-		return errors.New("DailyDebitLimitExceeded needs a valid date")
+	if !validation.IsValidDate(m.Date) {
+		return errors.New("DailyDebitLimitExceeded must have a valid date")
 	}
 	if m.TotalDebitsForDay < 0 {
-		return errors.New("DailyDebitLimitExceeded needs a valid total debits for day")
+		return errors.New("DailyDebitLimitExceeded must not have a negative total debits for day")
 	}
 	if m.DailyLimit < 0 {
-		return errors.New("DailyDebitLimitExceeded needs a valid daily limit")
+		return errors.New("DailyDebitLimitExceeded must not have a negative daily limit")
 	}
 
 	return nil

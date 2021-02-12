@@ -26,16 +26,16 @@ func (m CustomerAcquired) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m CustomerAcquired) Validate() error {
 	if m.CustomerID == "" {
-		return errors.New("CustomerAcquired needs a valid customer ID")
+		return errors.New("CustomerAcquired must not have an empty customer ID")
 	}
 	if m.CustomerName == "" {
-		return errors.New("CustomerAcquired needs a valid name")
+		return errors.New("CustomerAcquired must not have an empty name")
 	}
 	if m.AccountID == "" {
-		return errors.New("CustomerAcquired needs a valid account ID")
+		return errors.New("CustomerAcquired must not have an empty account ID")
 	}
 	if m.AccountName == "" {
-		return errors.New("CustomerAcquired needs a valid account name")
+		return errors.New("CustomerAcquired must not have an empty account name")
 	}
 
 	return nil

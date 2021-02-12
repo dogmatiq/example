@@ -32,19 +32,19 @@ func (m ConsumeDailyDebitLimit) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m ConsumeDailyDebitLimit) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("ConsumeDailyDebitLimit needs a valid transaction ID")
+		return errors.New("ConsumeDailyDebitLimit must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("ConsumeDailyDebitLimit needs a valid account ID")
+		return errors.New("ConsumeDailyDebitLimit must not have an empty account ID")
 	}
-	if m.DebitType == "" {
-		return errors.New("ConsumeDailyDebitLimit needs a valid debit type")
+	if !m.DebitType.IsDebit() {
+		return errors.New("ConsumeDailyDebitLimit must have a valid debit type")
 	}
 	if m.Amount < 1 {
-		return errors.New("ConsumeDailyDebitLimit needs a valid amount")
+		return errors.New("ConsumeDailyDebitLimit must have a positive amount")
 	}
 	if m.Date == "" {
-		return errors.New("ConsumeDailyDebitLimit needs a valid date")
+		return errors.New("ConsumeDailyDebitLimit must have a valid date")
 	}
 
 	return nil

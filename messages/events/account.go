@@ -89,13 +89,13 @@ func (m AccountDebitDeclined) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m AccountOpened) Validate() error {
 	if m.CustomerID == "" {
-		return errors.New("AccountOpened needs a valid customer ID")
+		return errors.New("AccountOpened must not have an empty customer ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("AccountOpened needs a valid account ID")
+		return errors.New("AccountOpened must not have an empty account ID")
 	}
 	if m.AccountName == "" {
-		return errors.New("AccountOpened needs a valid account name")
+		return errors.New("AccountOpened must not have an empty account name")
 	}
 
 	return nil
@@ -104,16 +104,16 @@ func (m AccountOpened) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m AccountCredited) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("AccountCredited needs a valid transaction ID")
+		return errors.New("AccountCredited must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("AccountCredited needs a valid account ID")
+		return errors.New("AccountCredited must not have an empty account ID")
 	}
-	if m.TransactionType == "" {
-		return errors.New("AccountCredited needs a valid transaction type")
+	if err := m.TransactionType.Validate(); err != nil {
+		return fmt.Errorf("AccountCredited must have a valid transaction type: %w", err)
 	}
 	if m.Amount < 1 {
-		return errors.New("AccountCredited needs a valid amount")
+		return errors.New("AccountCredited must have a positive amount")
 	}
 
 	return nil
@@ -122,16 +122,16 @@ func (m AccountCredited) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m AccountDebited) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("AccountDebited needs a valid transaction ID")
+		return errors.New("AccountDebited must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("AccountDebited needs a valid account ID")
+		return errors.New("AccountDebited must not have an empty account ID")
 	}
-	if m.TransactionType == "" {
-		return errors.New("AccountDebited needs a valid transaction type")
+	if err := m.TransactionType.Validate(); err != nil {
+		return fmt.Errorf("AccountDebited must have a valid transaction type: %w", err)
 	}
 	if m.Amount < 1 {
-		return errors.New("AccountDebited needs a valid amount")
+		return errors.New("AccountDebited must have a positive amount")
 	}
 
 	return nil
@@ -140,19 +140,19 @@ func (m AccountDebited) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m AccountDebitDeclined) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("AccountDebitDeclined needs a valid transaction ID")
+		return errors.New("AccountDebitDeclined must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("AccountDebitDeclined needs a valid account ID")
+		return errors.New("AccountDebitDeclined must not have an empty account ID")
 	}
-	if m.TransactionType == "" {
-		return errors.New("AccountDebitDeclined needs a valid transaction type")
+	if err := m.TransactionType.Validate(); err != nil {
+		return fmt.Errorf("AccountDebitDeclined must have a valid transaction type: %w", err)
 	}
 	if m.Amount < 1 {
-		return errors.New("AccountDebitDeclineAccountDebitDeclined a valid amount")
+		return errors.New("AccountDebitDeclined must have a positive amount")
 	}
-	if m.Reason == "" {
-		return errors.New("AccountDebitDeclined needs a valid reason")
+	if err := m.Reason.Validate(); err != nil {
+		return fmt.Errorf("AccountDebitDeclined must have a valid reason: %w", err)
 	}
 
 	return nil

@@ -68,13 +68,13 @@ func (m WithdrawalDeclined) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m WithdrawalStarted) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("WithdrawalStarted needs a valid transaction ID")
+		return errors.New("WithdrawalStarted must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("WithdrawalStarted needs a valid account ID")
+		return errors.New("WithdrawalStarted must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("WithdrawalStarted needs a valid amount")
+		return errors.New("WithdrawalStarted must have a positive amount")
 	}
 
 	return nil
@@ -83,13 +83,13 @@ func (m WithdrawalStarted) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m WithdrawalApproved) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("WithdrawalApproved needs a valid transaction ID")
+		return errors.New("WithdrawalApproved must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("WithdrawalApproved needs a valid account ID")
+		return errors.New("WithdrawalApproved must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("WithdrawalApproved needs a valid amount")
+		return errors.New("WithdrawalApproved must have a positive amount")
 	}
 
 	return nil
@@ -98,16 +98,16 @@ func (m WithdrawalApproved) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m WithdrawalDeclined) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("WithdrawalDeclined needs a valid transaction ID")
+		return errors.New("WithdrawalDeclined must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("WithdrawalDeclined needs a valid account ID")
+		return errors.New("WithdrawalDeclined must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("WithdrawalDeclined needs a valid amount")
+		return errors.New("WithdrawalDeclined must have a positive amount")
 	}
-	if m.Reason == "" {
-		return errors.New("WithdrawalDeclined needs a valid reason")
+	if err := m.Reason.Validate(); err != nil {
+		return fmt.Errorf("WithdrawalDeclined must have a valid reason: %w", err)
 	}
 
 	return nil

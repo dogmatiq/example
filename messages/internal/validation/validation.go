@@ -1,15 +1,15 @@
-// Package validation contains some message helpers.
+// Package validation contains some message validation helpers.
 package validation
 
-import "github.com/dogmatiq/example/messages"
+import "time"
 
-// IsValidBusinessDate returns true if the given date is a valid format.
-func IsValidBusinessDate(date string) bool {
+// IsValidDate returns true if the given date is a valid format.
+func IsValidDate(date string) bool {
 	if date == "" {
 		return false
 	}
 
-	_, err := messages.UnmarshalDate(date)
+	_, err := time.Parse("2006-01-02", date)
 
 	return err == nil
 }

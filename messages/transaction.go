@@ -1,6 +1,9 @@
 package messages
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // TransactionType defines types of debits.
 type TransactionType string
@@ -16,6 +19,30 @@ const (
 	Transfer TransactionType = "transfer"
 )
 
+// IsDebit returns true if the transaction type is a debit type.
+func (t TransactionType) IsDebit() bool {
+	switch t {
+	case Withdrawal:
+		return true
+	case Transfer:
+		return true
+	}
+
+	return false
+}
+
+// Validate return an error if t is not a valid transaction type.
+func (t TransactionType) Validate() error {
+	switch t {
+	case Deposit,
+		Withdrawal,
+		Transfer:
+		return nil
+	default:
+		return fmt.Errorf("invalid transaction type: %s", string(t))
+	}
+}
+
 // DebitFailureReason defines reasons why a debits may fail.
 type DebitFailureReason string
 
@@ -28,6 +55,17 @@ const (
 	// because it will exceed the account daily debit limit.
 	DailyDebitLimitExceeded DebitFailureReason = "daily debit limit exceeded"
 )
+
+// Validate return an error if r is not a valid reason.
+func (r DebitFailureReason) Validate() error {
+	switch r {
+	case InsufficientFunds,
+		DailyDebitLimitExceeded:
+		return nil
+	default:
+		return fmt.Errorf("invalid transaction type: %s", string(r))
+	}
+}
 
 // DailyDebitLimitDate returns the date of a transaction for the purposes of
 // checking daily debit limits.

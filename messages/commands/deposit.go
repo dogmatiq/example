@@ -44,13 +44,13 @@ func (m ApproveDeposit) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m Deposit) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("Deposit needs a valid transaction ID")
+		return errors.New("Deposit must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("Deposit needs a valid account ID")
+		return errors.New("Deposit must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("Deposit needs a valid amount")
+		return errors.New("Deposit must have a positive amount")
 	}
 
 	return nil
@@ -59,13 +59,13 @@ func (m Deposit) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m ApproveDeposit) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("ApproveDeposit needs a valid transaction ID")
+		return errors.New("ApproveDeposit must not have an empty transaction ID")
 	}
 	if m.AccountID == "" {
-		return errors.New("ApproveDeposit needs a valid account ID")
+		return errors.New("ApproveDeposit must not have an empty account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("ApproveDeposit needs a valid amount")
+		return errors.New("ApproveDeposit must have a positive amount")
 	}
 
 	return nil

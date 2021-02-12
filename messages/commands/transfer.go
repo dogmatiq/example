@@ -72,19 +72,19 @@ func (m DeclineTransfer) MessageDescription() string {
 // Validate returns a non-nil error if the message is invalid.
 func (m Transfer) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("Transfer needs a valid transaction ID")
+		return errors.New("Transfer must not have an empty transaction ID")
 	}
 	if m.FromAccountID == "" {
-		return errors.New("Transfer needs a valid from account ID")
+		return errors.New("Transfer must not have an empty from account ID")
 	}
 	if m.ToAccountID == "" {
-		return errors.New("Transfer needs a valid to account ID")
+		return errors.New("Transfer must not have an empty to account ID")
 	}
 	if m.FromAccountID == m.ToAccountID {
 		return errors.New("Transfer from account ID and to account ID must be different")
 	}
 	if m.Amount < 1 {
-		return errors.New("Transfer needs a valid amount")
+		return errors.New("Transfer must have a positive amount")
 	}
 
 	return nil
@@ -93,16 +93,16 @@ func (m Transfer) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m ApproveTransfer) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("ApproveTransfer needs a valid transaction ID")
+		return errors.New("ApproveTransfer must not have an empty transaction ID")
 	}
 	if m.FromAccountID == "" {
-		return errors.New("ApproveTransfer needs a valid from account ID")
+		return errors.New("ApproveTransfer must not have an empty from account ID")
 	}
 	if m.ToAccountID == "" {
-		return errors.New("ApproveTransfer needs a valid to account ID")
+		return errors.New("ApproveTransfer must not have an empty to account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("ApproveTransfer needs a valid amount")
+		return errors.New("ApproveTransfer must have a positive amount")
 	}
 
 	return nil
@@ -111,19 +111,19 @@ func (m ApproveTransfer) Validate() error {
 // Validate returns a non-nil error if the message is invalid.
 func (m DeclineTransfer) Validate() error {
 	if m.TransactionID == "" {
-		return errors.New("DeclineTransfer needs a valid transaction ID")
+		return errors.New("DeclineTransfer must not have an empty transaction ID")
 	}
 	if m.FromAccountID == "" {
-		return errors.New("DeclineTransfer needs a valid from account ID")
+		return errors.New("DeclineTransfer must not have an empty from account ID")
 	}
 	if m.ToAccountID == "" {
-		return errors.New("DeclineTransfer needs a valid to account ID")
+		return errors.New("DeclineTransfer must not have an empty to account ID")
 	}
 	if m.Amount < 1 {
-		return errors.New("DeclineTransfer needs a valid amount")
+		return errors.New("DeclineTransfer must have a positive amount")
 	}
-	if m.Reason == "" {
-		return errors.New("DeclineTransfer needs a valid reason")
+	if err := m.Reason.Validate(); err != nil {
+		return fmt.Errorf("DeclineTransfer must have a valid reason: %w", err)
 	}
 
 	return nil
