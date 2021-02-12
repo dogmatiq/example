@@ -37,7 +37,7 @@ func (m ConsumeDailyDebitLimit) Validate() error {
 	if m.AccountID == "" {
 		return errors.New("ConsumeDailyDebitLimit must not have an empty account ID")
 	}
-	if !m.DebitType.IsDebit() {
+	if err := m.DebitType.Validate(); err != nil && !m.DebitType.IsDebit() {
 		return errors.New("ConsumeDailyDebitLimit must have a valid debit type")
 	}
 	if m.Amount < 1 {
