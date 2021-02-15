@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
+	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
 // ConsumeDailyDebitLimit is a command requesting that an amount of an account
@@ -26,4 +28,28 @@ func (m ConsumeDailyDebitLimit) MessageDescription() string {
 		m.Date,
 		m.AccountID,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m ConsumeDailyDebitLimit) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("ConsumeDailyDebitLimit must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("ConsumeDailyDebitLimit must not have an empty account ID")
+	}
+	if err := m.DebitType.Validate(); err != nil {
+		return fmt.Errorf("ConsumeDailyDebitLimit must have a valid transaction type: %w", err)
+	}
+	if !m.DebitType.IsDebit() {
+		return errors.New("ConsumeDailyDebitLimit must have a debit transaction type")
+	}
+	if m.Amount < 1 {
+		return errors.New("ConsumeDailyDebitLimit must have a positive amount")
+	}
+	if !validation.IsValidDate(m.Date) {
+		return errors.New("ConsumeDailyDebitLimit must have a valid date")
+	}
+
+	return nil
 }

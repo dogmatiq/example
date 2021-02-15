@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -82,4 +83,73 @@ func (m DebitAccount) MessageDescription() string {
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m OpenAccountForNewCustomer) Validate() error {
+	if m.CustomerID == "" {
+		return errors.New("OpenAccountForNewCustomer must not have an empty customer ID")
+	}
+	if m.CustomerName == "" {
+		return errors.New("OpenAccountForNewCustomer must not have an empty customer name")
+	}
+	if m.AccountID == "" {
+		return errors.New("OpenAccountForNewCustomer must not have an empty account ID")
+	}
+	if m.AccountName == "" {
+		return errors.New("OpenAccountForNewCustomer must not have an empty account name")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m OpenAccount) Validate() error {
+	if m.CustomerID == "" {
+		return errors.New("OpenAccount must not have an empty customer ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("OpenAccount must not have an empty account ID")
+	}
+	if m.AccountName == "" {
+		return errors.New("OpenAccount must not have an empty account name")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m CreditAccount) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("CreditAccount must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("CreditAccount must not have an empty account ID")
+	}
+	if err := m.TransactionType.Validate(); err != nil {
+		return fmt.Errorf("CreditAccount must have a valid transaction type: %w", err)
+	}
+	if m.Amount < 1 {
+		return errors.New("CreditAccount must have a positive amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DebitAccount) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DebitAccount must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("DebitAccount must not have an empty account ID")
+	}
+	if err := m.TransactionType.Validate(); err != nil {
+		return fmt.Errorf("DebitAccount must have a valid transaction type: %w", err)
+	}
+	if m.Amount < 1 {
+		return errors.New("DebitAccount must have a positive amount")
+	}
+
+	return nil
 }

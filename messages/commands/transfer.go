@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -66,4 +67,64 @@ func (m DeclineTransfer) MessageDescription() string {
 		m.ToAccountID,
 		m.Reason,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m Transfer) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("Transfer must not have an empty transaction ID")
+	}
+	if m.FromAccountID == "" {
+		return errors.New("Transfer must not have an empty from account ID")
+	}
+	if m.ToAccountID == "" {
+		return errors.New("Transfer must not have an empty to account ID")
+	}
+	if m.FromAccountID == m.ToAccountID {
+		return errors.New("Transfer from account ID and to account ID must be different")
+	}
+	if m.Amount < 1 {
+		return errors.New("Transfer must have a positive amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m ApproveTransfer) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("ApproveTransfer must not have an empty transaction ID")
+	}
+	if m.FromAccountID == "" {
+		return errors.New("ApproveTransfer must not have an empty from account ID")
+	}
+	if m.ToAccountID == "" {
+		return errors.New("ApproveTransfer must not have an empty to account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("ApproveTransfer must have a positive amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DeclineTransfer) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DeclineTransfer must not have an empty transaction ID")
+	}
+	if m.FromAccountID == "" {
+		return errors.New("DeclineTransfer must not have an empty from account ID")
+	}
+	if m.ToAccountID == "" {
+		return errors.New("DeclineTransfer must not have an empty to account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("DeclineTransfer must have a positive amount")
+	}
+	if err := m.Reason.Validate(); err != nil {
+		return fmt.Errorf("DeclineTransfer must have a valid reason: %w", err)
+	}
+
+	return nil
 }

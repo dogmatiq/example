@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -59,4 +60,52 @@ func (m DeclineWithdrawal) MessageDescription() string {
 		m.AccountID,
 		m.Reason,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m Withdraw) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("Withdraw must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("Withdraw must not have an empty account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("Withdraw must have a positive amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m ApproveWithdrawal) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("ApproveWithdrawal must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("ApproveWithdrawal must not have an empty account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("ApproveWithdrawal must have a positive amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DeclineWithdrawal) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DeclineWithdrawal must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("DeclineWithdrawal must not have an empty account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("DeclineWithdrawal must have a positive amount")
+	}
+	if err := m.Reason.Validate(); err != nil {
+		return fmt.Errorf("DeclineWithdrawal must have a valid reason: %w", err)
+	}
+
+	return nil
 }

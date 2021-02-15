@@ -1,6 +1,7 @@
 package events
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dogmatiq/example/messages"
@@ -40,4 +41,34 @@ func (m DepositApproved) MessageDescription() string {
 		messages.FormatAmount(m.Amount),
 		m.AccountID,
 	)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DepositStarted) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DepositStarted must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("DepositStarted must not have an empty account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("DepositStarted must have a positive amount")
+	}
+
+	return nil
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m DepositApproved) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("DepositApproved must not have an empty transaction ID")
+	}
+	if m.AccountID == "" {
+		return errors.New("DepositApproved must not have an empty account ID")
+	}
+	if m.Amount < 1 {
+		return errors.New("DepositApproved must have a positive amount")
+	}
+
+	return nil
 }
