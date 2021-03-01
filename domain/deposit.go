@@ -46,10 +46,14 @@ func (DepositProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Mes
 }
 
 // HandleEvent handles an event message that has been routed to this handler.
-func (DepositProcessHandler) HandleEvent(_ context.Context, s dogma.ProcessEventScope, m dogma.Message) error {
+func (DepositProcessHandler) HandleEvent(
+	_ context.Context,
+	r dogma.ProcessRoot,
+	s dogma.ProcessEventScope,
+	m dogma.Message,
+) error {
 	switch x := m.(type) {
 	case events.DepositStarted:
-		s.Begin()
 		s.ExecuteCommand(commands.CreditAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       x.AccountID,

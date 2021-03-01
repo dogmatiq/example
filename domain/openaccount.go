@@ -38,10 +38,14 @@ func (OpenAccountForNewCustomerProcessHandler) RouteEventToInstance(_ context.Co
 }
 
 // HandleEvent handles an event message that has been routed to this handler.
-func (OpenAccountForNewCustomerProcessHandler) HandleEvent(_ context.Context, s dogma.ProcessEventScope, m dogma.Message) error {
+func (OpenAccountForNewCustomerProcessHandler) HandleEvent(
+	_ context.Context,
+	r dogma.ProcessRoot,
+	s dogma.ProcessEventScope,
+	m dogma.Message,
+) error {
 	switch x := m.(type) {
 	case events.CustomerAcquired:
-		s.Begin()
 		s.ExecuteCommand(commands.OpenAccount{
 			CustomerID:  x.CustomerID,
 			AccountID:   x.AccountID,
