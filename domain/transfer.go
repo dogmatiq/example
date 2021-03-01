@@ -78,16 +78,16 @@ func (TransferProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Me
 // HandleEvent handles an event message that has been routed to this handler.
 func (TransferProcessHandler) HandleEvent(
 	_ context.Context,
+	r dogma.ProcessRoot,
 	s dogma.ProcessEventScope,
 	m dogma.Message,
 ) error {
+	t := r.(*transferProcess)
+
 	switch x := m.(type) {
 	case events.TransferStarted:
-		s.Begin()
-
-		r := s.Root().(*transferProcess)
-		r.FromAccountID = x.FromAccountID
-		r.ToAccountID = x.ToAccountID
+		t.FromAccountID = x.FromAccountID
+		t.ToAccountID = x.ToAccountID
 
 		s.ScheduleTimeout(
 			TransferReadyToProceed{
@@ -109,59 +109,51 @@ func (TransferProcessHandler) HandleEvent(
 		})
 
 	case events.AccountDebitDeclined:
-		r := s.Root().(*transferProcess)
-
 		s.ExecuteCommand(commands.DeclineTransfer{
 			TransactionID: x.TransactionID,
-			FromAccountID: r.FromAccountID,
-			ToAccountID:   r.ToAccountID,
+			FromAccountID: t.FromAccountID,
+			ToAccountID:   t.ToAccountID,
 			Amount:        x.Amount,
 			Reason:        x.Reason,
 		})
 
 	case events.DailyDebitLimitConsumed:
-		r := s.Root().(*transferProcess)
-
 		// continue transfer
 		s.ExecuteCommand(commands.CreditAccount{
 			TransactionID:   x.TransactionID,
-			AccountID:       r.ToAccountID,
+			AccountID:       t.ToAccountID,
 			TransactionType: messages.Transfer,
 			Amount:          x.Amount,
 		})
 
 	case events.DailyDebitLimitExceeded:
-		r := s.Root().(*transferProcess)
-
-		r.DeclineReason = messages.DailyDebitLimitExceeded
+		t.DeclineReason = messages.DailyDebitLimitExceeded
 
 		// compensate the initial debit
 		s.ExecuteCommand(commands.CreditAccount{
 			TransactionID:   x.TransactionID,
-			AccountID:       r.FromAccountID,
+			AccountID:       t.FromAccountID,
 			TransactionType: messages.Transfer,
 			Amount:          x.Amount,
 		})
 
 	case events.AccountCredited:
-		r := s.Root().(*transferProcess)
-
-		if r.ToAccountID == x.AccountID {
+		if t.ToAccountID == x.AccountID {
 			// it was a credit to complete the transfer (success)
 			s.ExecuteCommand(commands.ApproveTransfer{
 				TransactionID: x.TransactionID,
-				FromAccountID: r.FromAccountID,
-				ToAccountID:   r.ToAccountID,
+				FromAccountID: t.FromAccountID,
+				ToAccountID:   t.ToAccountID,
 				Amount:        x.Amount,
 			})
 		} else {
 			// it was a compensating credit to undo the transfer (failure)
 			s.ExecuteCommand(commands.DeclineTransfer{
 				TransactionID: x.TransactionID,
-				FromAccountID: r.FromAccountID,
-				ToAccountID:   r.ToAccountID,
+				FromAccountID: t.FromAccountID,
+				ToAccountID:   t.ToAccountID,
 				Amount:        x.Amount,
-				Reason:        r.DeclineReason,
+				Reason:        t.DeclineReason,
 			})
 		}
 
@@ -179,6 +171,7 @@ func (TransferProcessHandler) HandleEvent(
 // HandleTimeout handles a timeout message that has been routed to this handler.
 func (TransferProcessHandler) HandleTimeout(
 	ctx context.Context,
+	r dogma.ProcessRoot,
 	s dogma.ProcessTimeoutScope,
 	m dogma.Message,
 ) error {
