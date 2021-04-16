@@ -34,8 +34,8 @@ github.com/dogmatiq/projectionkit v0.6.3 h1:X6bR35lHbR5z4e3Jt3QQwU+MSDHahOJRN72g
 github.com/dogmatiq/projectionkit v0.6.3/go.mod h1:+Zu0fgAHoX9apVKGKNBn0wU/0zTZP29J6qkkVCJnC3o=
 github.com/dogmatiq/sqltest v0.3.0 h1:DCwyLWfVk/ZHsqq5Itq3H/Lqsh/CIQ6nIRwI4YLywFc=
 github.com/dogmatiq/sqltest v0.3.0/go.mod h1:a8Da8NhU4m3lq5Sybhiv+ZQowSnGHWTIJHFNInVtffg=
-github.com/dogmatiq/testkit v0.13.1 h1:Dc5eaY79dYtJT8mQF2j0j2hlxPR901zQ/jje8PHlh0E=
-github.com/dogmatiq/testkit v0.13.1/go.mod h1:VFRfrjEDK46ZpgswFg3OGsjO5iDYYvm+pf/fQp1QnZo=
+github.com/dogmatiq/testkit v0.13.2 h1:XLG3XbcwkageQU9++42ZJR8dJBFMh+g2glD2g8Qwmac=
+github.com/dogmatiq/testkit v0.13.2/go.mod h1:VFRfrjEDK46ZpgswFg3OGsjO5iDYYvm+pf/fQp1QnZo=
 github.com/emicklei/dot v0.10.1/go.mod h1:kZg82Ikwc4pqb31Ct2yb0B7RUqxh3JESIXw2uWSv/xY=
 github.com/emicklei/dot v0.15.0 h1:XDBW0Xco1QNyRb33cqLe10cT04yMWL1XpCZfa98Q6Og=
 github.com/emicklei/dot v0.15.0/go.mod h1:DeV7GvQtIw4h2u73RKBkkFdvVAz0D9fzeJrgPW6gy/s=
