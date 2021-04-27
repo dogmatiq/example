@@ -8,6 +8,6 @@ require (
 	github.com/dogmatiq/graphkit v0.4.0
 	github.com/dogmatiq/projectionkit v0.6.3
 	github.com/dogmatiq/sqltest v0.3.0
-	github.com/dogmatiq/testkit v0.13.4
+	github.com/dogmatiq/testkit v0.13.5
 	github.com/mattn/go-sqlite3 v1.14.7
 )
