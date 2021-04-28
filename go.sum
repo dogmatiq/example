@@ -15,8 +15,8 @@ github.com/dogmatiq/configkit v0.11.0 h1:oMA1QWZEfCxVRVEz/nfBiEOndGXzS0DqohxwxKj
 github.com/dogmatiq/configkit v0.11.0/go.mod h1:D6lk29dCR31uGbmJPiA9bHT10+liEyPp7WKK/80W/w4=
 github.com/dogmatiq/cosyne v0.2.0 h1:tO957BpS4I9kqSw31ds6Ef4CXvV8zPAqWzbXKElsGWg=
 github.com/dogmatiq/cosyne v0.2.0/go.mod h1:dD8EZjbRX7FFw9t6P7l1nwoZbA7YxtOCfl9ZZAHPucU=
-github.com/dogmatiq/dapper v0.4.2 h1:9tdWCBMgUJRU6O21IkKeQtLBbSy5Q8GrdQ/TxhJc6xM=
-github.com/dogmatiq/dapper v0.4.2/go.mod h1:U32cRxzGYI5owhc/hMKjYLgBTVCdW/s3MdFJHwfDrLQ=
+github.com/dogmatiq/dapper v0.4.3 h1:oPsujPAZ0azfkbRwq+u4ZbBWP37/3x/hqMqAUh7pZHE=
+github.com/dogmatiq/dapper v0.4.3/go.mod h1:WQJq8/dsMAvH2QHEcm59w/UeUPvxw5waGMy9KYWunL4=
 github.com/dogmatiq/dogma v0.10.0/go.mod h1:8TdjQ5jjV2DcCPb/jjHPgSrqU66H6092yMEIF5HGx0g=
 github.com/dogmatiq/dogma v0.11.0/go.mod h1:8TdjQ5jjV2DcCPb/jjHPgSrqU66H6092yMEIF5HGx0g=
 github.com/dogmatiq/dogma v0.11.1 h1:N80eSyJ6uk7Bi20pZa4TJ5W/0B83ZgMLblENLB0Pv6U=
@@ -30,8 +30,8 @@ github.com/dogmatiq/projectionkit v0.6.3 h1:X6bR35lHbR5z4e3Jt3QQwU+MSDHahOJRN72g
 github.com/dogmatiq/projectionkit v0.6.3/go.mod h1:+Zu0fgAHoX9apVKGKNBn0wU/0zTZP29J6qkkVCJnC3o=
 github.com/dogmatiq/sqltest v0.3.0 h1:DCwyLWfVk/ZHsqq5Itq3H/Lqsh/CIQ6nIRwI4YLywFc=
 github.com/dogmatiq/sqltest v0.3.0/go.mod h1:a8Da8NhU4m3lq5Sybhiv+ZQowSnGHWTIJHFNInVtffg=
-github.com/dogmatiq/testkit v0.13.5 h1:Q/wYk7XYntqV3s+j9Iwx7yPGwJ6ktim6IP8DVFColsQ=
-github.com/dogmatiq/testkit v0.13.5/go.mod h1:ddXZiSvJ1sNQz25F+WogJxU30DKGwYkLd706kLMCRys=
+github.com/dogmatiq/testkit v0.13.6 h1:+33qnyd3ljsis5IfdALMgu6WO6yiw6jRAFPexLHfEIo=
+github.com/dogmatiq/testkit v0.13.6/go.mod h1:tX2YxPXYGbXiKLupD1dek1/64hMXNhKKtPsKYmaS5yE=
 github.com/emicklei/dot v0.15.0/go.mod h1:DeV7GvQtIw4h2u73RKBkkFdvVAz0D9fzeJrgPW6gy/s=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
@@ -240,7 +240,6 @@ golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb/go.mod h1:sp8m0HH+o8qH0wwXwY
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
-golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20180830151530-49385e6e1522/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
