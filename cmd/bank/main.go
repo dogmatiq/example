@@ -5,14 +5,19 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"net"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/harpy"
+	"github.com/dogmatiq/harpy/transport/httptransport"
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 	"github.com/dogmatiq/verity"
 	"github.com/dogmatiq/verity/persistence/sqlpersistence"
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
@@ -57,16 +62,45 @@ func run(ctx context.Context) error {
 		return err
 	}
 
+	g, ctx := errgroup.WithContext(ctx)
+
 	// Run the verity engine using the PostgreSQL database for persistence.
-	return verity.Run(
-		ctx,
-		&example.App{
-			ReadDB: db,
-		},
-		verity.WithPersistence(
-			&sqlpersistence.Provider{
-				DB: db,
+	g.Go(func() error {
+		return verity.Run(
+			ctx,
+			&example.App{
+				ReadDB: db,
 			},
-		),
-	)
+			verity.WithPersistence(
+				&sqlpersistence.Provider{
+					DB: db,
+				},
+			),
+		)
+	})
+
+	// Run the JSON-RPC API server.
+	g.Go(func() error {
+		port := os.Getenv("API_PORT")
+		if port == "" {
+			port = "3001"
+		}
+
+		server := &http.Server{
+			Addr: net.JoinHostPort("", port),
+			Handler: &httptransport.Handler{
+				Exchanger: harpy.Router{},
+			},
+		}
+
+		go func() {
+			<-ctx.Done()
+			server.Close()
+		}()
+
+		fmt.Printf("listening for JSON RPC requests on %s\n", server.Addr)
+		return server.ListenAndServe()
+	})
+
+	return g.Wait()
 }
