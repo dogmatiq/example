@@ -11,12 +11,12 @@ type accountListHandler struct {
 }
 
 type accountList struct {
-	Accounts []account
+	Accounts []account `json:"accounts"`
 }
 
 type account struct {
-	Number string
-	Name   string
+	Number string `json:"number"`
+	Name   string `json:"name"`
 }
 
 func (h *accountListHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
