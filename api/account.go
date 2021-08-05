@@ -21,8 +21,9 @@ type accountListResponse struct {
 }
 
 type accountListEntry struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Balance int64  `json:"balance"`
 }
 
 func (h *accountListHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -30,7 +31,8 @@ func (h *accountListHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 		req.Context(),
 		`SELECT
 			account_id,
-			name
+			name,
+			balance
 		FROM bank.account
 		ORDER BY name`,
 		// TODO: add customer_id to WHERE clause
@@ -49,6 +51,7 @@ func (h *accountListHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 		if err := rows.Scan(
 			&entry.ID,
 			&entry.Name,
+			&entry.Balance,
 		); err != nil {
 			writeError(w, err)
 			return
@@ -74,6 +77,8 @@ func (h *AccountListProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.Identity("account-list", "79bd71fe-ff48-41c7-9c49-10e09e2bca85")
 
 	c.ConsumesEventType(events.AccountOpened{})
+	c.ConsumesEventType(events.AccountCredited{})
+	c.ConsumesEventType(events.AccountDebited{})
 }
 
 func (h *AccountListProjectionHandler) HandleEvent(
@@ -98,6 +103,29 @@ func (h *AccountListProjectionHandler) HandleEvent(
 			m.AccountName,
 		)
 		return err
+
+	case events.AccountCredited:
+		_, err := tx.ExecContext(
+			ctx,
+			`UPDATE bank.account SET
+				balance = balance + $1
+			WHERE account_id = $2`,
+			m.Amount,
+			m.AccountID,
+		)
+		return err
+
+	case events.AccountDebited:
+		_, err := tx.ExecContext(
+			ctx,
+			`UPDATE bank.account SET
+				balance = balance - $1
+			WHERE account_id = $2`,
+			m.Amount,
+			m.AccountID,
+		)
+		return err
+
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
