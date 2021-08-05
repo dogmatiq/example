@@ -15,16 +15,20 @@ type accountList struct {
 }
 
 type account struct {
-	Number string `json:"number"`
-	Name   string `json:"name"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 func (h *accountListHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	result := accountList{
 		Accounts: []account{
 			{
-				Number: "100",
-				Name:   "Savings",
+				ID:   "ddbc4088-f249-40fe-aa92-72dcef7cacd2",
+				Name: "Savings",
+			},
+			{
+				ID:   "fce1748b-9d69-4bc6-abe9-5ffe6c378c25",
+				Name: "Chequing",
 			},
 		},
 	}
