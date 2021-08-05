@@ -4,7 +4,9 @@ import (
 	"database/sql"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/api"
 	"github.com/dogmatiq/example/domain"
+	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
 
 // App is a dogma.Application implementation for the example "bank" domain.
@@ -18,6 +20,8 @@ type App struct {
 	OpenAccountForNewCustomerProcess domain.OpenAccountForNewCustomerProcessHandler
 	TransferProcess                  domain.TransferProcessHandler
 	WithdrawalProcess                domain.WithdrawalProcessHandler
+
+	AccountListProjection api.AccountListProjectionHandler
 
 	// ReadDB is the database to use for read-models. If it is nil the
 	// projection message handlers are omitted from the application
@@ -38,4 +42,11 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.RegisterProcess(a.OpenAccountForNewCustomerProcess)
 	c.RegisterProcess(a.TransferProcess)
 	c.RegisterProcess(a.WithdrawalProcess)
+
+	c.RegisterProjection(
+		sqlprojection.New(
+			a.ReadDB,
+			&a.AccountListProjection,
+		),
+	)
 }

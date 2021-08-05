@@ -12,8 +12,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dogmatiq/dodeca/logging"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/api"
+	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 	"github.com/dogmatiq/verity"
 	"github.com/dogmatiq/verity/persistence/sqlpersistence"
@@ -38,6 +40,8 @@ func main() {
 }
 
 func run(ctx context.Context) error {
+	logger := logging.DebugLogger
+
 	dsn := os.Getenv("DSN")
 	if dsn == "" {
 		// The default DSN is configured for use with a PostgreSQL server
@@ -70,19 +74,42 @@ func run(ctx context.Context) error {
 
 	g, ctx := errgroup.WithContext(ctx)
 
+	engine := verity.New(
+		&example.App{
+			ReadDB: db,
+		},
+		verity.WithPersistence(
+			&sqlpersistence.Provider{
+				DB: db,
+			},
+		),
+		verity.WithLogger(logger),
+	)
+
 	// Run the verity engine using the PostgreSQL database for persistence.
 	g.Go(func() error {
-		return verity.Run(
-			ctx,
-			&example.App{
-				ReadDB: db,
-			},
-			verity.WithPersistence(
-				&sqlpersistence.Provider{
-					DB: db,
-				},
-			),
-		)
+		return engine.Run(ctx)
+	})
+
+	g.Go(func() error {
+		if err := engine.ExecuteCommand(ctx, commands.OpenAccountForNewCustomer{
+			CustomerID:   "683cd1ad-c9ff-4e76-8463-bab46ad48c92",
+			CustomerName: "Guy Bankman",
+			AccountID:    "d8c9741b-49fa-406a-b207-c000367bd004",
+			AccountName:  "Savings",
+		}); err != nil {
+			return err
+		}
+
+		if err := engine.ExecuteCommand(ctx, commands.OpenAccount{
+			CustomerID:  "683cd1ad-c9ff-4e76-8463-bab46ad48c92",
+			AccountID:   "c361f74c-6c87-45da-b846-be7071ec43ea",
+			AccountName: "Chequing",
+		}); err != nil {
+			return err
+		}
+
+		return nil
 	})
 
 	// Run the JSON-RPC API server.
@@ -94,7 +121,7 @@ func run(ctx context.Context) error {
 
 		server := &http.Server{
 			Addr:    net.JoinHostPort("", port),
-			Handler: api.NewHandler(),
+			Handler: api.NewHandler(db),
 		}
 
 		go func() {
