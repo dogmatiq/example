@@ -1,6 +1,6 @@
 module github.com/dogmatiq/example
 
-go 1.15
+go 1.16
 
 require (
 	github.com/dogmatiq/configkit v0.11.0
@@ -8,5 +8,5 @@ require (
 	github.com/dogmatiq/projectionkit v0.6.3
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.13.6
-	github.com/mattn/go-sqlite3 v1.14.8
+	github.com/jackc/pgx/v4 v4.13.0
 )

@@ -12,7 +12,7 @@ import (
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/testkit/engine"
 	"github.com/dogmatiq/testkit/fact"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 func main() {

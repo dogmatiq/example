@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"os"
 
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
@@ -15,7 +16,15 @@ import (
 func New() (*sql.DB, error) {
 	ctx := context.Background()
 
-	db, err := sql.Open("sqlite3", "file:artifacts/bank.sqlite3?mode=rwc")
+	dsn := os.Getenv("DSN")
+	if dsn == "" {
+		// The default DSN is configured for use with a PostgreSQL server
+		// running under docker as the docker stack configuratin in
+		// https://github.com/dogmatiq/sqltest.
+		dsn = "user=postgres password=rootpass sslmode=disable host=127.0.0.1 port=25432"
+	}
+
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}

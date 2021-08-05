@@ -20,7 +20,21 @@ jobs:
       uses: actions/checkout@v1
     - name: Make
       run: make ci
+      env:
+        DSN: "user=postgres password=rootpass sslmode=disable host=127.0.0.1 port=${{ job.services.postgres.ports['5432'] }}"
     - name: Upload Coverage Reports
       if: success()
       run: |
         [[ -z "${{ secrets.CODECOV_TOKEN }}" ]] || bash <(curl -s https://codecov.io/bash) -t "${{ secrets.CODECOV_TOKEN }}" -B "${{ github.ref }}"
+  services:
+    postgres:
+      image: postgres:13
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 2s
+        --health-timeout 10s
+        --health-retries 10
+      env:
+        POSTGRES_PASSWORD: rootpass
+      ports:
+      - 5432/tcp
