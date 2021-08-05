@@ -11,8 +11,7 @@ import (
 	"time"
 
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/harpy"
-	"github.com/dogmatiq/harpy/transport/httptransport"
+	"github.com/dogmatiq/example/api"
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 	"github.com/dogmatiq/verity"
 	"github.com/dogmatiq/verity/persistence/sqlpersistence"
@@ -87,10 +86,8 @@ func run(ctx context.Context) error {
 		}
 
 		server := &http.Server{
-			Addr: net.JoinHostPort("", port),
-			Handler: &httptransport.Handler{
-				Exchanger: harpy.Router{},
-			},
+			Addr:    net.JoinHostPort("", port),
+			Handler: api.NewHandler(),
 		}
 
 		go func() {
@@ -98,7 +95,7 @@ func run(ctx context.Context) error {
 			server.Close()
 		}()
 
-		fmt.Printf("listening for JSON RPC requests on %s\n", server.Addr)
+		fmt.Printf("listening for API requests on %s\n", server.Addr)
 		return server.ListenAndServe()
 	})
 
