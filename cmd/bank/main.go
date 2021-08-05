@@ -109,6 +109,22 @@ func run(ctx context.Context) error {
 			return err
 		}
 
+		if err := engine.ExecuteCommand(ctx, commands.Deposit{
+			TransactionID: "2c0390fa-beaa-4273-9ab5-a604a4238d1e",
+			AccountID:     "d8c9741b-49fa-406a-b207-c000367bd004",
+			Amount:        123456,
+		}); err != nil {
+			return err
+		}
+
+		if err := engine.ExecuteCommand(ctx, commands.Deposit{
+			TransactionID: "b1906181-c9db-493d-b39c-a3ccd7808047",
+			AccountID:     "c361f74c-6c87-45da-b846-be7071ec43ea",
+			Amount:        1234567,
+		}); err != nil {
+			return err
+		}
+
 		return nil
 	})
 
