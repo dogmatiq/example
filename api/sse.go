@@ -58,9 +58,14 @@ func (h *AccountListSSEProjectionHandler) Subscribe(req *http.Request, w http.Re
 		return
 	}
 
+	if resumeAt > h.version {
+		http.Error(w, "Last-Event-ID is in the future!", http.StatusNotFound)
+		return
+	}
+
 	oldest := 1 + h.version - len(h.events)
 	if resumeAt < oldest {
-		http.Error(w, "Last-Event-ID is too old!", http.StatusNotFound)
+		http.Error(w, "Last-Event-ID is too far in the past!", http.StatusNotFound)
 		return
 	}
 
