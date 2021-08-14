@@ -60,7 +60,7 @@ func (h *AccountListSSEProjectionHandler) Subscribe(req *http.Request, w http.Re
 		}
 
 		fmt.Printf("sending state at %d\n", h.version)
-		writeSSE(w, h.version, "state", data)
+		writeSSE(w, h.version, "domain-state", data)
 		return
 	}
 
