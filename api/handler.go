@@ -8,9 +8,10 @@ import (
 )
 
 // NewHandler returns an HTTP handler that serves API requests.
-func NewHandler(db *sql.DB) http.Handler {
+func NewHandler(db *sql.DB, sub Subscribable) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/x/accounts", &accountListHandler{DB: db})
+	mux.Handle("/x/accounts.sse", &accountListSSEHandler{Subscribable: sub})
 
 	return mux
 }

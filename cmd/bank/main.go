@@ -19,6 +19,7 @@ import (
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 	"github.com/dogmatiq/verity"
 	"github.com/dogmatiq/verity/persistence/sqlpersistence"
+	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"golang.org/x/sync/errgroup"
 )
@@ -40,7 +41,7 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	logger := logging.DebugLogger
+	logger := logging.DefaultLogger
 
 	dsn := os.Getenv("DSN")
 	if dsn == "" {
@@ -74,10 +75,12 @@ func run(ctx context.Context) error {
 
 	g, ctx := errgroup.WithContext(ctx)
 
+	app := &example.App{
+		ReadDB: db,
+	}
+
 	engine := verity.New(
-		&example.App{
-			ReadDB: db,
-		},
+		app,
 		verity.WithPersistence(
 			&sqlpersistence.Provider{
 				DB: db,
@@ -100,6 +103,8 @@ func run(ctx context.Context) error {
 		}); err != nil {
 			return err
 		}
+
+		time.Sleep(10 * time.Second)
 
 		if err := engine.ExecuteCommand(ctx, commands.OpenAccount{
 			CustomerID:  "683cd1ad-c9ff-4e76-8463-bab46ad48c92",
@@ -125,7 +130,23 @@ func run(ctx context.Context) error {
 			return err
 		}
 
-		return nil
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-ticker.C:
+				if err := engine.ExecuteCommand(ctx, commands.Deposit{
+					TransactionID: uuid.NewString(),
+					AccountID:     "c361f74c-6c87-45da-b846-be7071ec43ea",
+					Amount:        100,
+				}); err != nil {
+					return err
+				}
+			}
+		}
 	})
 
 	// Run the JSON-RPC API server.
@@ -137,7 +158,7 @@ func run(ctx context.Context) error {
 
 		server := &http.Server{
 			Addr:    net.JoinHostPort("", port),
-			Handler: api.NewHandler(db),
+			Handler: api.NewHandler(db, &app.AccountListSSEProjection),
 		}
 
 		go func() {

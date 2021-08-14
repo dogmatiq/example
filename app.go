@@ -21,7 +21,8 @@ type App struct {
 	TransferProcess                  domain.TransferProcessHandler
 	WithdrawalProcess                domain.WithdrawalProcessHandler
 
-	AccountListProjection api.AccountListProjectionHandler
+	AccountListProjection    api.AccountListProjectionHandler
+	AccountListSSEProjection api.AccountListSSEProjectionHandler
 
 	// ReadDB is the database to use for read-models. If it is nil the
 	// projection message handlers are omitted from the application
@@ -49,4 +50,6 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 			&a.AccountListProjection,
 		),
 	)
+
+	c.RegisterProjection(&a.AccountListSSEProjection)
 }

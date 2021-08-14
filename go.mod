@@ -8,6 +8,7 @@ require (
 	github.com/dogmatiq/projectionkit v0.6.3
 	github.com/dogmatiq/testkit v0.13.6
 	github.com/dogmatiq/verity v0.0.0-20210805092647-54625f045d75
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jackc/pgx/v4 v4.13.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 )
