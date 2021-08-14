@@ -53,14 +53,8 @@ func (h *AccountListSSEProjectionHandler) Subscribe(req *http.Request, w http.Re
 	h.subscribers[req] = w
 
 	if resumeAt == 0 {
-		data, err := json.Marshal(h.state)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		fmt.Printf("sending state at %d\n", h.version)
-		writeSSE(w, h.version, "domain-state", data)
+		writeSSE(w, h.version, "state", h.state)
 		return
 	}
 
@@ -73,7 +67,7 @@ func (h *AccountListSSEProjectionHandler) Subscribe(req *http.Request, w http.Re
 	index := resumeAt - oldest
 	for _, ev := range h.events[index:] {
 		fmt.Printf("sending event at %d\n", resumeAt)
-		writeSSEEvent(w, resumeAt, ev)
+		writeSSEDomainEvent(w, resumeAt, ev)
 		resumeAt++
 	}
 }
@@ -144,7 +138,7 @@ func (h *AccountListSSEProjectionHandler) HandleEvent(
 	}
 
 	for _, w := range h.subscribers {
-		writeSSEEvent(w, h.version, m)
+		writeSSEDomainEvent(w, h.version, m)
 	}
 
 	if h.resources == nil {
@@ -175,33 +169,30 @@ func (h *AccountListSSEProjectionHandler) CloseResource(ctx context.Context, r [
 func writeSSE(
 	w http.ResponseWriter,
 	version int,
-	event string,
-	data []byte,
+	typ string,
+	params interface{},
 ) {
-	writeSSEField(w, "event", event)
+	data, _ := json.Marshal([]interface{}{
+		typ,
+		params,
+	})
+
 	writeSSEField(w, "data", string(data))
 	writeSSEField(w, "id", strconv.Itoa(version))
 	fmt.Fprintf(w, "\n")
 	w.(http.Flusher).Flush()
 }
 
-func writeSSEEvent(
+func writeSSEDomainEvent(
 	w http.ResponseWriter,
 	version int,
 	m dogma.Message,
 ) {
-	env := []interface{}{
-		reflect.TypeOf(m).String(),
-		m,
-	}
-
-	data, _ := json.Marshal(env)
-
 	writeSSE(
 		w,
 		version,
-		"domain-event",
-		data,
+		reflect.TypeOf(m).String(),
+		m,
 	)
 }
 
