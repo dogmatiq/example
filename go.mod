@@ -5,8 +5,32 @@ go 1.19
 require (
 	github.com/dogmatiq/configkit v0.11.1
 	github.com/dogmatiq/dogma v0.11.1
-	github.com/dogmatiq/projectionkit v0.6.3
+	github.com/dogmatiq/projectionkit v0.6.4
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.13.9
 	github.com/mattn/go-sqlite3 v1.14.16
+)
+
+require (
+	github.com/dogmatiq/cosyne v0.2.0 // indirect
+	github.com/dogmatiq/dapper v0.4.5 // indirect
+	github.com/dogmatiq/iago v0.4.0 // indirect
+	github.com/dogmatiq/linger v1.0.0 // indirect
+	github.com/go-sql-driver/mysql v1.5.0 // indirect
+	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
+	github.com/jackc/pgconn v1.8.0 // indirect
+	github.com/jackc/pgio v1.0.0 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgproto3/v2 v2.0.6 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
+	github.com/jackc/pgtype v1.6.2 // indirect
+	github.com/jackc/pgx/v4 v4.10.0 // indirect
+	github.com/lib/pq v1.9.0 // indirect
+	github.com/sergi/go-diff v1.2.0 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.9.0 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 )
