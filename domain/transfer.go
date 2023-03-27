@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/dogmatiq/dogma"
@@ -200,4 +201,9 @@ type TransferReadyToProceed struct {
 	ToAccountID   string
 	Amount        int64
 	ScheduledFor  time.Time
+}
+
+// MessageDescription returns a human-readable description of the message.
+func (m TransferReadyToProceed) MessageDescription() string {
+	return fmt.Sprintf("transfer %s is ready to proceed", m.TransactionID)
 }
