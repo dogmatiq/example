@@ -2,8 +2,8 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"time"
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
@@ -15,6 +15,7 @@ import (
 type transferProcess struct {
 	FromAccountID string
 	ToAccountID   string
+	Amount        int64
 	DeclineReason messages.DebitFailureReason
 }
 
@@ -89,13 +90,11 @@ func (TransferProcessHandler) HandleEvent(
 	case events.TransferStarted:
 		t.FromAccountID = x.FromAccountID
 		t.ToAccountID = x.ToAccountID
+		t.Amount = x.Amount
 
 		s.ScheduleTimeout(
 			TransferReadyToProceed{
 				TransactionID: x.TransactionID,
-				FromAccountID: x.FromAccountID,
-				Amount:        x.Amount,
-				ScheduledFor:  x.ScheduledTime,
 			},
 			x.ScheduledTime,
 		)
@@ -176,14 +175,16 @@ func (TransferProcessHandler) HandleTimeout(
 	s dogma.ProcessTimeoutScope,
 	m dogma.Message,
 ) error {
+	t := r.(*transferProcess)
+
 	switch x := m.(type) {
 	case TransferReadyToProceed:
 		s.ExecuteCommand(commands.DebitAccount{
 			TransactionID:   x.TransactionID,
-			AccountID:       x.FromAccountID,
+			AccountID:       t.FromAccountID,
 			TransactionType: messages.Transfer,
-			Amount:          x.Amount,
-			ScheduledTime:   x.ScheduledFor,
+			Amount:          t.Amount,
+			ScheduledTime:   s.ScheduledFor(),
 		})
 
 	default:
@@ -197,13 +198,17 @@ func (TransferProcessHandler) HandleTimeout(
 // ready to proceed.
 type TransferReadyToProceed struct {
 	TransactionID string
-	FromAccountID string
-	ToAccountID   string
-	Amount        int64
-	ScheduledFor  time.Time
 }
 
 // MessageDescription returns a human-readable description of the message.
 func (m TransferReadyToProceed) MessageDescription() string {
 	return fmt.Sprintf("transfer %s is ready to proceed", m.TransactionID)
+}
+
+// Validate returns a non-nil error if the message is invalid.
+func (m TransferReadyToProceed) Validate() error {
+	if m.TransactionID == "" {
+		return errors.New("TransferReadyToProceed must not have an empty transaction ID")
+	}
+	return nil
 }
