@@ -77,10 +77,10 @@ func (m TransferStarted) Validate() error {
 		return errors.New("TransferStarted must not have an empty transaction ID")
 	}
 	if m.FromAccountID == "" {
-		return errors.New("TransferStarted must not have an empty from account ID")
+		return errors.New("TransferStarted must not have an empty 'from' account ID")
 	}
 	if m.ToAccountID == "" {
-		return errors.New("TransferStarted must not have an empty to account ID")
+		return errors.New("TransferStarted must not have an empty 'to' account ID")
 	}
 	if m.FromAccountID == m.ToAccountID {
 		return errors.New("TransferStarted from account ID and to account ID must be different")
@@ -98,10 +98,10 @@ func (m TransferApproved) Validate() error {
 		return errors.New("TransferApproved must not have an empty transaction ID")
 	}
 	if m.FromAccountID == "" {
-		return errors.New("TransferApproved must not have an empty from account ID")
+		return errors.New("TransferApproved must not have an empty 'from' account ID")
 	}
 	if m.ToAccountID == "" {
-		return errors.New("TransferApproved must not have an empty to account ID")
+		return errors.New("TransferApproved must not have an empty 'to' account ID")
 	}
 	if m.FromAccountID == m.ToAccountID {
 		return errors.New("TransferApproved from account ID and to account ID must be different")
@@ -119,10 +119,10 @@ func (m TransferDeclined) Validate() error {
 		return errors.New("TransferDeclined must not have an empty transaction ID")
 	}
 	if m.FromAccountID == "" {
-		return errors.New("TransferDeclined must not have an empty from account ID")
+		return errors.New("TransferDeclined must not have an empty 'from' account ID")
 	}
 	if m.ToAccountID == "" {
-		return errors.New("TransferDeclined must not have an empty to account ID")
+		return errors.New("TransferDeclined must not have an empty 'to' account ID")
 	}
 	if m.FromAccountID == m.ToAccountID {
 		return errors.New("TransferDeclined from account ID and to account ID must be different")

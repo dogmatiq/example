@@ -22,20 +22,21 @@ type WithdrawalProcessHandler struct {
 func (WithdrawalProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Identity("withdrawal", "23f70d2b-a289-4e0f-8a83-c0c6a69d11d9")
 
-	c.ConsumesEventType(events.WithdrawalStarted{})
-	c.ConsumesEventType(events.AccountDebited{})
-	c.ConsumesEventType(events.AccountDebitDeclined{})
-	c.ConsumesEventType(events.DailyDebitLimitConsumed{})
-	c.ConsumesEventType(events.DailyDebitLimitExceeded{})
-	c.ConsumesEventType(events.AccountCredited{})
-	c.ConsumesEventType(events.WithdrawalApproved{})
-	c.ConsumesEventType(events.WithdrawalDeclined{})
-
-	c.ProducesCommandType(commands.DebitAccount{})
-	c.ProducesCommandType(commands.ConsumeDailyDebitLimit{})
-	c.ProducesCommandType(commands.CreditAccount{})
-	c.ProducesCommandType(commands.ApproveWithdrawal{})
-	c.ProducesCommandType(commands.DeclineWithdrawal{})
+	c.Routes(
+		dogma.HandlesEvent[events.WithdrawalStarted](),
+		dogma.HandlesEvent[events.AccountDebited](),
+		dogma.HandlesEvent[events.AccountDebitDeclined](),
+		dogma.HandlesEvent[events.DailyDebitLimitConsumed](),
+		dogma.HandlesEvent[events.DailyDebitLimitExceeded](),
+		dogma.HandlesEvent[events.AccountCredited](),
+		dogma.HandlesEvent[events.WithdrawalApproved](),
+		dogma.HandlesEvent[events.WithdrawalDeclined](),
+		dogma.ExecutesCommand[commands.DebitAccount](),
+		dogma.ExecutesCommand[commands.ConsumeDailyDebitLimit](),
+		dogma.ExecutesCommand[commands.CreditAccount](),
+		dogma.ExecutesCommand[commands.ApproveWithdrawal](),
+		dogma.ExecutesCommand[commands.DeclineWithdrawal](),
+	)
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted

@@ -20,9 +20,11 @@ type AccountProjectionHandler struct {
 func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.Identity("account-list", "38dcb02a-3d76-4798-9c2a-186f8764ba19")
 
-	c.ConsumesEventType(events.AccountOpened{})
-	c.ConsumesEventType(events.AccountCredited{})
-	c.ConsumesEventType(events.AccountDebited{})
+	c.Routes(
+		dogma.HandlesEvent[events.AccountOpened](),
+		dogma.HandlesEvent[events.AccountCredited](),
+		dogma.HandlesEvent[events.AccountDebited](),
+	)
 }
 
 // HandleEvent updates the in-memory records to reflect the occurence of m.

@@ -130,23 +130,24 @@ func (TransactionHandler) New() dogma.AggregateRoot {
 func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Identity("transaction", "2afe7484-8eb4-4c02-9c39-c2493e0defb0")
 
-	c.ConsumesCommandType(commands.Deposit{})
-	c.ConsumesCommandType(commands.ApproveDeposit{})
-	c.ConsumesCommandType(commands.Withdraw{})
-	c.ConsumesCommandType(commands.ApproveWithdrawal{})
-	c.ConsumesCommandType(commands.DeclineWithdrawal{})
-	c.ConsumesCommandType(commands.Transfer{})
-	c.ConsumesCommandType(commands.ApproveTransfer{})
-	c.ConsumesCommandType(commands.DeclineTransfer{})
-
-	c.ProducesEventType(events.DepositStarted{})
-	c.ProducesEventType(events.DepositApproved{})
-	c.ProducesEventType(events.WithdrawalStarted{})
-	c.ProducesEventType(events.WithdrawalApproved{})
-	c.ProducesEventType(events.WithdrawalDeclined{})
-	c.ProducesEventType(events.TransferStarted{})
-	c.ProducesEventType(events.TransferApproved{})
-	c.ProducesEventType(events.TransferDeclined{})
+	c.Routes(
+		dogma.HandlesCommand[commands.Deposit](),
+		dogma.HandlesCommand[commands.ApproveDeposit](),
+		dogma.HandlesCommand[commands.Withdraw](),
+		dogma.HandlesCommand[commands.ApproveWithdrawal](),
+		dogma.HandlesCommand[commands.DeclineWithdrawal](),
+		dogma.HandlesCommand[commands.Transfer](),
+		dogma.HandlesCommand[commands.ApproveTransfer](),
+		dogma.HandlesCommand[commands.DeclineTransfer](),
+		dogma.RecordsEvent[events.DepositStarted](),
+		dogma.RecordsEvent[events.DepositApproved](),
+		dogma.RecordsEvent[events.WithdrawalStarted](),
+		dogma.RecordsEvent[events.WithdrawalApproved](),
+		dogma.RecordsEvent[events.WithdrawalDeclined](),
+		dogma.RecordsEvent[events.TransferStarted](),
+		dogma.RecordsEvent[events.TransferApproved](),
+		dogma.RecordsEvent[events.TransferDeclined](),
+	)
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is

@@ -21,9 +21,10 @@ type OpenAccountForNewCustomerProcessHandler struct {
 func (OpenAccountForNewCustomerProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Identity("open-account-for-new-customer", "89b39176-a57f-4071-afad-e0db62137fd3")
 
-	c.ConsumesEventType(events.CustomerAcquired{})
-
-	c.ProducesCommandType(commands.OpenAccount{})
+	c.Routes(
+		dogma.HandlesEvent[events.CustomerAcquired](),
+		dogma.ExecutesCommand[commands.OpenAccount](),
+	)
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted

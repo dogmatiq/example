@@ -70,10 +70,11 @@ func (DailyDebitLimitHandler) New() dogma.AggregateRoot {
 func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Identity("daily-debit-limit", "238c5a7b-b51d-42d8-ac8d-a8c81b780230")
 
-	c.ConsumesCommandType(commands.ConsumeDailyDebitLimit{})
-
-	c.ProducesEventType(events.DailyDebitLimitConsumed{})
-	c.ProducesEventType(events.DailyDebitLimitExceeded{})
+	c.Routes(
+		dogma.HandlesCommand[commands.ConsumeDailyDebitLimit](),
+		dogma.RecordsEvent[events.DailyDebitLimitConsumed](),
+		dogma.RecordsEvent[events.DailyDebitLimitExceeded](),
+	)
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is

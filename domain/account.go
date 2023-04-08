@@ -89,14 +89,15 @@ func (AccountHandler) New() dogma.AggregateRoot {
 func (AccountHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Identity("account", "fcce9a78-23a3-4211-b608-ecbe21ea446f")
 
-	c.ConsumesCommandType(commands.OpenAccount{})
-	c.ConsumesCommandType(commands.CreditAccount{})
-	c.ConsumesCommandType(commands.DebitAccount{})
-
-	c.ProducesEventType(events.AccountOpened{})
-	c.ProducesEventType(events.AccountCredited{})
-	c.ProducesEventType(events.AccountDebited{})
-	c.ProducesEventType(events.AccountDebitDeclined{})
+	c.Routes(
+		dogma.HandlesCommand[commands.OpenAccount](),
+		dogma.HandlesCommand[commands.CreditAccount](),
+		dogma.HandlesCommand[commands.DebitAccount](),
+		dogma.RecordsEvent[events.AccountOpened](),
+		dogma.RecordsEvent[events.AccountCredited](),
+		dogma.RecordsEvent[events.AccountDebited](),
+		dogma.RecordsEvent[events.AccountDebitDeclined](),
+	)
 }
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is

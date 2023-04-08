@@ -34,22 +34,22 @@ func (TransferProcessHandler) New() dogma.ProcessRoot {
 func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Identity("transfer", "35afbe82-24c1-4868-a689-c2ec96c2e953")
 
-	c.ConsumesEventType(events.TransferStarted{})
-	c.ConsumesEventType(events.AccountDebited{})
-	c.ConsumesEventType(events.AccountDebitDeclined{})
-	c.ConsumesEventType(events.DailyDebitLimitConsumed{})
-	c.ConsumesEventType(events.DailyDebitLimitExceeded{})
-	c.ConsumesEventType(events.AccountCredited{})
-	c.ConsumesEventType(events.TransferApproved{})
-	c.ConsumesEventType(events.TransferDeclined{})
-
-	c.ProducesCommandType(commands.DebitAccount{})
-	c.ProducesCommandType(commands.ConsumeDailyDebitLimit{})
-	c.ProducesCommandType(commands.CreditAccount{})
-	c.ProducesCommandType(commands.ApproveTransfer{})
-	c.ProducesCommandType(commands.DeclineTransfer{})
-
-	c.SchedulesTimeoutType(TransferReadyToProceed{})
+	c.Routes(
+		dogma.HandlesEvent[events.TransferStarted](),
+		dogma.HandlesEvent[events.AccountDebited](),
+		dogma.HandlesEvent[events.AccountDebitDeclined](),
+		dogma.HandlesEvent[events.DailyDebitLimitConsumed](),
+		dogma.HandlesEvent[events.DailyDebitLimitExceeded](),
+		dogma.HandlesEvent[events.AccountCredited](),
+		dogma.HandlesEvent[events.TransferApproved](),
+		dogma.HandlesEvent[events.TransferDeclined](),
+		dogma.ExecutesCommand[commands.DebitAccount](),
+		dogma.ExecutesCommand[commands.ConsumeDailyDebitLimit](),
+		dogma.ExecutesCommand[commands.CreditAccount](),
+		dogma.ExecutesCommand[commands.ApproveTransfer](),
+		dogma.ExecutesCommand[commands.DeclineTransfer](),
+		dogma.SchedulesTimeout[TransferReadyToProceed](),
+	)
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted

@@ -41,9 +41,10 @@ type CustomerHandler struct{}
 func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Identity("customer", "f30111d5-f100-4495-90ad-b09746ba8477")
 
-	c.ConsumesCommandType(commands.OpenAccountForNewCustomer{})
-
-	c.ProducesEventType(events.CustomerAcquired{})
+	c.Routes(
+		dogma.HandlesCommand[commands.OpenAccountForNewCustomer](),
+		dogma.RecordsEvent[events.CustomerAcquired](),
+	)
 }
 
 // New returns a new customer instance.

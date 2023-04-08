@@ -22,12 +22,13 @@ type DepositProcessHandler struct {
 func (DepositProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Identity("deposit", "4e50b66b-b2c4-4522-bf15-39756186caee")
 
-	c.ConsumesEventType(events.DepositStarted{})
-	c.ConsumesEventType(events.AccountCredited{})
-	c.ConsumesEventType(events.DepositApproved{})
-
-	c.ProducesCommandType(commands.CreditAccount{})
-	c.ProducesCommandType(commands.ApproveDeposit{})
+	c.Routes(
+		dogma.HandlesEvent[events.DepositStarted](),
+		dogma.HandlesEvent[events.AccountCredited](),
+		dogma.HandlesEvent[events.DepositApproved](),
+		dogma.ExecutesCommand[commands.CreditAccount](),
+		dogma.ExecutesCommand[commands.ApproveDeposit](),
+	)
 }
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
