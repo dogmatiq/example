@@ -7,8 +7,8 @@ github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7Do
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dogmatiq/configkit v0.12.0 h1:fB28zVlt+B0KXWPKBtOznxodfhpY+7kHK3hNz4aULK4=
-github.com/dogmatiq/configkit v0.12.0/go.mod h1:Y1P2CUURkcey3Sl0o6xEOS3X+Tm9SywUHjKIwI96Dc8=
+github.com/dogmatiq/configkit v0.12.1 h1:p992Z+JwdBJ5B4nBllpMQQ3pnbfEjUUvm/g3EuE0dqw=
+github.com/dogmatiq/configkit v0.12.1/go.mod h1:Y1P2CUURkcey3Sl0o6xEOS3X+Tm9SywUHjKIwI96Dc8=
 github.com/dogmatiq/cosyne v0.2.0 h1:tO957BpS4I9kqSw31ds6Ef4CXvV8zPAqWzbXKElsGWg=
 github.com/dogmatiq/cosyne v0.2.0/go.mod h1:dD8EZjbRX7FFw9t6P7l1nwoZbA7YxtOCfl9ZZAHPucU=
 github.com/dogmatiq/dapper v0.4.6 h1:2KH3MFAyIjxqtJ0BS6uZ9e5UkEStq2I5dJ0MqpDFZgg=
