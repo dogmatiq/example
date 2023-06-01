@@ -1,3 +1,5 @@
+CGO_ENABLED := 1
+
 -include .makefiles/Makefile
 -include .makefiles/pkg/go/v1/Makefile
 
