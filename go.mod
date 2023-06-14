@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/dogmatiq/configkit v0.12.1
-	github.com/dogmatiq/dogma v0.12.0
+	github.com/dogmatiq/dogma v0.12.1
 	github.com/dogmatiq/projectionkit v0.6.5
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.13.11
