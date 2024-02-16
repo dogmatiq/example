@@ -1,6 +1,6 @@
 module github.com/dogmatiq/example
 
-go 1.19
+go 1.21
 
 require (
 	github.com/dogmatiq/configkit v0.12.2
