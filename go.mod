@@ -3,21 +3,22 @@ module github.com/dogmatiq/example
 go 1.21
 
 require (
-	github.com/dogmatiq/configkit v0.12.2
-	github.com/dogmatiq/dogma v0.12.1
+	github.com/dogmatiq/configkit v0.13.0
+	github.com/dogmatiq/dogma v0.13.0
 	github.com/dogmatiq/projectionkit v0.7.0
 	github.com/dogmatiq/sqltest v0.3.0
-	github.com/dogmatiq/testkit v0.13.12
+	github.com/dogmatiq/testkit v0.14.0
 	github.com/mattn/go-sqlite3 v1.14.22
 )
 
 require (
 	github.com/dogmatiq/cosyne v0.2.0 // indirect
-	github.com/dogmatiq/dapper v0.5.0 // indirect
+	github.com/dogmatiq/dapper v0.5.1 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
+	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
-	github.com/google/uuid v1.5.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
