@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/dogmatiq/configkit v0.13.0
 	github.com/dogmatiq/dogma v0.13.0
-	github.com/dogmatiq/projectionkit v0.7.0
+	github.com/dogmatiq/projectionkit v0.7.1
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.14.0
 	github.com/mattn/go-sqlite3 v1.14.22
