@@ -23,8 +23,8 @@ github.com/dogmatiq/jumble v0.1.0 h1:Cb3ExfxY+AoUP4G9/sOwoOdYX8o+kOLK8+dhXAry+QA
 github.com/dogmatiq/jumble v0.1.0/go.mod h1:FCGV2ImXu8zvThxhd4QLstiEdu74vbIVw9bFJSBcKr4=
 github.com/dogmatiq/linger v1.1.0 h1:kGL9sL79qRa6Cr8PhadeJ/ptbum+b48pAaNWWlyVVKg=
 github.com/dogmatiq/linger v1.1.0/go.mod h1:OOWJUwTxNkFolhuVdaTYjO4FmFLjZHZ8EMc5H5qOJ7Q=
-github.com/dogmatiq/projectionkit v0.7.0 h1:BmfYdixw6Ffb7wChLl2RHxuaHzwFVhBEG2EaMXLDmZU=
-github.com/dogmatiq/projectionkit v0.7.0/go.mod h1:B69avQlY/fuQn1lgZrBGJiIqCEibL6x5G+7NjJMvRaY=
+github.com/dogmatiq/projectionkit v0.7.1 h1:PTy3kSJEJzQoYSdRbItQCekbd0f2xSw0ZF5hMWM7jvU=
+github.com/dogmatiq/projectionkit v0.7.1/go.mod h1:u6qBJmV7nHipD9VGSMrOtQ5gyHkWaV/gEFmCJmOkChQ=
 github.com/dogmatiq/sqltest v0.3.0 h1:DCwyLWfVk/ZHsqq5Itq3H/Lqsh/CIQ6nIRwI4YLywFc=
 github.com/dogmatiq/sqltest v0.3.0/go.mod h1:a8Da8NhU4m3lq5Sybhiv+ZQowSnGHWTIJHFNInVtffg=
 github.com/dogmatiq/testkit v0.14.0 h1:9TIiD+f2R4p31m8/2hIEsQkefbWowCq5lazi6dq0ods=
