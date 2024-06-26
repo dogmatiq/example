@@ -7,13 +7,13 @@ require (
 	github.com/dogmatiq/dogma v0.13.0
 	github.com/dogmatiq/projectionkit v0.7.1
 	github.com/dogmatiq/sqltest v0.3.0
-	github.com/dogmatiq/testkit v0.14.0
+	github.com/dogmatiq/testkit v0.15.0
 	github.com/mattn/go-sqlite3 v1.14.22
 )
 
 require (
 	github.com/dogmatiq/cosyne v0.2.0 // indirect
-	github.com/dogmatiq/dapper v0.5.1 // indirect
+	github.com/dogmatiq/dapper v0.5.3 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
@@ -31,6 +31,6 @@ require (
 	github.com/sergi/go-diff v1.3.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.20.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 )
