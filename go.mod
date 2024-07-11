@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/dogmatiq/configkit v0.13.0
 	github.com/dogmatiq/dogma v0.13.0
-	github.com/dogmatiq/projectionkit v0.7.1
+	github.com/dogmatiq/projectionkit v0.7.2
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.15.0
 	github.com/mattn/go-sqlite3 v1.14.22
@@ -30,7 +30,7 @@ require (
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.20.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
