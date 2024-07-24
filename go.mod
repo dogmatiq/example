@@ -7,7 +7,7 @@ require (
 	github.com/dogmatiq/dogma v0.13.1
 	github.com/dogmatiq/projectionkit v0.7.3
 	github.com/dogmatiq/sqltest v0.3.0
-	github.com/dogmatiq/testkit v0.15.1
+	github.com/dogmatiq/testkit v0.15.2
 	github.com/mattn/go-sqlite3 v1.14.22
 )
 
