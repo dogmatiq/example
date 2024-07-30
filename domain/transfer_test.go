@@ -11,74 +11,82 @@ import (
 	. "github.com/dogmatiq/testkit"
 )
 
-func Test_Transfer(t *testing.T) {
+func Test_Transfer_Refactor(t *testing.T) {
+	annaCustomerID := "C001"
+	bobCustomerID := "C002"
+
+	annaAccountID := "A001"
+	bobAccountID := "A002"
+
+	openAccountForAnna := ExecuteCommand(commands.OpenAccount{
+		CustomerID:  annaCustomerID,
+		AccountID:   annaAccountID,
+		AccountName: "Anna Smith",
+	})
+
+	openAccountForBob := ExecuteCommand(commands.OpenAccount{
+		CustomerID:  bobCustomerID,
+		AccountID:   bobAccountID,
+		AccountName: "Bob Jones",
+	})
+
+	depositForAnna := ExecuteCommand(commands.Deposit{
+		TransactionID: "D001",
+		AccountID:     annaAccountID,
+		Amount:        500,
+	})
+
+	depositAboveDailyDebitLimitForAnna := ExecuteCommand(commands.Deposit{
+		TransactionID: "D001",
+		AccountID:     annaAccountID,
+		Amount:        expectedDailyDebitLimit + 1,
+	})
+
 	t.Run(
 		"when there are sufficient funds",
 		func(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
 				func(t *testing.T) {
+					var amount int64 = 100
+
+					whenAnnaHasSufficientFundsToTransferToBob := ExecuteCommand(commands.Transfer{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theTransferIsApproved := ToRecordEvent(events.TransferApproved{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+					})
+
+					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theWithdrawalIsApproved := ToRecordEvent(events.WithdrawalApproved{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+					})
+
 					Begin(t, &example.App{}).
 						Prepare(
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C001",
-									AccountID:   "A001",
-									AccountName: "Anna Smith",
-								},
-							),
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C002",
-									AccountID:   "A002",
-									AccountName: "Bob Jones",
-								},
-							),
-							ExecuteCommand(
-								commands.Deposit{
-									TransactionID: "D001",
-									AccountID:     "A001",
-									Amount:        500,
-								},
-							),
+							openAccountForAnna,
+							openAccountForBob,
+							depositForAnna,
 						).
-						Expect(
-							ExecuteCommand(
-								commands.Transfer{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        100,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.TransferApproved{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        100,
-								},
-							),
-						).
-						// verify that funds are availalbe
-						Expect(
-							ExecuteCommand(
-								commands.Withdraw{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.WithdrawalApproved{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-								},
-							),
-						)
+						Expect(whenAnnaHasSufficientFundsToTransferToBob, theTransferIsApproved).
+						// verify that funds are available
+						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsApproved)
 				},
 			)
 		},
@@ -90,69 +98,47 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it does not transfer any funds from the account",
 				func(t *testing.T) {
+					var amount int64 = 1000
+
+					whenAnnaHasInsufficientFundsToTransferToBob := ExecuteCommand(commands.Transfer{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theTransferIsDeclined := ToRecordEvent(events.TransferDeclined{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+						Reason:        messages.InsufficientFunds,
+					})
+
+					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theWithdrawalIsDeclined := ToRecordEvent(events.WithdrawalDeclined{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+						Reason:        messages.InsufficientFunds,
+					})
+
 					Begin(t, &example.App{}).
 						Prepare(
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C001",
-									AccountID:   "A001",
-									AccountName: "Anna Smith",
-								},
-							),
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C002",
-									AccountID:   "A002",
-									AccountName: "Bob Jones",
-								},
-							),
-							ExecuteCommand(
-								commands.Deposit{
-									TransactionID: "D001",
-									AccountID:     "A001",
-									Amount:        500,
-								},
-							),
+							openAccountForAnna,
+							openAccountForBob,
+							depositForAnna,
 						).
-						Expect(
-							ExecuteCommand(
-								commands.Transfer{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        1000,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.TransferDeclined{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        1000,
-									Reason:        messages.InsufficientFunds,
-								},
-							),
-						).
-						// verify that funds are not availalbe
-						Expect(
-							ExecuteCommand(
-								commands.Withdraw{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.WithdrawalDeclined{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-									Reason:        messages.InsufficientFunds,
-								},
-							),
-						)
+						Expect(whenAnnaHasInsufficientFundsToTransferToBob, theTransferIsDeclined).
+						// verify that funds are not available
+						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsDeclined)
 				},
 			)
 		},
@@ -164,67 +150,45 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds from one account to another",
 				func(t *testing.T) {
+					var amount int64 = expectedDailyDebitLimit
+
+					whenAnnaDoesNotExceedDailyDebitLimitToTransferToBob := ExecuteCommand(commands.Transfer{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theTransferIsApproved := ToRecordEvent(events.TransferApproved{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+					})
+
+					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theWithdrawalIsApproved := ToRecordEvent(events.WithdrawalApproved{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+					})
+
 					Begin(t, &example.App{}).
 						Prepare(
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C001",
-									AccountID:   "A001",
-									AccountName: "Anna Smith",
-								},
-							),
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C002",
-									AccountID:   "A002",
-									AccountName: "Bob Jones",
-								},
-							),
-							ExecuteCommand(
-								commands.Deposit{
-									TransactionID: "T001",
-									AccountID:     "A001",
-									Amount:        expectedDailyDebitLimit + 10000,
-								},
-							),
+							openAccountForAnna,
+							openAccountForBob,
+							depositAboveDailyDebitLimitForAnna,
 						).
-						Expect(
-							ExecuteCommand(
-								commands.Transfer{
-									TransactionID: "T002",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        500,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.TransferApproved{
-									TransactionID: "T002",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        500,
-								},
-							),
-						).
-						// verify that funds are availalbe
-						Expect(
-							ExecuteCommand(
-								commands.Withdraw{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.WithdrawalApproved{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-								},
-							),
-						)
+						Expect(whenAnnaDoesNotExceedDailyDebitLimitToTransferToBob, theTransferIsApproved).
+						// verify that funds are available
+						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsApproved)
 				},
 			)
 		},
@@ -236,69 +200,47 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it does not transfer any funds from the account",
 				func(t *testing.T) {
+					var amount int64 = expectedDailyDebitLimit + 1
+
+					whenAnnaDoesExceedDailyDebitLimitToTransferToBob := ExecuteCommand(commands.Transfer{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theTransferIsDeclined := ToRecordEvent(events.TransferDeclined{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+						Reason:        messages.DailyDebitLimitExceeded,
+					})
+
+					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theWithdrawalIsDeclined := ToRecordEvent(events.WithdrawalDeclined{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+						Reason:        messages.InsufficientFunds,
+					})
+
 					Begin(t, &example.App{}).
 						Prepare(
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C001",
-									AccountID:   "A001",
-									AccountName: "Anna Smith",
-								},
-							),
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C002",
-									AccountID:   "A002",
-									AccountName: "Bob Jones",
-								},
-							),
-							ExecuteCommand(
-								commands.Deposit{
-									TransactionID: "D001",
-									AccountID:     "A001",
-									Amount:        expectedDailyDebitLimit + 10000,
-								},
-							),
+							openAccountForAnna,
+							openAccountForBob,
+							depositAboveDailyDebitLimitForAnna,
 						).
-						Expect(
-							ExecuteCommand(
-								commands.Transfer{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        expectedDailyDebitLimit + 1,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.TransferDeclined{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        expectedDailyDebitLimit + 1,
-									Reason:        messages.DailyDebitLimitExceeded,
-								},
-							),
-						).
-						// verify that funds are not availalbe
-						Expect(
-							ExecuteCommand(
-								commands.Withdraw{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.WithdrawalDeclined{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-									Reason:        messages.InsufficientFunds,
-								},
-							),
-						)
+						Expect(whenAnnaDoesExceedDailyDebitLimitToTransferToBob, theTransferIsDeclined).
+						// verify that funds are not available
+						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsDeclined)
 				},
 			)
 		},
@@ -310,6 +252,44 @@ func Test_Transfer(t *testing.T) {
 			t.Run(
 				"it transfers the funds after the scheduled time",
 				func(t *testing.T) {
+					var amount int64 = 100
+
+					whenAnnaHasScheduledAFutureTransferToBob := ExecuteCommand(commands.Transfer{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
+					})
+
+					theTransferIsNotYetApproved := NoneOf(
+						ToRecordEventOfType(events.TransferApproved{}),
+					)
+
+					whenTimePassesTheScheduledTransferTime := AdvanceTime(
+						ToTime(time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC)),
+					)
+
+					theTransferIsApproved := ToRecordEvent(events.TransferApproved{
+						TransactionID: "T001",
+						FromAccountID: annaAccountID,
+						ToAccountID:   bobAccountID,
+						Amount:        amount,
+					})
+
+					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+						ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+					})
+
+					theWithdrawalIsApproved := ToRecordEvent(events.WithdrawalApproved{
+						TransactionID: "W001",
+						AccountID:     bobAccountID,
+						Amount:        amount,
+					})
+
 					Begin(
 						t,
 						&example.App{},
@@ -318,73 +298,14 @@ func Test_Transfer(t *testing.T) {
 						),
 					).
 						Prepare(
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C001",
-									AccountID:   "A001",
-									AccountName: "Anna Smith",
-								},
-							),
-							ExecuteCommand(
-								commands.OpenAccount{
-									CustomerID:  "C002",
-									AccountID:   "A002",
-									AccountName: "Bob Jones",
-								},
-							),
-							ExecuteCommand(
-								commands.Deposit{
-									TransactionID: "D001",
-									AccountID:     "A001",
-									Amount:        500,
-								},
-							),
+							openAccountForAnna,
+							openAccountForBob,
+							depositForAnna,
 						).
-						Expect(
-							ExecuteCommand(
-								commands.Transfer{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        100,
-									ScheduledTime: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							NoneOf(
-								ToRecordEventOfType(events.TransferApproved{}),
-							),
-						).
-						Expect(
-							AdvanceTime(
-								ToTime(time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC)),
-							),
-							ToRecordEvent(
-								events.TransferApproved{
-									TransactionID: "T001",
-									FromAccountID: "A001",
-									ToAccountID:   "A002",
-									Amount:        100,
-								},
-							),
-						).
-						// verify that funds are availalbe
-						Expect(
-							ExecuteCommand(
-								commands.Withdraw{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-									ScheduledTime: time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC),
-								},
-							),
-							ToRecordEvent(
-								events.WithdrawalApproved{
-									TransactionID: "W001",
-									AccountID:     "A002",
-									Amount:        100,
-								},
-							),
-						)
+						Expect(whenAnnaHasScheduledAFutureTransferToBob, theTransferIsNotYetApproved).
+						Expect(whenTimePassesTheScheduledTransferTime, theTransferIsApproved).
+						// verify that funds are available
+						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsApproved)
 				},
 			)
 		},
