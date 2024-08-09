@@ -67,7 +67,7 @@ func (WithdrawalProcessHandler) RouteEventToInstance(_ context.Context, m dogma.
 // HandleEvent handles an event message that has been routed to this handler.
 func (WithdrawalProcessHandler) HandleEvent(
 	_ context.Context,
-	r dogma.ProcessRoot,
+	_ dogma.ProcessRoot,
 	s dogma.ProcessEventScope,
 	m dogma.Message,
 ) error {

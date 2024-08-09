@@ -170,7 +170,7 @@ func (TransferProcessHandler) HandleEvent(
 
 // HandleTimeout handles a timeout message that has been routed to this handler.
 func (TransferProcessHandler) HandleTimeout(
-	ctx context.Context,
+	_ context.Context,
 	r dogma.ProcessRoot,
 	s dogma.ProcessTimeoutScope,
 	m dogma.Message,
