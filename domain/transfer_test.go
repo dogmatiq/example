@@ -53,7 +53,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = 100
 
-					whenAnnaSendsTransferToBobWithSufficientFunds := ExecuteCommand(commands.Transfer{
+					annaTransferToBobWithSufficientFunds := ExecuteCommand(commands.Transfer{
 						TransactionID: transactionID,
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -90,7 +90,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 							depositForAnna,
 						).
 						Expect(
-							whenAnnaSendsTransferToBobWithSufficientFunds,
+							annaTransferToBobWithSufficientFunds,
 							AllOf(
 								theTransferIsApproved,
 								annaIsDebited,
@@ -110,7 +110,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = 1000
 
-					whenAnnaSendsTransferToBobWithInsufficientFunds := ExecuteCommand(commands.Transfer{
+					annaTransferToBobWithInsufficientFunds := ExecuteCommand(commands.Transfer{
 						TransactionID: transactionID,
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -126,8 +126,10 @@ func Test_Transfer_Refactor(t *testing.T) {
 						Reason:        messages.InsufficientFunds,
 					})
 
-					annaIsDebited := ToRecordEventOfType(events.AccountDebited{})
-					bobIsCredited := ToRecordEventOfType(events.AccountCredited{})
+					theAccountsDoNotGetDebitedOrCredited := NoneOf(
+						ToRecordEventOfType(events.AccountDebited{}),  // anna
+						ToRecordEventOfType(events.AccountCredited{}), // bob
+					)
 
 					Begin(t, &example.App{}).
 						Prepare(
@@ -136,13 +138,10 @@ func Test_Transfer_Refactor(t *testing.T) {
 							depositForAnna,
 						).
 						Expect(
-							whenAnnaSendsTransferToBobWithInsufficientFunds,
+							annaTransferToBobWithInsufficientFunds,
 							AllOf(
 								theTransferIsDeclined,
-								NoneOf(
-									annaIsDebited,
-									bobIsCredited,
-								),
+								theAccountsDoNotGetDebitedOrCredited,
 							),
 						)
 				},
@@ -158,7 +157,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = expectedDailyDebitLimit
 
-					whenAnnaSendsTransferToBobWithoutExceedingDailyDebitLimit := ExecuteCommand(commands.Transfer{
+					annaTransferToBobWithoutExceedingDailyDebitLimit := ExecuteCommand(commands.Transfer{
 						TransactionID: transactionID,
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -195,7 +194,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 							depositAboveDailyDebitLimitForAnna,
 						).
 						Expect(
-							whenAnnaSendsTransferToBobWithoutExceedingDailyDebitLimit,
+							annaTransferToBobWithoutExceedingDailyDebitLimit,
 							AllOf(
 								theTransferIsApproved,
 								annaIsDebited,
@@ -215,7 +214,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = expectedDailyDebitLimit + 1
 
-					whenAnnaSendsTransferToBobAndExceedsDailyDebitLimit := ExecuteCommand(commands.Transfer{
+					annaTransferToBobAndExceedsDailyDebitLimit := ExecuteCommand(commands.Transfer{
 						TransactionID: transactionID,
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -245,12 +244,10 @@ func Test_Transfer_Refactor(t *testing.T) {
 							depositAboveDailyDebitLimitForAnna,
 						).
 						Expect(
-							whenAnnaSendsTransferToBobAndExceedsDailyDebitLimit,
+							annaTransferToBobAndExceedsDailyDebitLimit,
 							AllOf(
 								theTransferIsDeclined,
-								NoneOf(
-									bobIsCredited,
-								),
+								NoneOf(bobIsCredited),
 							),
 						)
 				},
@@ -268,7 +265,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 					startTime := time.Date(2001, time.February, 3, 11, 22, 33, 0, time.UTC)
 					timeInFuture := time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC)
 
-					whenAnnaSendsTransferToBobScheduledInTheFuture := ExecuteCommand(commands.Transfer{
+					annaTransferToBobScheduledInTheFuture := ExecuteCommand(commands.Transfer{
 						TransactionID: transactionID,
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -317,7 +314,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 							depositForAnna,
 						).
 						Expect(
-							whenAnnaSendsTransferToBobScheduledInTheFuture,
+							annaTransferToBobScheduledInTheFuture,
 							AllOf(
 								theTransferIsNotYetApproved,
 								NoneOf(
