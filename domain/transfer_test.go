@@ -50,7 +50,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = 100
 
-					whenAnnaHasSufficientFundsToTransferToBob := ExecuteCommand(commands.Transfer{
+					whenAnnaSendsTransferToBobWithSufficientFunds := ExecuteCommand(commands.Transfer{
 						TransactionID: "T001",
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -65,7 +65,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 						Amount:        amount,
 					})
 
-					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+					whenBobTriesWithdrawingTheTransferredFunds := ExecuteCommand(commands.Withdraw{
 						TransactionID: "W001",
 						AccountID:     bobAccountID,
 						Amount:        amount,
@@ -84,9 +84,9 @@ func Test_Transfer_Refactor(t *testing.T) {
 							openAccountForBob,
 							depositForAnna,
 						).
-						Expect(whenAnnaHasSufficientFundsToTransferToBob, theTransferIsApproved).
+						Expect(whenAnnaSendsTransferToBobWithSufficientFunds, theTransferIsApproved).
 						// verify that funds are available
-						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsApproved)
+						Expect(whenBobTriesWithdrawingTheTransferredFunds, theWithdrawalIsApproved)
 				},
 			)
 		},
@@ -100,7 +100,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = 1000
 
-					whenAnnaHasInsufficientFundsToTransferToBob := ExecuteCommand(commands.Transfer{
+					whenAnnaSendsTransferToBobWithInsufficientFunds := ExecuteCommand(commands.Transfer{
 						TransactionID: "T001",
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -116,7 +116,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 						Reason:        messages.InsufficientFunds,
 					})
 
-					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+					whenBobTriesWithdrawingTheTransferredFunds := ExecuteCommand(commands.Withdraw{
 						TransactionID: "W001",
 						AccountID:     bobAccountID,
 						Amount:        amount,
@@ -136,9 +136,9 @@ func Test_Transfer_Refactor(t *testing.T) {
 							openAccountForBob,
 							depositForAnna,
 						).
-						Expect(whenAnnaHasInsufficientFundsToTransferToBob, theTransferIsDeclined).
+						Expect(whenAnnaSendsTransferToBobWithInsufficientFunds, theTransferIsDeclined).
 						// verify that funds are not available
-						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsDeclined)
+						Expect(whenBobTriesWithdrawingTheTransferredFunds, theWithdrawalIsDeclined)
 				},
 			)
 		},
@@ -152,7 +152,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = expectedDailyDebitLimit
 
-					whenAnnaDoesNotExceedDailyDebitLimitToTransferToBob := ExecuteCommand(commands.Transfer{
+					whenAnnaSendsTransferToBobWithoutExceedingDailyDebitLimit := ExecuteCommand(commands.Transfer{
 						TransactionID: "T001",
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -167,7 +167,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 						Amount:        amount,
 					})
 
-					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+					whenBobTriesWithdrawingTheTransferredFunds := ExecuteCommand(commands.Withdraw{
 						TransactionID: "W001",
 						AccountID:     bobAccountID,
 						Amount:        amount,
@@ -186,9 +186,9 @@ func Test_Transfer_Refactor(t *testing.T) {
 							openAccountForBob,
 							depositAboveDailyDebitLimitForAnna,
 						).
-						Expect(whenAnnaDoesNotExceedDailyDebitLimitToTransferToBob, theTransferIsApproved).
+						Expect(whenAnnaSendsTransferToBobWithoutExceedingDailyDebitLimit, theTransferIsApproved).
 						// verify that funds are available
-						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsApproved)
+						Expect(whenBobTriesWithdrawingTheTransferredFunds, theWithdrawalIsApproved)
 				},
 			)
 		},
@@ -202,7 +202,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 				func(t *testing.T) {
 					var amount int64 = expectedDailyDebitLimit + 1
 
-					whenAnnaDoesExceedDailyDebitLimitToTransferToBob := ExecuteCommand(commands.Transfer{
+					whenAnnaSendsTransferToBobAndExceedsDailyDebitLimit := ExecuteCommand(commands.Transfer{
 						TransactionID: "T001",
 						FromAccountID: annaAccountID,
 						ToAccountID:   bobAccountID,
@@ -218,7 +218,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 						Reason:        messages.DailyDebitLimitExceeded,
 					})
 
-					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+					whenBobTriesToWithdrawTheTransferredFunds := ExecuteCommand(commands.Withdraw{
 						TransactionID: "W001",
 						AccountID:     bobAccountID,
 						Amount:        amount,
@@ -238,9 +238,9 @@ func Test_Transfer_Refactor(t *testing.T) {
 							openAccountForBob,
 							depositAboveDailyDebitLimitForAnna,
 						).
-						Expect(whenAnnaDoesExceedDailyDebitLimitToTransferToBob, theTransferIsDeclined).
+						Expect(whenAnnaSendsTransferToBobAndExceedsDailyDebitLimit, theTransferIsDeclined).
 						// verify that funds are not available
-						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsDeclined)
+						Expect(whenBobTriesToWithdrawTheTransferredFunds, theWithdrawalIsDeclined)
 				},
 			)
 		},
@@ -277,7 +277,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 						Amount:        amount,
 					})
 
-					whenBobWithdrawsTheTransferredFunds := ExecuteCommand(commands.Withdraw{
+					whenBobTriesWithdrawingTheTransferredFunds := ExecuteCommand(commands.Withdraw{
 						TransactionID: "W001",
 						AccountID:     bobAccountID,
 						Amount:        amount,
@@ -305,7 +305,7 @@ func Test_Transfer_Refactor(t *testing.T) {
 						Expect(whenAnnaHasScheduledAFutureTransferToBob, theTransferIsNotYetApproved).
 						Expect(whenTimePassesTheScheduledTransferTime, theTransferIsApproved).
 						// verify that funds are available
-						Expect(whenBobWithdrawsTheTransferredFunds, theWithdrawalIsApproved)
+						Expect(whenBobTriesWithdrawingTheTransferredFunds, theWithdrawalIsApproved)
 				},
 			)
 		},
