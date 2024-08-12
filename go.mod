@@ -3,7 +3,7 @@ module github.com/dogmatiq/example
 go 1.21
 
 require (
-	github.com/dogmatiq/configkit v0.13.1
+	github.com/dogmatiq/configkit v0.13.2
 	github.com/dogmatiq/dogma v0.13.1
 	github.com/dogmatiq/projectionkit v0.7.3
 	github.com/dogmatiq/sqltest v0.3.0
@@ -31,6 +31,6 @@ require (
 	github.com/sergi/go-diff v1.3.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
