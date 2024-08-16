@@ -1,9 +1,10 @@
 module github.com/dogmatiq/example
 
 go 1.21
+toolchain go1.22.5
 
 require (
-	github.com/dogmatiq/configkit v0.13.2
+	github.com/dogmatiq/configkit v0.13.4
 	github.com/dogmatiq/dogma v0.13.1
 	github.com/dogmatiq/projectionkit v0.7.3
 	github.com/dogmatiq/sqltest v0.3.0
@@ -15,6 +16,7 @@ require (
 	github.com/dogmatiq/cosyne v0.2.0 // indirect
 	github.com/dogmatiq/dapper v0.5.3 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
+	github.com/dogmatiq/interopspec v0.5.4 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
@@ -30,7 +32,11 @@ require (
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
+	google.golang.org/grpc v1.65.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
