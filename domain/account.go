@@ -62,7 +62,7 @@ func (a *account) hasSufficientFunds(amount int64) bool {
 	return a.Balance >= amount
 }
 
-func (a *account) ApplyEvent(m dogma.Message) {
+func (a *account) ApplyEvent(m dogma.Event) {
 	switch x := m.(type) {
 	case events.AccountOpened:
 		a.Opened = true
@@ -102,7 +102,7 @@ func (AccountHandler) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (AccountHandler) RouteCommandToInstance(m dogma.Message) string {
+func (AccountHandler) RouteCommandToInstance(m dogma.Command) string {
 	switch x := m.(type) {
 	case commands.OpenAccount:
 		return x.AccountID
@@ -119,7 +119,7 @@ func (AccountHandler) RouteCommandToInstance(m dogma.Message) string {
 func (AccountHandler) HandleCommand(
 	r dogma.AggregateRoot,
 	s dogma.AggregateCommandScope,
-	m dogma.Message,
+	m dogma.Command,
 ) {
 	a := r.(*account)
 

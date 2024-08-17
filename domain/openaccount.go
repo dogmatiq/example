@@ -13,7 +13,6 @@ import (
 type OpenAccountForNewCustomerProcessHandler struct {
 	dogma.StatelessProcessBehavior
 	dogma.NoTimeoutMessagesBehavior
-	dogma.NoTimeoutHintBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -29,7 +28,10 @@ func (OpenAccountForNewCustomerProcessHandler) Configure(c dogma.ProcessConfigur
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
 // by m.
-func (OpenAccountForNewCustomerProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
+func (OpenAccountForNewCustomerProcessHandler) RouteEventToInstance(
+	_ context.Context,
+	m dogma.Event,
+) (string, bool, error) {
 	switch x := m.(type) {
 	case events.CustomerAcquired:
 		return x.CustomerID, true, nil
@@ -41,9 +43,9 @@ func (OpenAccountForNewCustomerProcessHandler) RouteEventToInstance(_ context.Co
 // HandleEvent handles an event message that has been routed to this handler.
 func (OpenAccountForNewCustomerProcessHandler) HandleEvent(
 	_ context.Context,
-	r dogma.ProcessRoot,
+	_ dogma.ProcessRoot,
 	s dogma.ProcessEventScope,
-	m dogma.Message,
+	m dogma.Event,
 ) error {
 	switch x := m.(type) {
 	case events.CustomerAcquired:

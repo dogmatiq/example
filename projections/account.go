@@ -12,7 +12,6 @@ import (
 // AccountProjectionHandler is a projection that builds a report of accounts
 // managed by the bank.
 type AccountProjectionHandler struct {
-	dogma.NoTimeoutHintBehavior
 	sqlprojection.NoCompactBehavior
 }
 
@@ -31,8 +30,8 @@ func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 func (h *AccountProjectionHandler) HandleEvent(
 	ctx context.Context,
 	tx *sql.Tx,
-	s dogma.ProjectionEventScope,
-	m dogma.Message,
+	_ dogma.ProjectionEventScope,
+	m dogma.Event,
 ) error {
 	switch x := m.(type) {
 	case events.AccountOpened:

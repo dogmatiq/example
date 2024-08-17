@@ -26,7 +26,7 @@ func (c *customer) Acquire(s dogma.AggregateCommandScope, m commands.OpenAccount
 	})
 }
 
-func (c *customer) ApplyEvent(m dogma.Message) {
+func (c *customer) ApplyEvent(m dogma.Event) {
 	switch m.(type) {
 	case events.CustomerAcquired:
 		c.Acquired = true
@@ -54,7 +54,7 @@ func (CustomerHandler) New() dogma.AggregateRoot {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (CustomerHandler) RouteCommandToInstance(m dogma.Message) string {
+func (CustomerHandler) RouteCommandToInstance(m dogma.Command) string {
 	switch x := m.(type) {
 	case commands.OpenAccountForNewCustomer:
 		return x.CustomerID
@@ -67,7 +67,7 @@ func (CustomerHandler) RouteCommandToInstance(m dogma.Message) string {
 func (CustomerHandler) HandleCommand(
 	r dogma.AggregateRoot,
 	s dogma.AggregateCommandScope,
-	m dogma.Message,
+	m dogma.Command,
 ) {
 	c := r.(*customer)
 

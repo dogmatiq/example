@@ -12,7 +12,6 @@ import (
 // CustomerProjectionHandler is a projection that builds a report of customers
 // acquired by the bank.
 type CustomerProjectionHandler struct {
-	dogma.NoTimeoutHintBehavior
 	sqlprojection.NoCompactBehavior
 }
 
@@ -29,8 +28,8 @@ func (h *CustomerProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 func (h *CustomerProjectionHandler) HandleEvent(
 	ctx context.Context,
 	tx *sql.Tx,
-	s dogma.ProjectionEventScope,
-	m dogma.Message,
+	_ dogma.ProjectionEventScope,
+	m dogma.Event,
 ) error {
 	switch x := m.(type) {
 	case events.CustomerAcquired:

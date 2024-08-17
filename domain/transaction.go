@@ -103,7 +103,7 @@ func (t *transaction) DeclineTransfer(s dogma.AggregateCommandScope, m commands.
 	})
 }
 
-func (t *transaction) ApplyEvent(m dogma.Message) {
+func (t *transaction) ApplyEvent(m dogma.Event) {
 	switch m.(type) {
 	case events.DepositStarted:
 		t.Started = true
@@ -152,7 +152,7 @@ func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (TransactionHandler) RouteCommandToInstance(m dogma.Message) string {
+func (TransactionHandler) RouteCommandToInstance(m dogma.Command) string {
 	switch x := m.(type) {
 	case commands.Deposit:
 		return x.TransactionID
@@ -180,7 +180,7 @@ func (TransactionHandler) RouteCommandToInstance(m dogma.Message) string {
 func (TransactionHandler) HandleCommand(
 	r dogma.AggregateRoot,
 	s dogma.AggregateCommandScope,
-	m dogma.Message,
+	m dogma.Command,
 ) {
 	t := r.(*transaction)
 

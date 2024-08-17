@@ -28,7 +28,7 @@ func main() {
 		panic(err)
 	}
 
-	messages := []dogma.Message{
+	commands := []dogma.Command{
 		commands.OpenAccountForNewCustomer{
 			CustomerID:   "cust1",
 			CustomerName: "Anna Smith",
@@ -68,7 +68,7 @@ func main() {
 		},
 	}
 
-	for _, m := range messages {
+	for _, m := range commands {
 		err := en.Dispatch(
 			context.Background(),
 			m,

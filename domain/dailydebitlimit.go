@@ -46,7 +46,7 @@ func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
 	return d.TotalDebitsForDay+amount > maximumDailyDebitLimit
 }
 
-func (d *dailyDebitLimit) ApplyEvent(m dogma.Message) {
+func (d *dailyDebitLimit) ApplyEvent(m dogma.Event) {
 	switch x := m.(type) {
 	case events.DailyDebitLimitConsumed:
 		d.TotalDebitsForDay = x.Amount
@@ -79,7 +79,7 @@ func (DailyDebitLimitHandler) Configure(c dogma.AggregateConfigurer) {
 
 // RouteCommandToInstance returns the ID of the aggregate instance that is
 // targetted by m.
-func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
+func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Command) string {
 	switch x := m.(type) {
 	case commands.ConsumeDailyDebitLimit:
 		return fmt.Sprintf("%s:%s", x.Date, x.AccountID)
@@ -92,7 +92,7 @@ func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Message) string {
 func (DailyDebitLimitHandler) HandleCommand(
 	r dogma.AggregateRoot,
 	s dogma.AggregateCommandScope,
-	m dogma.Message,
+	m dogma.Command,
 ) {
 	d := r.(*dailyDebitLimit)
 

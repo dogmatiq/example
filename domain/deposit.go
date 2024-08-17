@@ -14,7 +14,6 @@ import (
 type DepositProcessHandler struct {
 	dogma.StatelessProcessBehavior
 	dogma.NoTimeoutMessagesBehavior
-	dogma.NoTimeoutHintBehavior
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -33,7 +32,10 @@ func (DepositProcessHandler) Configure(c dogma.ProcessConfigurer) {
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
 // by m.
-func (DepositProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
+func (DepositProcessHandler) RouteEventToInstance(
+	_ context.Context,
+	m dogma.Event,
+) (string, bool, error) {
 	switch x := m.(type) {
 	case events.DepositStarted:
 		return x.TransactionID, true, nil
@@ -49,9 +51,9 @@ func (DepositProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Mes
 // HandleEvent handles an event message that has been routed to this handler.
 func (DepositProcessHandler) HandleEvent(
 	_ context.Context,
-	r dogma.ProcessRoot,
+	_ dogma.ProcessRoot,
 	s dogma.ProcessEventScope,
-	m dogma.Message,
+	m dogma.Event,
 ) error {
 	switch x := m.(type) {
 	case events.DepositStarted:

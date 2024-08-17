@@ -21,9 +21,7 @@ type transferProcess struct {
 
 // TransferProcessHandler manages the process of transferring funds between
 // accounts.
-type TransferProcessHandler struct {
-	dogma.NoTimeoutHintBehavior
-}
+type TransferProcessHandler struct{}
 
 // New returns a new transfer instance.
 func (TransferProcessHandler) New() dogma.ProcessRoot {
@@ -54,7 +52,10 @@ func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 
 // RouteEventToInstance returns the ID of the process instance that is targetted
 // by m.
-func (TransferProcessHandler) RouteEventToInstance(_ context.Context, m dogma.Message) (string, bool, error) {
+func (TransferProcessHandler) RouteEventToInstance(
+	_ context.Context,
+	m dogma.Event,
+) (string, bool, error) {
 	switch x := m.(type) {
 	case events.TransferStarted:
 		return x.TransactionID, true, nil
@@ -82,7 +83,7 @@ func (TransferProcessHandler) HandleEvent(
 	_ context.Context,
 	r dogma.ProcessRoot,
 	s dogma.ProcessEventScope,
-	m dogma.Message,
+	m dogma.Event,
 ) error {
 	t := r.(*transferProcess)
 
@@ -157,8 +158,7 @@ func (TransferProcessHandler) HandleEvent(
 			})
 		}
 
-	case events.TransferApproved,
-		events.TransferDeclined:
+	case events.TransferApproved, events.TransferDeclined:
 		s.End()
 
 	default:
@@ -170,10 +170,10 @@ func (TransferProcessHandler) HandleEvent(
 
 // HandleTimeout handles a timeout message that has been routed to this handler.
 func (TransferProcessHandler) HandleTimeout(
-	ctx context.Context,
+	_ context.Context,
 	r dogma.ProcessRoot,
 	s dogma.ProcessTimeoutScope,
-	m dogma.Message,
+	m dogma.Timeout,
 ) error {
 	t := r.(*transferProcess)
 
