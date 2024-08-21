@@ -9,13 +9,13 @@ require (
 	github.com/dogmatiq/dogma v0.14.1
 	github.com/dogmatiq/projectionkit v0.7.4
 	github.com/dogmatiq/sqltest v0.3.0
-	github.com/dogmatiq/testkit v0.16.0
+	github.com/dogmatiq/testkit v0.17.0
 	github.com/mattn/go-sqlite3 v1.14.22
 )
 
 require (
 	github.com/dogmatiq/cosyne v0.2.0 // indirect
-	github.com/dogmatiq/dapper v0.5.3 // indirect
+	github.com/dogmatiq/dapper v0.6.0 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/interopspec v0.5.4 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
