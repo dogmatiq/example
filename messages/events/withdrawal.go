@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
 )
 
@@ -66,7 +67,7 @@ func (m WithdrawalDeclined) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m WithdrawalStarted) Validate() error {
+func (m WithdrawalStarted) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("WithdrawalStarted must not have an empty transaction ID")
 	}
@@ -81,7 +82,7 @@ func (m WithdrawalStarted) Validate() error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m WithdrawalApproved) Validate() error {
+func (m WithdrawalApproved) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("WithdrawalApproved must not have an empty transaction ID")
 	}
@@ -96,7 +97,7 @@ func (m WithdrawalApproved) Validate() error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m WithdrawalDeclined) Validate() error {
+func (m WithdrawalDeclined) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("WithdrawalDeclined must not have an empty transaction ID")
 	}

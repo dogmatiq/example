@@ -5,23 +5,22 @@ go 1.23
 toolchain go1.23.0
 
 require (
-	github.com/dogmatiq/configkit v0.14.0
-	github.com/dogmatiq/dogma v0.14.3
+	github.com/dogmatiq/configkit v0.14.1-0.20240929215230-3af80ab0c2e9
+	github.com/dogmatiq/dogma v0.15.0
 	github.com/dogmatiq/projectionkit v0.7.5
 	github.com/dogmatiq/sqltest v0.3.0
-	github.com/dogmatiq/testkit v0.17.2
+	github.com/dogmatiq/testkit v0.17.3-0.20240926003334-8aa7bdf0aec1
 	github.com/mattn/go-sqlite3 v1.14.23
 )
 
 require (
 	github.com/dogmatiq/cosyne v0.2.0 // indirect
 	github.com/dogmatiq/dapper v0.6.0 // indirect
+	github.com/dogmatiq/enginekit v0.13.1-0.20240929214803-d23339eac9a9 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
-	github.com/dogmatiq/interopspec v0.5.4 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -34,10 +33,6 @@ require (
 	github.com/sergi/go-diff v1.3.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
-	golang.org/x/net v0.29.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
-	google.golang.org/grpc v1.67.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
 )
 
@@ -86,7 +87,7 @@ func (m DebitAccount) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m OpenAccountForNewCustomer) Validate() error {
+func (m OpenAccountForNewCustomer) Validate(dogma.CommandValidationScope) error {
 	if m.CustomerID == "" {
 		return errors.New("OpenAccountForNewCustomer must not have an empty customer ID")
 	}
@@ -104,7 +105,7 @@ func (m OpenAccountForNewCustomer) Validate() error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m OpenAccount) Validate() error {
+func (m OpenAccount) Validate(dogma.CommandValidationScope) error {
 	if m.CustomerID == "" {
 		return errors.New("OpenAccount must not have an empty customer ID")
 	}
@@ -119,7 +120,7 @@ func (m OpenAccount) Validate() error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m CreditAccount) Validate() error {
+func (m CreditAccount) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("CreditAccount must not have an empty transaction ID")
 	}
@@ -137,7 +138,7 @@ func (m CreditAccount) Validate() error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DebitAccount) Validate() error {
+func (m DebitAccount) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DebitAccount must not have an empty transaction ID")
 	}

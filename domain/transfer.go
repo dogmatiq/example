@@ -206,7 +206,7 @@ func (m TransferReadyToProceed) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m TransferReadyToProceed) Validate() error {
+func (m TransferReadyToProceed) Validate(dogma.TimeoutValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("TransferReadyToProceed must not have an empty transaction ID")
 	}
