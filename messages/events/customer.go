@@ -3,6 +3,8 @@ package events
 import (
 	"errors"
 	"fmt"
+
+	"github.com/dogmatiq/dogma"
 )
 
 // CustomerAcquired is an event indicating that a new customer has been
@@ -24,7 +26,7 @@ func (m CustomerAcquired) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m CustomerAcquired) Validate() error {
+func (m CustomerAcquired) Validate(dogma.EventValidationScope) error {
 	if m.CustomerID == "" {
 		return errors.New("CustomerAcquired must not have an empty customer ID")
 	}

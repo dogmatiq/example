@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/internal/validation"
 )
@@ -31,7 +32,7 @@ func (m ConsumeDailyDebitLimit) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m ConsumeDailyDebitLimit) Validate() error {
+func (m ConsumeDailyDebitLimit) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("ConsumeDailyDebitLimit must not have an empty transaction ID")
 	}

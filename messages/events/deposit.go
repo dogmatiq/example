@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
 )
 
@@ -44,7 +45,7 @@ func (m DepositApproved) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DepositStarted) Validate() error {
+func (m DepositStarted) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DepositStarted must not have an empty transaction ID")
 	}
@@ -59,7 +60,7 @@ func (m DepositStarted) Validate() error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DepositApproved) Validate() error {
+func (m DepositApproved) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DepositApproved must not have an empty transaction ID")
 	}
