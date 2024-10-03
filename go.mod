@@ -5,18 +5,18 @@ go 1.23
 toolchain go1.23.0
 
 require (
-	github.com/dogmatiq/configkit v0.14.1-0.20240929215230-3af80ab0c2e9
+	github.com/dogmatiq/configkit v0.15.0
 	github.com/dogmatiq/dogma v0.15.0
 	github.com/dogmatiq/projectionkit v0.7.5
 	github.com/dogmatiq/sqltest v0.3.0
-	github.com/dogmatiq/testkit v0.17.3-0.20240926003334-8aa7bdf0aec1
+	github.com/dogmatiq/testkit v0.18.0
 	github.com/mattn/go-sqlite3 v1.14.23
 )
 
 require (
 	github.com/dogmatiq/cosyne v0.2.0 // indirect
 	github.com/dogmatiq/dapper v0.6.0 // indirect
-	github.com/dogmatiq/enginekit v0.13.1-0.20240929214803-d23339eac9a9 // indirect
+	github.com/dogmatiq/enginekit v0.16.0 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect

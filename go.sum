@@ -9,16 +9,16 @@ github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7Do
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dogmatiq/configkit v0.14.1-0.20240929215230-3af80ab0c2e9 h1:kFoWErDVOq1zLJziPDWdXFldyRM8/4zQwdlQ+dNfQI8=
-github.com/dogmatiq/configkit v0.14.1-0.20240929215230-3af80ab0c2e9/go.mod h1:WhUSbkhYksNVSbn2Q0LIhkY+bFV2BERNTUMVy4Zsjr4=
+github.com/dogmatiq/configkit v0.15.0 h1:aNtfF8bgFEJwGCc/yNGguZetejs1dSmxWVzQw9co/3A=
+github.com/dogmatiq/configkit v0.15.0/go.mod h1:f1tSQPPd+fAgHYuHVChIYhwll95vx9SosY3zF3NRXHo=
 github.com/dogmatiq/cosyne v0.2.0 h1:tO957BpS4I9kqSw31ds6Ef4CXvV8zPAqWzbXKElsGWg=
 github.com/dogmatiq/cosyne v0.2.0/go.mod h1:dD8EZjbRX7FFw9t6P7l1nwoZbA7YxtOCfl9ZZAHPucU=
 github.com/dogmatiq/dapper v0.6.0 h1:hnWUsjnt3nUiC9hmkPvuxrnMd7fYNz1i+/GS3gOx0Xs=
 github.com/dogmatiq/dapper v0.6.0/go.mod h1:ubRHWzt73s0MsPpGhWvnfW/Z/1YPnrkCsQv6CUOZVEw=
 github.com/dogmatiq/dogma v0.15.0 h1:aXOTd2K4wLvlwHc1D9OsFREp0BusNJ9o9KssxURftmg=
 github.com/dogmatiq/dogma v0.15.0/go.mod h1:TF6xisRxQ2RE3JQwFr6MCI4nWLKQQp7KRWXVHOq9K0k=
-github.com/dogmatiq/enginekit v0.13.1-0.20240929214803-d23339eac9a9 h1:CuQ1OBcfZVfnfAZ4zcqCadsOLVtnfCN4vRsprt/Nncw=
-github.com/dogmatiq/enginekit v0.13.1-0.20240929214803-d23339eac9a9/go.mod h1:XsY6KGPIC6zHx1duYDXbHTomqH9y+QOJX/tEiNZE2Qg=
+github.com/dogmatiq/enginekit v0.16.0 h1:1+Fr0117jihoiY2SABsSAGhJYLi8DeNv35rR8PWgBfk=
+github.com/dogmatiq/enginekit v0.16.0/go.mod h1:nODdKEljyHQHDRlwQrKD3NCJ/4y1jFFKYDwJ0yeHcVo=
 github.com/dogmatiq/iago v0.4.0 h1:57nZqVT34IZxtCZEW/RFif7DNUEjMXgevfr/Mmd0N8I=
 github.com/dogmatiq/iago v0.4.0/go.mod h1:fishMWBtzYcjgis6d873VTv9kFm/wHYLOzOyO9ECBDc=
 github.com/dogmatiq/jumble v0.1.0 h1:Cb3ExfxY+AoUP4G9/sOwoOdYX8o+kOLK8+dhXAry+QA=
@@ -29,8 +29,8 @@ github.com/dogmatiq/projectionkit v0.7.5 h1:TURoHeSgADg6lDN2+eHU+E3wTgr9CZ8HksOg
 github.com/dogmatiq/projectionkit v0.7.5/go.mod h1:+5hT6zhWGPEA2BQaq9i1WShdWPHWXbDNrQvfEQDWojQ=
 github.com/dogmatiq/sqltest v0.3.0 h1:DCwyLWfVk/ZHsqq5Itq3H/Lqsh/CIQ6nIRwI4YLywFc=
 github.com/dogmatiq/sqltest v0.3.0/go.mod h1:a8Da8NhU4m3lq5Sybhiv+ZQowSnGHWTIJHFNInVtffg=
-github.com/dogmatiq/testkit v0.17.3-0.20240926003334-8aa7bdf0aec1 h1:TTVpXY2bNFg5wwk6m3JioVLoUrho4ZBbmhW111vzYtw=
-github.com/dogmatiq/testkit v0.17.3-0.20240926003334-8aa7bdf0aec1/go.mod h1:r2ICPCX23WWQXGo9QCtYm61Rb7c7ljyZzz+q3PBKPw8=
+github.com/dogmatiq/testkit v0.18.0 h1:21kG6isYtJ6h/W0GNNe1BHonqkhf4JORJysqd9hbd2M=
+github.com/dogmatiq/testkit v0.18.0/go.mod h1:IvxK70lpFqvf36ckD+FkbZWfVKGi/ZUbnqm5wVZ4d98=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWoS4=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
@@ -312,5 +312,3 @@ gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt0JzvZhAg=
-pgregory.net/rapid v1.1.0 h1:CMa0sjHSru3puNx+J0MIAuiiEV4N0qj8/cMWGBBCsjw=
-pgregory.net/rapid v1.1.0/go.mod h1:PY5XlDGj0+V1FCq0o192FdRhpKHGTRIWBgqjDBTrq04=
