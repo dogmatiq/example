@@ -37,27 +37,31 @@ type App struct {
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.Identity("bank", AppKey)
 
-	c.RegisterAggregate(a.AccountAggregate)
-	c.RegisterAggregate(a.CustomerAggregate)
-	c.RegisterAggregate(a.DailyDebitLimitAggregate)
-	c.RegisterAggregate(a.TransactionAggregate)
+	c.Handlers(
+		dogma.RegisterAggregate(a.AccountAggregate),
+		dogma.RegisterAggregate(a.CustomerAggregate),
+		dogma.RegisterAggregate(a.DailyDebitLimitAggregate),
+		dogma.RegisterAggregate(a.TransactionAggregate),
 
-	c.RegisterProcess(a.DepositProcess)
-	c.RegisterProcess(a.OpenAccountForNewCustomerProcess)
-	c.RegisterProcess(a.TransferProcess)
-	c.RegisterProcess(a.WithdrawalProcess)
+		dogma.RegisterProcess(a.DepositProcess),
+		dogma.RegisterProcess(a.OpenAccountForNewCustomerProcess),
+		dogma.RegisterProcess(a.TransferProcess),
+		dogma.RegisterProcess(a.WithdrawalProcess),
+	)
 
 	if a.ReadDB != nil { // TODO: Remove this when testkit is updated
-		c.RegisterProjection(
-			sqlprojection.New(
-				a.ReadDB,
-				&a.AccountProjection,
+		c.Handlers(
+			dogma.RegisterProjection(
+				sqlprojection.New(
+					a.ReadDB,
+					&a.AccountProjection,
+				),
 			),
-		)
-		c.RegisterProjection(
-			sqlprojection.New(
-				a.ReadDB,
-				&a.CustomerProjection,
+			dogma.RegisterProjection(
+				sqlprojection.New(
+					a.ReadDB,
+					&a.CustomerProjection,
+				),
 			),
 		)
 	}

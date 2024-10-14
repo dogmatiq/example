@@ -6,7 +6,7 @@ toolchain go1.23.0
 
 require (
 	github.com/dogmatiq/configkit v0.16.0
-	github.com/dogmatiq/dogma v0.15.0
+	github.com/dogmatiq/dogma v0.15.1-0.20241014054936-ffedb1e76e66
 	github.com/dogmatiq/projectionkit v0.7.5
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.18.1
