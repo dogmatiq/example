@@ -2,15 +2,13 @@ module github.com/dogmatiq/example
 
 go 1.23
 
-toolchain go1.23.0
-
 require (
 	github.com/dogmatiq/configkit v0.16.0
 	github.com/dogmatiq/dogma v0.15.0
 	github.com/dogmatiq/projectionkit v0.7.5
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.18.1
-	github.com/mattn/go-sqlite3 v1.14.24
+	github.com/mattn/go-sqlite3 v1.14.27
 )
 
 require (
