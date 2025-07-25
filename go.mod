@@ -10,7 +10,7 @@ require (
 	github.com/dogmatiq/projectionkit v0.7.5
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.18.1
-	github.com/mattn/go-sqlite3 v1.14.28
+	github.com/mattn/go-sqlite3 v1.14.29
 )
 
 require (
