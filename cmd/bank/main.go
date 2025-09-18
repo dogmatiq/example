@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dogmatiq/configkit"
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/enginekit/config/runtimeconfig"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/database"
 	"github.com/dogmatiq/example/messages/commands"
@@ -23,7 +23,7 @@ func main() {
 		ReadDB: db,
 	}
 
-	en, err := engine.New(configkit.FromApplication(app))
+	en, err := engine.New(runtimeconfig.FromApplication(app))
 	if err != nil {
 		panic(err)
 	}
