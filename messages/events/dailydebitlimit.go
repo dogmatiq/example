@@ -9,6 +9,11 @@ import (
 	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
+func init() {
+	dogma.RegisterEvent[DailyDebitLimitConsumed]("9b4a1114-817e-42d1-963d-ba6324dd07b2")
+	dogma.RegisterEvent[DailyDebitLimitExceeded]("83c5315e-440d-4d70-a6c8-41f97edc226f")
+}
+
 // DailyDebitLimitConsumed is an event that indicates an amount of an account
 // daily debit limit has been consumed.
 type DailyDebitLimitConsumed struct {

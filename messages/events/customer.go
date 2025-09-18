@@ -7,6 +7,10 @@ import (
 	"github.com/dogmatiq/dogma"
 )
 
+func init() {
+	dogma.RegisterEvent[CustomerAcquired]("ddf33f6c-d120-440e-b611-b86a6c3b80a6")
+}
+
 // CustomerAcquired is an event indicating that a new customer has been
 // acquired.
 type CustomerAcquired struct {

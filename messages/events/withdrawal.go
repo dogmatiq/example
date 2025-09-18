@@ -9,6 +9,12 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterEvent[WithdrawalStarted]("ae327c68-3de9-4fe1-aa39-c4830200602c")
+	dogma.RegisterEvent[WithdrawalApproved]("8551621a-ef28-42aa-b815-d5a448299d38")
+	dogma.RegisterEvent[WithdrawalDeclined]("a87f5f6f-52ec-4eeb-954f-2af97a165181")
+}
+
 // WithdrawalStarted is an event indicating that the process of withdrawing
 // funds from an account has begun.
 type WithdrawalStarted struct {

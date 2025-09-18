@@ -9,6 +9,12 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterCommand[Withdraw]("5528ea57-2fa4-4ddd-ac96-3ec56ec89fce")
+	dogma.RegisterCommand[ApproveWithdrawal]("1023356f-f49c-4ea1-9244-83fdb3225da9")
+	dogma.RegisterCommand[DeclineWithdrawal]("ee1e59ff-ed96-4d66-a1aa-f0a11ca8c47d")
+}
+
 // Withdraw is a command requesting that funds be withdrawn from a bank account.
 type Withdraw struct {
 	TransactionID string

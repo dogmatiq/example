@@ -9,6 +9,13 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterEvent[AccountOpened]("75ef425c-3c42-4ead-8925-cd26cbea3139")
+	dogma.RegisterEvent[AccountCredited]("f3091f46-7d36-4e5f-b0ab-fb96029e5d7a")
+	dogma.RegisterEvent[AccountDebited]("76552351-0095-442e-85dd-68f8f7fae286")
+	dogma.RegisterEvent[AccountDebitDeclined]("34b0c426-5467-44d8-a5db-7d09c789c930")
+}
+
 // AccountOpened is an event indicating that a new bank account has been opened.
 type AccountOpened struct {
 	CustomerID  string
