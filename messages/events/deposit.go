@@ -8,6 +8,11 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterEvent[DepositStarted]("699ae4e6-ea0a-4450-8a04-8ec5248b8042")
+	dogma.RegisterEvent[DepositApproved]("8520d995-5c0e-4905-9bbf-99b5f8028505")
+}
+
 // DepositStarted is an event indicating that the process of depositing funds
 // into an account has begun.
 type DepositStarted struct {

@@ -9,6 +9,10 @@ import (
 	"github.com/dogmatiq/example/messages/internal/validation"
 )
 
+func init() {
+	dogma.RegisterCommand[ConsumeDailyDebitLimit]("d86ca816-6333-4b78-a1d3-9368b3adcf65")
+}
+
 // ConsumeDailyDebitLimit is a command requesting that an amount of an account
 // daily debit limit be consumed.
 type ConsumeDailyDebitLimit struct {

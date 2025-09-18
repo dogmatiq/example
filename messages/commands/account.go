@@ -9,6 +9,13 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterCommand[OpenAccountForNewCustomer]("209ed1ad-4394-4c1a-b36f-7b24fc8b1d1b")
+	dogma.RegisterCommand[OpenAccount]("3d20299c-ba57-4756-8692-f4e3a95fe00d")
+	dogma.RegisterCommand[CreditAccount]("0ffb0a54-eaf5-459c-a58b-76f22b95de2d")
+	dogma.RegisterCommand[DebitAccount]("4209ab99-5f15-45b9-a88f-48bce219b911")
+}
+
 // OpenAccountForNewCustomer is a command requesting that a new bank account be
 // opened for a new customer.
 type OpenAccountForNewCustomer struct {

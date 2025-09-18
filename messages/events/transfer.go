@@ -9,6 +9,12 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterEvent[TransferStarted]("e5a7db39-861a-4a98-b109-a6f4187ac407")
+	dogma.RegisterEvent[TransferApproved]("bcc989cc-4ec7-4175-84dc-24908ac82676")
+	dogma.RegisterEvent[TransferDeclined]("0e43679a-bf5b-4730-a4a0-543e17a67479")
+}
+
 // TransferStarted is an event indicating that the process of transferring funds
 // from one account to another has begun.
 type TransferStarted struct {

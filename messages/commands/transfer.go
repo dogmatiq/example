@@ -9,6 +9,12 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterCommand[Transfer]("5ee87c7b-bde3-4b39-9f12-44968cdb9889")
+	dogma.RegisterCommand[ApproveTransfer]("0d22aaa5-4449-459a-b9b1-c5fb0ce4a990")
+	dogma.RegisterCommand[DeclineTransfer]("d7d069a2-41fc-415e-91dd-7db3affa9f6d")
+}
+
 // Transfer is a command requesting that funds be transferred from one bank
 // account to another.
 type Transfer struct {

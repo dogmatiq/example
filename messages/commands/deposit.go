@@ -8,6 +8,11 @@ import (
 	"github.com/dogmatiq/example/messages"
 )
 
+func init() {
+	dogma.RegisterCommand[Deposit]("0cfac865-a1d9-4fd2-b085-f8fce0053795")
+	dogma.RegisterCommand[ApproveDeposit]("6cd5ee09-b59d-45ef-a8ed-91cb1bb6940a")
+}
+
 // Deposit is a command requesting that funds be deposited into a bank account.
 type Deposit struct {
 	TransactionID string

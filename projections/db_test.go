@@ -10,7 +10,7 @@ import (
 )
 
 func openDB(ctx context.Context) (*sqltest.Database, *sql.DB) {
-	database, err := sqltest.NewDatabase(context.Background(), sqltest.SQLite3Driver, sqltest.SQLite)
+	database, err := sqltest.NewDatabase(ctx, sqltest.SQLite3Driver, sqltest.SQLite)
 	if err != nil {
 		panic(err)
 	}
@@ -20,7 +20,7 @@ func openDB(ctx context.Context) (*sqltest.Database, *sql.DB) {
 		panic(err)
 	}
 
-	if err := sqlprojection.CreateSchema(ctx, db); err != nil {
+	if err := sqlprojection.SQLiteDriver.CreateSchema(ctx, db); err != nil {
 		database.Close()
 		panic(err)
 	}

@@ -35,7 +35,7 @@ func New() (*sql.DB, error) {
 		return nil, err
 	}
 
-	if err := sqlprojection.CreateSchema(ctx, db); err != nil {
+	if err := sqlprojection.SQLiteDriver.CreateSchema(ctx, db); err != nil {
 		db.Close()
 		return nil, err
 	}

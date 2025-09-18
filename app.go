@@ -24,41 +24,27 @@ type App struct {
 	TransferProcess                  domain.TransferProcessHandler
 	WithdrawalProcess                domain.WithdrawalProcessHandler
 
+	ReadDB             *sql.DB
 	AccountProjection  projections.AccountProjectionHandler
 	CustomerProjection projections.CustomerProjectionHandler
-
-	// ReadDB is the database to use for read-models. If it is nil the
-	// projection message handlers are omitted from the application
-	// configuration.
-	ReadDB *sql.DB
 }
 
 // Configure configures the Dogma engine for this application.
 func (a *App) Configure(c dogma.ApplicationConfigurer) {
 	c.Identity("bank", AppKey)
 
-	c.RegisterAggregate(a.AccountAggregate)
-	c.RegisterAggregate(a.CustomerAggregate)
-	c.RegisterAggregate(a.DailyDebitLimitAggregate)
-	c.RegisterAggregate(a.TransactionAggregate)
+	c.Routes(
+		dogma.ViaAggregate(a.AccountAggregate),
+		dogma.ViaAggregate(a.CustomerAggregate),
+		dogma.ViaAggregate(a.DailyDebitLimitAggregate),
+		dogma.ViaAggregate(a.TransactionAggregate),
 
-	c.RegisterProcess(a.DepositProcess)
-	c.RegisterProcess(a.OpenAccountForNewCustomerProcess)
-	c.RegisterProcess(a.TransferProcess)
-	c.RegisterProcess(a.WithdrawalProcess)
+		dogma.ViaProcess(a.DepositProcess),
+		dogma.ViaProcess(a.OpenAccountForNewCustomerProcess),
+		dogma.ViaProcess(a.TransferProcess),
+		dogma.ViaProcess(a.WithdrawalProcess),
 
-	if a.ReadDB != nil { // TODO: Remove this when testkit is updated
-		c.RegisterProjection(
-			sqlprojection.New(
-				a.ReadDB,
-				&a.AccountProjection,
-			),
-		)
-		c.RegisterProjection(
-			sqlprojection.New(
-				a.ReadDB,
-				&a.CustomerProjection,
-			),
-		)
-	}
+		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.AccountProjection)),
+		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.CustomerProjection)),
+	)
 }
