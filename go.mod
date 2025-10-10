@@ -5,8 +5,8 @@ go 1.24.0
 toolchain go1.24.1
 
 require (
-	github.com/dogmatiq/dogma v0.17.0
-	github.com/dogmatiq/enginekit v0.17.0
+	github.com/dogmatiq/dogma v0.17.1
+	github.com/dogmatiq/enginekit v0.18.1
 	github.com/dogmatiq/projectionkit v0.8.0
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.19.0
@@ -35,5 +35,5 @@ require (
 	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
-	google.golang.org/protobuf v1.36.9 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 )
