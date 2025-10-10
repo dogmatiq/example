@@ -29,37 +29,37 @@ func main() {
 	}
 
 	commands := []dogma.Command{
-		commands.OpenAccountForNewCustomer{
+		&commands.OpenAccountForNewCustomer{
 			CustomerID:   "cust1",
 			CustomerName: "Anna Smith",
 			AccountID:    "acct1",
 			AccountName:  "Anna Smith",
 		},
-		commands.OpenAccountForNewCustomer{
+		&commands.OpenAccountForNewCustomer{
 			CustomerID:   "cust2",
 			CustomerName: "Bob Jones",
 			AccountID:    "acct2",
 			AccountName:  "Bob Jones",
 		},
-		commands.Deposit{
+		&commands.Deposit{
 			TransactionID: "txn1",
 			AccountID:     "acct1",
 			Amount:        10000,
 		},
-		commands.Withdraw{
+		&commands.Withdraw{
 			TransactionID: "txn2",
 			AccountID:     "acct1",
 			Amount:        500,
 			ScheduledTime: time.Now(),
 		},
-		commands.Transfer{
+		&commands.Transfer{
 			TransactionID: "txn3",
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",
 			Amount:        2500,
 			ScheduledTime: time.Now(),
 		},
-		commands.Transfer{
+		&commands.Transfer{
 			TransactionID: "txn4",
 			FromAccountID: "acct1",
 			ToAccountID:   "acct2",

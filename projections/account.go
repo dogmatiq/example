@@ -20,9 +20,9 @@ func (h *AccountProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
 	c.Identity("account-list", "38dcb02a-3d76-4798-9c2a-186f8764ba19")
 
 	c.Routes(
-		dogma.HandlesEvent[events.AccountOpened](),
-		dogma.HandlesEvent[events.AccountCredited](),
-		dogma.HandlesEvent[events.AccountDebited](),
+		dogma.HandlesEvent[*events.AccountOpened](),
+		dogma.HandlesEvent[*events.AccountCredited](),
+		dogma.HandlesEvent[*events.AccountDebited](),
 	)
 }
 
@@ -34,7 +34,7 @@ func (h *AccountProjectionHandler) HandleEvent(
 	m dogma.Event,
 ) error {
 	switch x := m.(type) {
-	case events.AccountOpened:
+	case *events.AccountOpened:
 		_, err := tx.ExecContext(
 			ctx,
 			`INSERT INTO account (
@@ -52,7 +52,7 @@ func (h *AccountProjectionHandler) HandleEvent(
 		)
 		return err
 
-	case events.AccountCredited:
+	case *events.AccountCredited:
 		_, err := tx.ExecContext(
 			ctx,
 			`UPDATE account SET balance = balance + ? WHERE id = ?`,
@@ -61,7 +61,7 @@ func (h *AccountProjectionHandler) HandleEvent(
 		)
 		return err
 
-	case events.AccountDebited:
+	case *events.AccountDebited:
 		_, err := tx.ExecContext(
 			ctx,
 			`UPDATE account SET balance = balance - ? WHERE id = ?`,

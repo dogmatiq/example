@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -10,8 +11,8 @@ import (
 )
 
 func init() {
-	dogma.RegisterEvent[DailyDebitLimitConsumed]("9b4a1114-817e-42d1-963d-ba6324dd07b2")
-	dogma.RegisterEvent[DailyDebitLimitExceeded]("83c5315e-440d-4d70-a6c8-41f97edc226f")
+	dogma.RegisterEvent[*DailyDebitLimitConsumed]("9b4a1114-817e-42d1-963d-ba6324dd07b2")
+	dogma.RegisterEvent[*DailyDebitLimitExceeded]("83c5315e-440d-4d70-a6c8-41f97edc226f")
 }
 
 // DailyDebitLimitConsumed is an event that indicates an amount of an account
@@ -39,7 +40,7 @@ type DailyDebitLimitExceeded struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m DailyDebitLimitConsumed) MessageDescription() string {
+func (m *DailyDebitLimitConsumed) MessageDescription() string {
 	return fmt.Sprintf(
 		"%s %s: consumed %s from %s daily debit limit of account %s",
 		m.DebitType,
@@ -51,7 +52,7 @@ func (m DailyDebitLimitConsumed) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m DailyDebitLimitExceeded) MessageDescription() string {
+func (m *DailyDebitLimitExceeded) MessageDescription() string {
 	return fmt.Sprintf(
 		"%s %s: exceeded %s daily debit limit of account %s by %s",
 		m.DebitType,
@@ -63,7 +64,7 @@ func (m DailyDebitLimitExceeded) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DailyDebitLimitConsumed) Validate(dogma.EventValidationScope) error {
+func (m *DailyDebitLimitConsumed) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DailyDebitLimitConsumed must not have an empty transaction ID")
 	}
@@ -93,7 +94,7 @@ func (m DailyDebitLimitConsumed) Validate(dogma.EventValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DailyDebitLimitExceeded) Validate(dogma.EventValidationScope) error {
+func (m *DailyDebitLimitExceeded) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DailyDebitLimitExceeded must not have an empty transaction ID")
 	}
@@ -120,4 +121,28 @@ func (m DailyDebitLimitExceeded) Validate(dogma.EventValidationScope) error {
 	}
 
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *DailyDebitLimitConsumed) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *DailyDebitLimitConsumed) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *DailyDebitLimitExceeded) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *DailyDebitLimitExceeded) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }

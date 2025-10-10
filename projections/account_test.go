@@ -21,7 +21,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 				EnableHandlers("account-list").
 				Prepare(
 					ExecuteCommand(
-						commands.OpenAccountForNewCustomer{
+						&commands.OpenAccountForNewCustomer{
 							CustomerID:   "C001",
 							CustomerName: "Anna Smith",
 							AccountID:    "A001",
@@ -107,7 +107,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 				EnableHandlers("account-list").
 				Prepare(
 					ExecuteCommand(
-						commands.OpenAccountForNewCustomer{
+						&commands.OpenAccountForNewCustomer{
 							CustomerID:   "C001",
 							CustomerName: "Anna Smith",
 							AccountID:    "A001",
@@ -115,7 +115,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 						},
 					),
 					ExecuteCommand(
-						commands.Deposit{
+						&commands.Deposit{
 							TransactionID: "T001",
 							AccountID:     "A001",
 							Amount:        150,
@@ -174,7 +174,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 				EnableHandlers("account-list").
 				Prepare(
 					ExecuteCommand(
-						commands.OpenAccountForNewCustomer{
+						&commands.OpenAccountForNewCustomer{
 							CustomerID:   "C001",
 							CustomerName: "Anna Smith",
 							AccountID:    "A001",
@@ -182,14 +182,14 @@ func Test_AccountProjectionHandler(t *testing.T) {
 						},
 					),
 					ExecuteCommand(
-						commands.Deposit{
+						&commands.Deposit{
 							TransactionID: "T001",
 							AccountID:     "A001",
 							Amount:        500,
 						},
 					),
 					ExecuteCommand(
-						commands.Withdraw{
+						&commands.Withdraw{
 							TransactionID: "T002",
 							AccountID:     "A001",
 							Amount:        150,

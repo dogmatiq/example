@@ -22,11 +22,11 @@ func (DepositProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Identity("deposit", "4e50b66b-b2c4-4522-bf15-39756186caee")
 
 	c.Routes(
-		dogma.HandlesEvent[events.DepositStarted](),
-		dogma.HandlesEvent[events.AccountCredited](),
-		dogma.HandlesEvent[events.DepositApproved](),
-		dogma.ExecutesCommand[commands.CreditAccount](),
-		dogma.ExecutesCommand[commands.ApproveDeposit](),
+		dogma.HandlesEvent[*events.DepositStarted](),
+		dogma.HandlesEvent[*events.AccountCredited](),
+		dogma.HandlesEvent[*events.DepositApproved](),
+		dogma.ExecutesCommand[*commands.CreditAccount](),
+		dogma.ExecutesCommand[*commands.ApproveDeposit](),
 	)
 }
 
@@ -37,11 +37,11 @@ func (DepositProcessHandler) RouteEventToInstance(
 	m dogma.Event,
 ) (string, bool, error) {
 	switch x := m.(type) {
-	case events.DepositStarted:
+	case *events.DepositStarted:
 		return x.TransactionID, true, nil
-	case events.AccountCredited:
+	case *events.AccountCredited:
 		return x.TransactionID, x.TransactionType == messages.Deposit, nil
-	case events.DepositApproved:
+	case *events.DepositApproved:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -56,22 +56,22 @@ func (DepositProcessHandler) HandleEvent(
 	m dogma.Event,
 ) error {
 	switch x := m.(type) {
-	case events.DepositStarted:
-		s.ExecuteCommand(commands.CreditAccount{
+	case *events.DepositStarted:
+		s.ExecuteCommand(&commands.CreditAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       x.AccountID,
 			TransactionType: messages.Deposit,
 			Amount:          x.Amount,
 		})
 
-	case events.AccountCredited:
-		s.ExecuteCommand(commands.ApproveDeposit{
+	case *events.AccountCredited:
+		s.ExecuteCommand(&commands.ApproveDeposit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
-	case events.DepositApproved:
+	case *events.DepositApproved:
 		s.End()
 
 	default:

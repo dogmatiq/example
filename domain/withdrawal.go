@@ -22,19 +22,19 @@ func (WithdrawalProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Identity("withdrawal", "23f70d2b-a289-4e0f-8a83-c0c6a69d11d9")
 
 	c.Routes(
-		dogma.HandlesEvent[events.WithdrawalStarted](),
-		dogma.HandlesEvent[events.AccountDebited](),
-		dogma.HandlesEvent[events.AccountDebitDeclined](),
-		dogma.HandlesEvent[events.DailyDebitLimitConsumed](),
-		dogma.HandlesEvent[events.DailyDebitLimitExceeded](),
-		dogma.HandlesEvent[events.AccountCredited](),
-		dogma.HandlesEvent[events.WithdrawalApproved](),
-		dogma.HandlesEvent[events.WithdrawalDeclined](),
-		dogma.ExecutesCommand[commands.DebitAccount](),
-		dogma.ExecutesCommand[commands.ConsumeDailyDebitLimit](),
-		dogma.ExecutesCommand[commands.CreditAccount](),
-		dogma.ExecutesCommand[commands.ApproveWithdrawal](),
-		dogma.ExecutesCommand[commands.DeclineWithdrawal](),
+		dogma.HandlesEvent[*events.WithdrawalStarted](),
+		dogma.HandlesEvent[*events.AccountDebited](),
+		dogma.HandlesEvent[*events.AccountDebitDeclined](),
+		dogma.HandlesEvent[*events.DailyDebitLimitConsumed](),
+		dogma.HandlesEvent[*events.DailyDebitLimitExceeded](),
+		dogma.HandlesEvent[*events.AccountCredited](),
+		dogma.HandlesEvent[*events.WithdrawalApproved](),
+		dogma.HandlesEvent[*events.WithdrawalDeclined](),
+		dogma.ExecutesCommand[*commands.DebitAccount](),
+		dogma.ExecutesCommand[*commands.ConsumeDailyDebitLimit](),
+		dogma.ExecutesCommand[*commands.CreditAccount](),
+		dogma.ExecutesCommand[*commands.ApproveWithdrawal](),
+		dogma.ExecutesCommand[*commands.DeclineWithdrawal](),
 	)
 }
 
@@ -45,21 +45,21 @@ func (WithdrawalProcessHandler) RouteEventToInstance(
 	m dogma.Event,
 ) (string, bool, error) {
 	switch x := m.(type) {
-	case events.WithdrawalStarted:
+	case *events.WithdrawalStarted:
 		return x.TransactionID, true, nil
-	case events.AccountDebited:
+	case *events.AccountDebited:
 		return x.TransactionID, x.TransactionType == messages.Withdrawal, nil
-	case events.AccountDebitDeclined:
+	case *events.AccountDebitDeclined:
 		return x.TransactionID, x.TransactionType == messages.Withdrawal, nil
-	case events.DailyDebitLimitConsumed:
+	case *events.DailyDebitLimitConsumed:
 		return x.TransactionID, x.DebitType == messages.Withdrawal, nil
-	case events.DailyDebitLimitExceeded:
+	case *events.DailyDebitLimitExceeded:
 		return x.TransactionID, x.DebitType == messages.Withdrawal, nil
-	case events.AccountCredited:
+	case *events.AccountCredited:
 		return x.TransactionID, x.TransactionType == messages.Withdrawal, nil
-	case events.WithdrawalApproved:
+	case *events.WithdrawalApproved:
 		return x.TransactionID, true, nil
-	case events.WithdrawalDeclined:
+	case *events.WithdrawalDeclined:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -74,8 +74,8 @@ func (WithdrawalProcessHandler) HandleEvent(
 	m dogma.Event,
 ) error {
 	switch x := m.(type) {
-	case events.WithdrawalStarted:
-		s.ExecuteCommand(commands.DebitAccount{
+	case *events.WithdrawalStarted:
+		s.ExecuteCommand(&commands.DebitAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       x.AccountID,
 			TransactionType: messages.Withdrawal,
@@ -83,8 +83,8 @@ func (WithdrawalProcessHandler) HandleEvent(
 			ScheduledTime:   x.ScheduledTime,
 		})
 
-	case events.AccountDebited:
-		s.ExecuteCommand(commands.ConsumeDailyDebitLimit{
+	case *events.AccountDebited:
+		s.ExecuteCommand(&commands.ConsumeDailyDebitLimit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			DebitType:     messages.Withdrawal,
@@ -92,39 +92,39 @@ func (WithdrawalProcessHandler) HandleEvent(
 			Date:          messages.DailyDebitLimitDate(x.ScheduledTime),
 		})
 
-	case events.AccountDebitDeclined:
-		s.ExecuteCommand(commands.DeclineWithdrawal{
+	case *events.AccountDebitDeclined:
+		s.ExecuteCommand(&commands.DeclineWithdrawal{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 			Reason:        x.Reason,
 		})
 
-	case events.DailyDebitLimitConsumed:
-		s.ExecuteCommand(commands.ApproveWithdrawal{
+	case *events.DailyDebitLimitConsumed:
+		s.ExecuteCommand(&commands.ApproveWithdrawal{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 		})
 
-	case events.DailyDebitLimitExceeded:
-		s.ExecuteCommand(commands.CreditAccount{
+	case *events.DailyDebitLimitExceeded:
+		s.ExecuteCommand(&commands.CreditAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       x.AccountID,
 			TransactionType: messages.Withdrawal,
 			Amount:          x.Amount,
 		})
 
-	case events.AccountCredited:
-		s.ExecuteCommand(commands.DeclineWithdrawal{
+	case *events.AccountCredited:
+		s.ExecuteCommand(&commands.DeclineWithdrawal{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			Amount:        x.Amount,
 			Reason:        messages.DailyDebitLimitExceeded,
 		})
 
-	case events.WithdrawalApproved,
-		events.WithdrawalDeclined:
+	case *events.WithdrawalApproved,
+		*events.WithdrawalDeclined:
 		s.End()
 
 	default:

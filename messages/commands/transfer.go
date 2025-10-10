@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -10,9 +11,9 @@ import (
 )
 
 func init() {
-	dogma.RegisterCommand[Transfer]("5ee87c7b-bde3-4b39-9f12-44968cdb9889")
-	dogma.RegisterCommand[ApproveTransfer]("0d22aaa5-4449-459a-b9b1-c5fb0ce4a990")
-	dogma.RegisterCommand[DeclineTransfer]("d7d069a2-41fc-415e-91dd-7db3affa9f6d")
+	dogma.RegisterCommand[*Transfer]("5ee87c7b-bde3-4b39-9f12-44968cdb9889")
+	dogma.RegisterCommand[*ApproveTransfer]("0d22aaa5-4449-459a-b9b1-c5fb0ce4a990")
+	dogma.RegisterCommand[*DeclineTransfer]("d7d069a2-41fc-415e-91dd-7db3affa9f6d")
 }
 
 // Transfer is a command requesting that funds be transferred from one bank
@@ -43,7 +44,7 @@ type DeclineTransfer struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m Transfer) MessageDescription() string {
+func (m *Transfer) MessageDescription() string {
 	return fmt.Sprintf(
 		"transfer %s: transfering %s from account %s to account %s",
 		m.TransactionID,
@@ -54,7 +55,7 @@ func (m Transfer) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m ApproveTransfer) MessageDescription() string {
+func (m *ApproveTransfer) MessageDescription() string {
 	return fmt.Sprintf(
 		"transfer %s: approving transfer of %s from account %s to account %s",
 		m.TransactionID,
@@ -65,7 +66,7 @@ func (m ApproveTransfer) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m DeclineTransfer) MessageDescription() string {
+func (m *DeclineTransfer) MessageDescription() string {
 	return fmt.Sprintf(
 		"transfer %s: declining transfer of %s from account %s to account %s: %s",
 		m.TransactionID,
@@ -77,7 +78,7 @@ func (m DeclineTransfer) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m Transfer) Validate(dogma.CommandValidationScope) error {
+func (m *Transfer) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("Transfer must not have an empty transaction ID")
 	}
@@ -98,7 +99,7 @@ func (m Transfer) Validate(dogma.CommandValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m ApproveTransfer) Validate(dogma.CommandValidationScope) error {
+func (m *ApproveTransfer) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("ApproveTransfer must not have an empty transaction ID")
 	}
@@ -116,7 +117,7 @@ func (m ApproveTransfer) Validate(dogma.CommandValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DeclineTransfer) Validate(dogma.CommandValidationScope) error {
+func (m *DeclineTransfer) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DeclineTransfer must not have an empty transaction ID")
 	}
@@ -134,4 +135,40 @@ func (m DeclineTransfer) Validate(dogma.CommandValidationScope) error {
 	}
 
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *Transfer) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *Transfer) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *ApproveTransfer) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *ApproveTransfer) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *DeclineTransfer) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *DeclineTransfer) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }

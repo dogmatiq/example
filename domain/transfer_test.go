@@ -21,21 +21,21 @@ func Test_Transfer(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C002",
 									AccountID:   "A002",
 									AccountName: "Bob Jones",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D001",
 									AccountID:     "A001",
 									Amount:        500,
@@ -44,7 +44,7 @@ func Test_Transfer(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Transfer{
+								&commands.Transfer{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -53,7 +53,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.TransferApproved{
+								&events.TransferApproved{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -64,7 +64,7 @@ func Test_Transfer(t *testing.T) {
 						// verify that funds are availalbe
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -72,7 +72,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -93,21 +93,21 @@ func Test_Transfer(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C002",
 									AccountID:   "A002",
 									AccountName: "Bob Jones",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D001",
 									AccountID:     "A001",
 									Amount:        500,
@@ -116,7 +116,7 @@ func Test_Transfer(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Transfer{
+								&commands.Transfer{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -125,7 +125,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.TransferDeclined{
+								&events.TransferDeclined{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -137,7 +137,7 @@ func Test_Transfer(t *testing.T) {
 						// verify that funds are not availalbe
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -145,7 +145,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalDeclined{
+								&events.WithdrawalDeclined{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -167,21 +167,21 @@ func Test_Transfer(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C002",
 									AccountID:   "A002",
 									AccountName: "Bob Jones",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 10000,
@@ -190,7 +190,7 @@ func Test_Transfer(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Transfer{
+								&commands.Transfer{
 									TransactionID: "T002",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -199,7 +199,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.TransferApproved{
+								&events.TransferApproved{
 									TransactionID: "T002",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -210,7 +210,7 @@ func Test_Transfer(t *testing.T) {
 						// verify that funds are availalbe
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -218,7 +218,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -239,21 +239,21 @@ func Test_Transfer(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C002",
 									AccountID:   "A002",
 									AccountName: "Bob Jones",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 10000,
@@ -262,7 +262,7 @@ func Test_Transfer(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Transfer{
+								&commands.Transfer{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -271,7 +271,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.TransferDeclined{
+								&events.TransferDeclined{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -283,7 +283,7 @@ func Test_Transfer(t *testing.T) {
 						// verify that funds are not availalbe
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -291,7 +291,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalDeclined{
+								&events.WithdrawalDeclined{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -319,21 +319,21 @@ func Test_Transfer(t *testing.T) {
 					).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C002",
 									AccountID:   "A002",
 									AccountName: "Bob Jones",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D001",
 									AccountID:     "A001",
 									Amount:        500,
@@ -342,7 +342,7 @@ func Test_Transfer(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Transfer{
+								&commands.Transfer{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -351,7 +351,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							NoneOf(
-								ToRecordEventOfType(events.TransferApproved{}),
+								ToRecordEventOfType(&events.TransferApproved{}),
 							),
 						).
 						Expect(
@@ -359,7 +359,7 @@ func Test_Transfer(t *testing.T) {
 								ToTime(time.Date(2001, time.February, 4, 0, 0, 0, 0, time.UTC)),
 							),
 							ToRecordEvent(
-								events.TransferApproved{
+								&events.TransferApproved{
 									TransactionID: "T001",
 									FromAccountID: "A001",
 									ToAccountID:   "A002",
@@ -370,7 +370,7 @@ func Test_Transfer(t *testing.T) {
 						// verify that funds are availalbe
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,
@@ -378,7 +378,7 @@ func Test_Transfer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A002",
 									Amount:        100,

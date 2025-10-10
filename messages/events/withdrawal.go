@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -10,9 +11,9 @@ import (
 )
 
 func init() {
-	dogma.RegisterEvent[WithdrawalStarted]("ae327c68-3de9-4fe1-aa39-c4830200602c")
-	dogma.RegisterEvent[WithdrawalApproved]("8551621a-ef28-42aa-b815-d5a448299d38")
-	dogma.RegisterEvent[WithdrawalDeclined]("a87f5f6f-52ec-4eeb-954f-2af97a165181")
+	dogma.RegisterEvent[*WithdrawalStarted]("ae327c68-3de9-4fe1-aa39-c4830200602c")
+	dogma.RegisterEvent[*WithdrawalApproved]("8551621a-ef28-42aa-b815-d5a448299d38")
+	dogma.RegisterEvent[*WithdrawalDeclined]("a87f5f6f-52ec-4eeb-954f-2af97a165181")
 }
 
 // WithdrawalStarted is an event indicating that the process of withdrawing
@@ -42,7 +43,7 @@ type WithdrawalDeclined struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m WithdrawalStarted) MessageDescription() string {
+func (m *WithdrawalStarted) MessageDescription() string {
 	return fmt.Sprintf(
 		"withdrawal %s: started withdrawal of %s from account %s",
 		m.TransactionID,
@@ -52,7 +53,7 @@ func (m WithdrawalStarted) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m WithdrawalApproved) MessageDescription() string {
+func (m *WithdrawalApproved) MessageDescription() string {
 	return fmt.Sprintf(
 		"withdrawal %s: approved withdrawal of %s from account %s",
 		m.TransactionID,
@@ -62,7 +63,7 @@ func (m WithdrawalApproved) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m WithdrawalDeclined) MessageDescription() string {
+func (m *WithdrawalDeclined) MessageDescription() string {
 	return fmt.Sprintf(
 		"withdrawal %s: declined withdrawal of %s from account %s: %s",
 		m.TransactionID,
@@ -73,7 +74,7 @@ func (m WithdrawalDeclined) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m WithdrawalStarted) Validate(dogma.EventValidationScope) error {
+func (m *WithdrawalStarted) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("WithdrawalStarted must not have an empty transaction ID")
 	}
@@ -88,7 +89,7 @@ func (m WithdrawalStarted) Validate(dogma.EventValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m WithdrawalApproved) Validate(dogma.EventValidationScope) error {
+func (m *WithdrawalApproved) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("WithdrawalApproved must not have an empty transaction ID")
 	}
@@ -103,7 +104,7 @@ func (m WithdrawalApproved) Validate(dogma.EventValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m WithdrawalDeclined) Validate(dogma.EventValidationScope) error {
+func (m *WithdrawalDeclined) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("WithdrawalDeclined must not have an empty transaction ID")
 	}
@@ -118,4 +119,40 @@ func (m WithdrawalDeclined) Validate(dogma.EventValidationScope) error {
 	}
 
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *WithdrawalStarted) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *WithdrawalStarted) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *WithdrawalApproved) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *WithdrawalApproved) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *WithdrawalDeclined) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *WithdrawalDeclined) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }

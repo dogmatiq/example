@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func init() {
-	dogma.RegisterCommand[ConsumeDailyDebitLimit]("d86ca816-6333-4b78-a1d3-9368b3adcf65")
+	dogma.RegisterCommand[*ConsumeDailyDebitLimit]("d86ca816-6333-4b78-a1d3-9368b3adcf65")
 }
 
 // ConsumeDailyDebitLimit is a command requesting that an amount of an account
@@ -24,7 +25,7 @@ type ConsumeDailyDebitLimit struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m ConsumeDailyDebitLimit) MessageDescription() string {
+func (m *ConsumeDailyDebitLimit) MessageDescription() string {
 	return fmt.Sprintf(
 		"%s %s: consuming %s from %s daily debit limit of account %s",
 		m.DebitType,
@@ -36,7 +37,7 @@ func (m ConsumeDailyDebitLimit) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m ConsumeDailyDebitLimit) Validate(dogma.CommandValidationScope) error {
+func (m *ConsumeDailyDebitLimit) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("ConsumeDailyDebitLimit must not have an empty transaction ID")
 	}
@@ -57,4 +58,16 @@ func (m ConsumeDailyDebitLimit) Validate(dogma.CommandValidationScope) error {
 	}
 
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *ConsumeDailyDebitLimit) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *ConsumeDailyDebitLimit) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }

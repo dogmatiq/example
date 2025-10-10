@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -12,7 +13,7 @@ import (
 )
 
 func init() {
-	dogma.RegisterTimeout[TransferReadyToProceed]("b5474f89-e985-4661-b85b-645347a4a645")
+	dogma.RegisterTimeout[*TransferReadyToProceed]("b5474f89-e985-4661-b85b-645347a4a645")
 }
 
 // transfer is the process root for a funds transfer.
@@ -21,6 +22,16 @@ type transferProcess struct {
 	ToAccountID   string
 	Amount        int64
 	DeclineReason messages.DebitFailureReason
+}
+
+// MarshalBinary returns the transferProcess encoded as binary data.
+func (p *transferProcess) MarshalBinary() ([]byte, error) {
+	return json.Marshal(p)
+}
+
+// UnmarshalBinary decodes binary data into the transferProcess.
+func (p *transferProcess) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, p)
 }
 
 // TransferProcessHandler manages the process of transferring funds between
@@ -37,20 +48,20 @@ func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	c.Identity("transfer", "35afbe82-24c1-4868-a689-c2ec96c2e953")
 
 	c.Routes(
-		dogma.HandlesEvent[events.TransferStarted](),
-		dogma.HandlesEvent[events.AccountDebited](),
-		dogma.HandlesEvent[events.AccountDebitDeclined](),
-		dogma.HandlesEvent[events.DailyDebitLimitConsumed](),
-		dogma.HandlesEvent[events.DailyDebitLimitExceeded](),
-		dogma.HandlesEvent[events.AccountCredited](),
-		dogma.HandlesEvent[events.TransferApproved](),
-		dogma.HandlesEvent[events.TransferDeclined](),
-		dogma.ExecutesCommand[commands.DebitAccount](),
-		dogma.ExecutesCommand[commands.ConsumeDailyDebitLimit](),
-		dogma.ExecutesCommand[commands.CreditAccount](),
-		dogma.ExecutesCommand[commands.ApproveTransfer](),
-		dogma.ExecutesCommand[commands.DeclineTransfer](),
-		dogma.SchedulesTimeout[TransferReadyToProceed](),
+		dogma.HandlesEvent[*events.TransferStarted](),
+		dogma.HandlesEvent[*events.AccountDebited](),
+		dogma.HandlesEvent[*events.AccountDebitDeclined](),
+		dogma.HandlesEvent[*events.DailyDebitLimitConsumed](),
+		dogma.HandlesEvent[*events.DailyDebitLimitExceeded](),
+		dogma.HandlesEvent[*events.AccountCredited](),
+		dogma.HandlesEvent[*events.TransferApproved](),
+		dogma.HandlesEvent[*events.TransferDeclined](),
+		dogma.ExecutesCommand[*commands.DebitAccount](),
+		dogma.ExecutesCommand[*commands.ConsumeDailyDebitLimit](),
+		dogma.ExecutesCommand[*commands.CreditAccount](),
+		dogma.ExecutesCommand[*commands.ApproveTransfer](),
+		dogma.ExecutesCommand[*commands.DeclineTransfer](),
+		dogma.SchedulesTimeout[*TransferReadyToProceed](),
 	)
 }
 
@@ -61,21 +72,21 @@ func (TransferProcessHandler) RouteEventToInstance(
 	m dogma.Event,
 ) (string, bool, error) {
 	switch x := m.(type) {
-	case events.TransferStarted:
+	case *events.TransferStarted:
 		return x.TransactionID, true, nil
-	case events.AccountDebited:
+	case *events.AccountDebited:
 		return x.TransactionID, x.TransactionType == messages.Transfer, nil
-	case events.AccountDebitDeclined:
+	case *events.AccountDebitDeclined:
 		return x.TransactionID, x.TransactionType == messages.Transfer, nil
-	case events.DailyDebitLimitConsumed:
+	case *events.DailyDebitLimitConsumed:
 		return x.TransactionID, x.DebitType == messages.Transfer, nil
-	case events.DailyDebitLimitExceeded:
+	case *events.DailyDebitLimitExceeded:
 		return x.TransactionID, x.DebitType == messages.Transfer, nil
-	case events.AccountCredited:
+	case *events.AccountCredited:
 		return x.TransactionID, x.TransactionType == messages.Transfer, nil
-	case events.TransferApproved:
+	case *events.TransferApproved:
 		return x.TransactionID, true, nil
-	case events.TransferDeclined:
+	case *events.TransferDeclined:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -92,20 +103,20 @@ func (TransferProcessHandler) HandleEvent(
 	t := r.(*transferProcess)
 
 	switch x := m.(type) {
-	case events.TransferStarted:
+	case *events.TransferStarted:
 		t.FromAccountID = x.FromAccountID
 		t.ToAccountID = x.ToAccountID
 		t.Amount = x.Amount
 
 		s.ScheduleTimeout(
-			TransferReadyToProceed{
+			&TransferReadyToProceed{
 				TransactionID: x.TransactionID,
 			},
 			x.ScheduledTime,
 		)
 
-	case events.AccountDebited:
-		s.ExecuteCommand(commands.ConsumeDailyDebitLimit{
+	case *events.AccountDebited:
+		s.ExecuteCommand(&commands.ConsumeDailyDebitLimit{
 			TransactionID: x.TransactionID,
 			AccountID:     x.AccountID,
 			DebitType:     messages.Transfer,
@@ -113,8 +124,8 @@ func (TransferProcessHandler) HandleEvent(
 			Date:          messages.DailyDebitLimitDate(x.ScheduledTime),
 		})
 
-	case events.AccountDebitDeclined:
-		s.ExecuteCommand(commands.DeclineTransfer{
+	case *events.AccountDebitDeclined:
+		s.ExecuteCommand(&commands.DeclineTransfer{
 			TransactionID: x.TransactionID,
 			FromAccountID: t.FromAccountID,
 			ToAccountID:   t.ToAccountID,
@@ -122,30 +133,30 @@ func (TransferProcessHandler) HandleEvent(
 			Reason:        x.Reason,
 		})
 
-	case events.DailyDebitLimitConsumed:
+	case *events.DailyDebitLimitConsumed:
 		// continue transfer
-		s.ExecuteCommand(commands.CreditAccount{
+		s.ExecuteCommand(&commands.CreditAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       t.ToAccountID,
 			TransactionType: messages.Transfer,
 			Amount:          x.Amount,
 		})
 
-	case events.DailyDebitLimitExceeded:
+	case *events.DailyDebitLimitExceeded:
 		t.DeclineReason = messages.DailyDebitLimitExceeded
 
 		// compensate the initial debit
-		s.ExecuteCommand(commands.CreditAccount{
+		s.ExecuteCommand(&commands.CreditAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       t.FromAccountID,
 			TransactionType: messages.Transfer,
 			Amount:          x.Amount,
 		})
 
-	case events.AccountCredited:
+	case *events.AccountCredited:
 		if t.ToAccountID == x.AccountID {
 			// it was a credit to complete the transfer (success)
-			s.ExecuteCommand(commands.ApproveTransfer{
+			s.ExecuteCommand(&commands.ApproveTransfer{
 				TransactionID: x.TransactionID,
 				FromAccountID: t.FromAccountID,
 				ToAccountID:   t.ToAccountID,
@@ -153,7 +164,7 @@ func (TransferProcessHandler) HandleEvent(
 			})
 		} else {
 			// it was a compensating credit to undo the transfer (failure)
-			s.ExecuteCommand(commands.DeclineTransfer{
+			s.ExecuteCommand(&commands.DeclineTransfer{
 				TransactionID: x.TransactionID,
 				FromAccountID: t.FromAccountID,
 				ToAccountID:   t.ToAccountID,
@@ -162,7 +173,7 @@ func (TransferProcessHandler) HandleEvent(
 			})
 		}
 
-	case events.TransferApproved, events.TransferDeclined:
+	case *events.TransferApproved, *events.TransferDeclined:
 		s.End()
 
 	default:
@@ -182,8 +193,8 @@ func (TransferProcessHandler) HandleTimeout(
 	t := r.(*transferProcess)
 
 	switch x := m.(type) {
-	case TransferReadyToProceed:
-		s.ExecuteCommand(commands.DebitAccount{
+	case *TransferReadyToProceed:
+		s.ExecuteCommand(&commands.DebitAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       t.FromAccountID,
 			TransactionType: messages.Transfer,
@@ -205,14 +216,26 @@ type TransferReadyToProceed struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m TransferReadyToProceed) MessageDescription() string {
+func (m *TransferReadyToProceed) MessageDescription() string {
 	return fmt.Sprintf("transfer %s is ready to proceed", m.TransactionID)
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m TransferReadyToProceed) Validate(dogma.TimeoutValidationScope) error {
+func (m *TransferReadyToProceed) Validate(dogma.TimeoutValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("TransferReadyToProceed must not have an empty transaction ID")
 	}
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *TransferReadyToProceed) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *TransferReadyToProceed) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }

@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -9,8 +10,8 @@ import (
 )
 
 func init() {
-	dogma.RegisterEvent[DepositStarted]("699ae4e6-ea0a-4450-8a04-8ec5248b8042")
-	dogma.RegisterEvent[DepositApproved]("8520d995-5c0e-4905-9bbf-99b5f8028505")
+	dogma.RegisterEvent[*DepositStarted]("699ae4e6-ea0a-4450-8a04-8ec5248b8042")
+	dogma.RegisterEvent[*DepositApproved]("8520d995-5c0e-4905-9bbf-99b5f8028505")
 }
 
 // DepositStarted is an event indicating that the process of depositing funds
@@ -30,7 +31,7 @@ type DepositApproved struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m DepositStarted) MessageDescription() string {
+func (m *DepositStarted) MessageDescription() string {
 	return fmt.Sprintf(
 		"deposit %s: started deposit of %s into account %s",
 		m.TransactionID,
@@ -40,7 +41,7 @@ func (m DepositStarted) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m DepositApproved) MessageDescription() string {
+func (m *DepositApproved) MessageDescription() string {
 	return fmt.Sprintf(
 		"deposit %s: approved deposit of %s into account %s",
 		m.TransactionID,
@@ -50,7 +51,7 @@ func (m DepositApproved) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DepositStarted) Validate(dogma.EventValidationScope) error {
+func (m *DepositStarted) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DepositStarted must not have an empty transaction ID")
 	}
@@ -65,7 +66,7 @@ func (m DepositStarted) Validate(dogma.EventValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DepositApproved) Validate(dogma.EventValidationScope) error {
+func (m *DepositApproved) Validate(dogma.EventValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DepositApproved must not have an empty transaction ID")
 	}
@@ -77,4 +78,28 @@ func (m DepositApproved) Validate(dogma.EventValidationScope) error {
 	}
 
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *DepositStarted) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *DepositStarted) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *DepositApproved) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *DepositApproved) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }

@@ -21,14 +21,14 @@ func Test_Withdraw(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,
@@ -37,7 +37,7 @@ func Test_Withdraw(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -45,7 +45,7 @@ func Test_Withdraw(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -66,7 +66,7 @@ func Test_Withdraw(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
@@ -75,7 +75,7 @@ func Test_Withdraw(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,
@@ -83,7 +83,7 @@ func Test_Withdraw(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalDeclined{
+								&events.WithdrawalDeclined{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,
@@ -105,14 +105,14 @@ func Test_Withdraw(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 10000,
@@ -121,7 +121,7 @@ func Test_Withdraw(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -129,7 +129,7 @@ func Test_Withdraw(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -145,28 +145,28 @@ func Test_Withdraw(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C002",
 									AccountID:   "A002",
 									AccountName: "Bob Jones",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 10000,
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D002",
 									AccountID:     "A002",
 									Amount:        expectedDailyDebitLimit + 10000,
@@ -175,7 +175,7 @@ func Test_Withdraw(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit,
@@ -183,7 +183,7 @@ func Test_Withdraw(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit,
@@ -192,7 +192,7 @@ func Test_Withdraw(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T002",
 									AccountID:     "A002",
 									Amount:        expectedDailyDebitLimit,
@@ -200,7 +200,7 @@ func Test_Withdraw(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A002",
 									Amount:        expectedDailyDebitLimit,
@@ -216,21 +216,21 @@ func Test_Withdraw(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit * 2,
 								},
 							),
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit,
@@ -240,7 +240,7 @@ func Test_Withdraw(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -248,7 +248,7 @@ func Test_Withdraw(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "T002",
 									AccountID:     "A001",
 									Amount:        500,
@@ -269,14 +269,14 @@ func Test_Withdraw(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "D001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 10000,
@@ -285,7 +285,7 @@ func Test_Withdraw(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 1,
@@ -293,7 +293,7 @@ func Test_Withdraw(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalDeclined{
+								&events.WithdrawalDeclined{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        expectedDailyDebitLimit + 1,

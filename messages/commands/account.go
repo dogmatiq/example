@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -10,10 +11,10 @@ import (
 )
 
 func init() {
-	dogma.RegisterCommand[OpenAccountForNewCustomer]("209ed1ad-4394-4c1a-b36f-7b24fc8b1d1b")
-	dogma.RegisterCommand[OpenAccount]("3d20299c-ba57-4756-8692-f4e3a95fe00d")
-	dogma.RegisterCommand[CreditAccount]("0ffb0a54-eaf5-459c-a58b-76f22b95de2d")
-	dogma.RegisterCommand[DebitAccount]("4209ab99-5f15-45b9-a88f-48bce219b911")
+	dogma.RegisterCommand[*OpenAccountForNewCustomer]("209ed1ad-4394-4c1a-b36f-7b24fc8b1d1b")
+	dogma.RegisterCommand[*OpenAccount]("3d20299c-ba57-4756-8692-f4e3a95fe00d")
+	dogma.RegisterCommand[*CreditAccount]("0ffb0a54-eaf5-459c-a58b-76f22b95de2d")
+	dogma.RegisterCommand[*DebitAccount]("4209ab99-5f15-45b9-a88f-48bce219b911")
 }
 
 // OpenAccountForNewCustomer is a command requesting that a new bank account be
@@ -51,7 +52,7 @@ type DebitAccount struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m OpenAccountForNewCustomer) MessageDescription() string {
+func (m *OpenAccountForNewCustomer) MessageDescription() string {
 	return fmt.Sprintf(
 		"customer %s %s is opening their first account %s %s",
 		m.CustomerID,
@@ -62,7 +63,7 @@ func (m OpenAccountForNewCustomer) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m OpenAccount) MessageDescription() string {
+func (m *OpenAccount) MessageDescription() string {
 	return fmt.Sprintf(
 		"opening account %s %s for customer %s",
 		m.AccountID,
@@ -72,7 +73,7 @@ func (m OpenAccount) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m CreditAccount) MessageDescription() string {
+func (m *CreditAccount) MessageDescription() string {
 	return fmt.Sprintf(
 		"%s %s: crediting %s to account %s",
 		m.TransactionType,
@@ -83,7 +84,7 @@ func (m CreditAccount) MessageDescription() string {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m DebitAccount) MessageDescription() string {
+func (m *DebitAccount) MessageDescription() string {
 	return fmt.Sprintf(
 		"%s %s: debiting %s from account %s",
 		m.TransactionType,
@@ -94,7 +95,7 @@ func (m DebitAccount) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m OpenAccountForNewCustomer) Validate(dogma.CommandValidationScope) error {
+func (m *OpenAccountForNewCustomer) Validate(dogma.CommandValidationScope) error {
 	if m.CustomerID == "" {
 		return errors.New("OpenAccountForNewCustomer must not have an empty customer ID")
 	}
@@ -112,7 +113,7 @@ func (m OpenAccountForNewCustomer) Validate(dogma.CommandValidationScope) error 
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m OpenAccount) Validate(dogma.CommandValidationScope) error {
+func (m *OpenAccount) Validate(dogma.CommandValidationScope) error {
 	if m.CustomerID == "" {
 		return errors.New("OpenAccount must not have an empty customer ID")
 	}
@@ -127,7 +128,7 @@ func (m OpenAccount) Validate(dogma.CommandValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m CreditAccount) Validate(dogma.CommandValidationScope) error {
+func (m *CreditAccount) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("CreditAccount must not have an empty transaction ID")
 	}
@@ -145,7 +146,7 @@ func (m CreditAccount) Validate(dogma.CommandValidationScope) error {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m DebitAccount) Validate(dogma.CommandValidationScope) error {
+func (m *DebitAccount) Validate(dogma.CommandValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("DebitAccount must not have an empty transaction ID")
 	}
@@ -160,4 +161,52 @@ func (m DebitAccount) Validate(dogma.CommandValidationScope) error {
 	}
 
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *OpenAccountForNewCustomer) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *OpenAccountForNewCustomer) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *OpenAccount) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *OpenAccount) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *CreditAccount) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *CreditAccount) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *DebitAccount) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *DebitAccount) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }
