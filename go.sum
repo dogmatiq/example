@@ -14,8 +14,8 @@ github.com/dogmatiq/cosyne v0.2.0 h1:tO957BpS4I9kqSw31ds6Ef4CXvV8zPAqWzbXKElsGWg
 github.com/dogmatiq/cosyne v0.2.0/go.mod h1:dD8EZjbRX7FFw9t6P7l1nwoZbA7YxtOCfl9ZZAHPucU=
 github.com/dogmatiq/dapper v0.6.0 h1:hnWUsjnt3nUiC9hmkPvuxrnMd7fYNz1i+/GS3gOx0Xs=
 github.com/dogmatiq/dapper v0.6.0/go.mod h1:ubRHWzt73s0MsPpGhWvnfW/Z/1YPnrkCsQv6CUOZVEw=
-github.com/dogmatiq/dogma v0.17.0 h1:9OWV+oGoUt2XYRmEY0tg4Vusi5AziIqNDJxDpVxf9y8=
-github.com/dogmatiq/dogma v0.17.0/go.mod h1:TF6xisRxQ2RE3JQwFr6MCI4nWLKQQp7KRWXVHOq9K0k=
+github.com/dogmatiq/dogma v0.17.1 h1:DKAgHgUlZRVUdPqcnZQZzkPazvFHPGKxtUyBo5QDRLQ=
+github.com/dogmatiq/dogma v0.17.1/go.mod h1:TF6xisRxQ2RE3JQwFr6MCI4nWLKQQp7KRWXVHOq9K0k=
 github.com/dogmatiq/enginekit v0.17.0 h1:4A3X1ga6XQoZzZMuvo0il55M8nyC9qilVLmdilVI7og=
 github.com/dogmatiq/enginekit v0.17.0/go.mod h1:I/whGee5Ab6UYs/cb/2W7Nslq26qhiENr+5pvwueXeQ=
 github.com/dogmatiq/iago v0.4.0 h1:57nZqVT34IZxtCZEW/RFif7DNUEjMXgevfr/Mmd0N8I=
