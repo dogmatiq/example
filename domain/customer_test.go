@@ -19,7 +19,7 @@ func Test_OpenAccountForNewCustomer(t *testing.T) {
 					Begin(t, &example.App{}).
 						Expect(
 							ExecuteCommand(
-								commands.OpenAccountForNewCustomer{
+								&commands.OpenAccountForNewCustomer{
 									CustomerID:   "C001",
 									CustomerName: "Bob Jones",
 									AccountID:    "A001",
@@ -27,7 +27,7 @@ func Test_OpenAccountForNewCustomer(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.CustomerAcquired{
+								&events.CustomerAcquired{
 									CustomerID:   "C001",
 									CustomerName: "Bob Jones",
 									AccountID:    "A001",
@@ -46,7 +46,7 @@ func Test_OpenAccountForNewCustomer(t *testing.T) {
 			t.Run(
 				"it does not reacquire the customer",
 				func(t *testing.T) {
-					cmd := commands.OpenAccountForNewCustomer{
+					cmd := &commands.OpenAccountForNewCustomer{
 						CustomerID:   "C001",
 						CustomerName: "Bob Jones",
 						AccountID:    "A001",
@@ -60,7 +60,7 @@ func Test_OpenAccountForNewCustomer(t *testing.T) {
 						Expect(
 							ExecuteCommand(cmd),
 							NoneOf(
-								ToRecordEventOfType(events.CustomerAcquired{}),
+								ToRecordEventOfType(&events.CustomerAcquired{}),
 							),
 						)
 				},

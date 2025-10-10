@@ -20,7 +20,7 @@ func Test_Deposit(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
@@ -29,14 +29,14 @@ func Test_Deposit(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.Deposit{
+								&commands.Deposit{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,
 								},
 							),
 							ToRecordEvent(
-								events.DepositApproved{
+								&events.DepositApproved{
 									TransactionID: "T001",
 									AccountID:     "A001",
 									Amount:        500,
@@ -46,7 +46,7 @@ func Test_Deposit(t *testing.T) {
 						// verify that funds are availalbe
 						Expect(
 							ExecuteCommand(
-								commands.Withdraw{
+								&commands.Withdraw{
 									TransactionID: "W001",
 									AccountID:     "A001",
 									Amount:        100,
@@ -54,7 +54,7 @@ func Test_Deposit(t *testing.T) {
 								},
 							),
 							ToRecordEvent(
-								events.WithdrawalApproved{
+								&events.WithdrawalApproved{
 									TransactionID: "W001",
 									AccountID:     "A001",
 									Amount:        100,

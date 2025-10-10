@@ -20,7 +20,7 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 				EnableHandlers("customer-list").
 				Prepare(
 					ExecuteCommand(
-						commands.OpenAccountForNewCustomer{
+						&commands.OpenAccountForNewCustomer{
 							CustomerID:   "C001",
 							CustomerName: "Anna Smith",
 							AccountID:    "A001",

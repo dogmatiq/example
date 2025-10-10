@@ -19,14 +19,14 @@ func Test_OpenAccount(t *testing.T) {
 					Begin(t, &example.App{}).
 						Expect(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							ToRecordEvent(
-								events.AccountOpened{
+								&events.AccountOpened{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
@@ -47,7 +47,7 @@ func Test_OpenAccount(t *testing.T) {
 					Begin(t, &example.App{}).
 						Prepare(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
@@ -56,14 +56,14 @@ func Test_OpenAccount(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(
-								commands.OpenAccount{
+								&commands.OpenAccount{
 									CustomerID:  "C001",
 									AccountID:   "A001",
 									AccountName: "Anna Smith",
 								},
 							),
 							NoneOf(
-								ToRecordEventOfType(events.AccountOpened{}),
+								ToRecordEventOfType(&events.AccountOpened{}),
 							),
 						)
 				},

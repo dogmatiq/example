@@ -21,8 +21,8 @@ func (OpenAccountForNewCustomerProcessHandler) Configure(c dogma.ProcessConfigur
 	c.Identity("open-account-for-new-customer", "89b39176-a57f-4071-afad-e0db62137fd3")
 
 	c.Routes(
-		dogma.HandlesEvent[events.CustomerAcquired](),
-		dogma.ExecutesCommand[commands.OpenAccount](),
+		dogma.HandlesEvent[*events.CustomerAcquired](),
+		dogma.ExecutesCommand[*commands.OpenAccount](),
 	)
 }
 
@@ -33,7 +33,7 @@ func (OpenAccountForNewCustomerProcessHandler) RouteEventToInstance(
 	m dogma.Event,
 ) (string, bool, error) {
 	switch x := m.(type) {
-	case events.CustomerAcquired:
+	case *events.CustomerAcquired:
 		return x.CustomerID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -48,8 +48,8 @@ func (OpenAccountForNewCustomerProcessHandler) HandleEvent(
 	m dogma.Event,
 ) error {
 	switch x := m.(type) {
-	case events.CustomerAcquired:
-		s.ExecuteCommand(commands.OpenAccount{
+	case *events.CustomerAcquired:
+		s.ExecuteCommand(&commands.OpenAccount{
 			CustomerID:  x.CustomerID,
 			AccountID:   x.AccountID,
 			AccountName: x.AccountName,

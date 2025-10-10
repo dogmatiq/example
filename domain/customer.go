@@ -8,17 +8,19 @@ import (
 
 // customer is the aggregate root for a bank customer.
 type customer struct {
+	dogma.NoSnapshotBehavior
+
 	// Acquired is true if the customer has been acquired.
 	Acquired bool
 }
 
-func (c *customer) Acquire(s dogma.AggregateCommandScope, m commands.OpenAccountForNewCustomer) {
+func (c *customer) Acquire(s dogma.AggregateCommandScope, m *commands.OpenAccountForNewCustomer) {
 	if c.Acquired {
 		s.Log("customer has already been acquired")
 		return
 	}
 
-	s.RecordEvent(events.CustomerAcquired{
+	s.RecordEvent(&events.CustomerAcquired{
 		CustomerID:   m.CustomerID,
 		CustomerName: m.CustomerName,
 		AccountID:    m.AccountID,
@@ -28,7 +30,7 @@ func (c *customer) Acquire(s dogma.AggregateCommandScope, m commands.OpenAccount
 
 func (c *customer) ApplyEvent(m dogma.Event) {
 	switch m.(type) {
-	case events.CustomerAcquired:
+	case *events.CustomerAcquired:
 		c.Acquired = true
 	}
 }
@@ -42,8 +44,8 @@ func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
 	c.Identity("customer", "f30111d5-f100-4495-90ad-b09746ba8477")
 
 	c.Routes(
-		dogma.HandlesCommand[commands.OpenAccountForNewCustomer](),
-		dogma.RecordsEvent[events.CustomerAcquired](),
+		dogma.HandlesCommand[*commands.OpenAccountForNewCustomer](),
+		dogma.RecordsEvent[*events.CustomerAcquired](),
 	)
 }
 
@@ -56,7 +58,7 @@ func (CustomerHandler) New() dogma.AggregateRoot {
 // targetted by m.
 func (CustomerHandler) RouteCommandToInstance(m dogma.Command) string {
 	switch x := m.(type) {
-	case commands.OpenAccountForNewCustomer:
+	case *commands.OpenAccountForNewCustomer:
 		return x.CustomerID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -72,7 +74,7 @@ func (CustomerHandler) HandleCommand(
 	c := r.(*customer)
 
 	switch x := m.(type) {
-	case commands.OpenAccountForNewCustomer:
+	case *commands.OpenAccountForNewCustomer:
 		c.Acquire(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)

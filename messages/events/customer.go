@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -8,7 +9,7 @@ import (
 )
 
 func init() {
-	dogma.RegisterEvent[CustomerAcquired]("ddf33f6c-d120-440e-b611-b86a6c3b80a6")
+	dogma.RegisterEvent[*CustomerAcquired]("ddf33f6c-d120-440e-b611-b86a6c3b80a6")
 }
 
 // CustomerAcquired is an event indicating that a new customer has been
@@ -21,7 +22,7 @@ type CustomerAcquired struct {
 }
 
 // MessageDescription returns a human-readable description of the message.
-func (m CustomerAcquired) MessageDescription() string {
+func (m *CustomerAcquired) MessageDescription() string {
 	return fmt.Sprintf(
 		"acquired customer %s %s",
 		m.CustomerID,
@@ -30,7 +31,7 @@ func (m CustomerAcquired) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m CustomerAcquired) Validate(dogma.EventValidationScope) error {
+func (m *CustomerAcquired) Validate(dogma.EventValidationScope) error {
 	if m.CustomerID == "" {
 		return errors.New("CustomerAcquired must not have an empty customer ID")
 	}
@@ -45,4 +46,16 @@ func (m CustomerAcquired) Validate(dogma.EventValidationScope) error {
 	}
 
 	return nil
+}
+
+// MarshalBinary returns a binary representation of the message.
+// For simplicity in this example we use JSON.
+func (m *CustomerAcquired) MarshalBinary() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+// UnmarshalBinary populates the message from its binary representation.
+// For simplicity in this example we use JSON.
+func (m *CustomerAcquired) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, m)
 }
