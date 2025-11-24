@@ -5,9 +5,9 @@ go 1.24.0
 toolchain go1.24.1
 
 require (
-	github.com/dogmatiq/dogma v0.17.1
-	github.com/dogmatiq/enginekit v0.19.4
-	github.com/dogmatiq/projectionkit v0.8.0
+	github.com/dogmatiq/dogma v0.18.0
+	github.com/dogmatiq/enginekit v0.19.7
+	github.com/dogmatiq/projectionkit v0.9.0
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.19.0
 	github.com/mattn/go-sqlite3 v1.14.32
@@ -19,7 +19,7 @@ require (
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
