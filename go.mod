@@ -5,8 +5,8 @@ go 1.24.0
 toolchain go1.24.1
 
 require (
-	github.com/dogmatiq/dogma v0.18.0
-	github.com/dogmatiq/enginekit v0.19.7
+	github.com/dogmatiq/dogma v0.19.0
+	github.com/dogmatiq/enginekit v0.19.17
 	github.com/dogmatiq/projectionkit v0.9.0
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.19.0
