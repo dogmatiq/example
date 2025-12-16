@@ -10,7 +10,7 @@ import (
 )
 
 // AccountProjectionHandler is a projection that builds a report of accounts
-// managed by the bank.
+// managed by the bank. It implements [dogma.ProjectionMessageHandler].
 type AccountProjectionHandler struct {
 	sqlprojection.NoCompactBehavior
 }
@@ -73,4 +73,17 @@ func (h *AccountProjectionHandler) HandleEvent(
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
+}
+
+// Reset clears all projection data.
+func (h *AccountProjectionHandler) Reset(
+	ctx context.Context,
+	tx *sql.Tx,
+	_ dogma.ProjectionResetScope,
+) error {
+	_, err := tx.ExecContext(
+		ctx,
+		`DELETE FROM account`,
+	)
+	return err
 }

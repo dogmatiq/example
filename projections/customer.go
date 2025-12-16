@@ -51,3 +51,16 @@ func (h *CustomerProjectionHandler) HandleEvent(
 		panic(dogma.UnexpectedMessage)
 	}
 }
+
+// Reset clears all projection data.
+func (h *CustomerProjectionHandler) Reset(
+	ctx context.Context,
+	tx *sql.Tx,
+	_ dogma.ProjectionResetScope,
+) error {
+	_, err := tx.ExecContext(
+		ctx,
+		`DELETE FROM customer`,
+	)
+	return err
+}
