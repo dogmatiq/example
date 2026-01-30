@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/dogmatiq/dogma v0.19.0
-	github.com/dogmatiq/enginekit v0.19.19
+	github.com/dogmatiq/enginekit v0.20.0
 	github.com/dogmatiq/projectionkit v0.10.0
 	github.com/dogmatiq/sqltest v0.3.0
 	github.com/dogmatiq/testkit v0.20.0
