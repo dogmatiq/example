@@ -209,7 +209,6 @@ func (TransferProcessHandler) HandleEvent(
 			Amount:        t.Amount,
 		})
 
-		// compensate the initial debit after ending the process
 		s.ExecuteCommand(&commands.CreditAccount{
 			TransactionID:   x.TransactionID,
 			AccountID:       t.FromAccountID,
