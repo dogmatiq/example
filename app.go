@@ -5,6 +5,7 @@ import (
 
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/domain"
+	"github.com/dogmatiq/example/integrations"
 	"github.com/dogmatiq/example/projections"
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
@@ -23,6 +24,8 @@ type App struct {
 	OpenAccountForNewCustomerProcess domain.OpenAccountForNewCustomerProcessHandler
 	TransferProcess                  domain.TransferProcessHandler
 	WithdrawalProcess                domain.WithdrawalProcessHandler
+
+	ThirdPartyBank integrations.ThirdPartyBankIntegrationHandler
 
 	ReadDB             *sql.DB
 	AccountProjection  projections.AccountProjectionHandler
@@ -43,6 +46,8 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 		dogma.ViaProcess(a.OpenAccountForNewCustomerProcess),
 		dogma.ViaProcess(a.TransferProcess),
 		dogma.ViaProcess(a.WithdrawalProcess),
+
+		dogma.ViaIntegration(a.ThirdPartyBank),
 
 		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.AccountProjection)),
 		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.CustomerProjection)),
