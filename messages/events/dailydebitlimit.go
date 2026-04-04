@@ -45,8 +45,8 @@ func (m *DailyDebitLimitConsumed) MessageDescription() string {
 		"%s %s: consumed %s from %s daily debit limit of account %s",
 		m.DebitType,
 		m.TransactionID,
-		m.Date,
 		messages.FormatAmount(m.Amount),
+		m.Date,
 		m.AccountID,
 	)
 }

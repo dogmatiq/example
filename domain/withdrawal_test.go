@@ -257,6 +257,63 @@ func Test_Withdraw(t *testing.T) {
 						)
 				},
 			)
+
+			t.Run(
+				"it declines a second withdrawal that cumulatively exceeds the daily limit",
+				func(t *testing.T) {
+					Begin(t, &example.App{}).
+						Prepare(
+							ExecuteCommand(
+								&commands.OpenAccount{
+									CustomerID:  "C001",
+									AccountID:   "A001",
+									AccountName: "Anna Smith",
+								},
+							),
+							ExecuteCommand(
+								&commands.Deposit{
+									TransactionID: "D001",
+									AccountID:     "A001",
+									Amount:        expectedDailyDebitLimit + 1,
+								},
+							),
+							ExecuteCommand(
+								&commands.Withdraw{
+									TransactionID: "T001",
+									AccountID:     "A001",
+									Amount:        expectedDailyDebitLimit / 2,
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+								},
+							),
+							ExecuteCommand(
+								&commands.Withdraw{
+									TransactionID: "T002",
+									AccountID:     "A001",
+									Amount:        expectedDailyDebitLimit / 2,
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+								},
+							),
+						).
+						Expect(
+							ExecuteCommand(
+								&commands.Withdraw{
+									TransactionID: "T003",
+									AccountID:     "A001",
+									Amount:        1,
+									ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+								},
+							),
+							ToRecordEvent(
+								&events.WithdrawalDeclined{
+									TransactionID: "T003",
+									AccountID:     "A001",
+									Amount:        1,
+									Reason:        messages.DailyDebitLimitExceeded,
+								},
+							),
+						)
+				},
+			)
 		},
 	)
 

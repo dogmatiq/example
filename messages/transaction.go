@@ -49,7 +49,7 @@ type DebitFailureReason string
 const (
 	// InsufficientFunds means there was not enough funds available in the
 	// account to perform the debit.
-	InsufficientFunds DebitFailureReason = "insufficent funds"
+	InsufficientFunds DebitFailureReason = "insufficient funds"
 
 	// DailyDebitLimitExceeded means that the debit cannot be performed
 	// because it will exceed the account daily debit limit.
@@ -63,7 +63,7 @@ func (r DebitFailureReason) Validate() error {
 		DailyDebitLimitExceeded:
 		return nil
 	default:
-		return fmt.Errorf("invalid transaction type: %s", string(r))
+		return fmt.Errorf("invalid debit failure reason: %s", string(r))
 	}
 }
 

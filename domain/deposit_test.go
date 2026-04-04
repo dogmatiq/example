@@ -43,7 +43,7 @@ func Test_Deposit(t *testing.T) {
 								},
 							),
 						).
-						// verify that funds are availalbe
+						// verify that funds are available
 						Expect(
 							ExecuteCommand(
 								&commands.Withdraw{

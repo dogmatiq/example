@@ -18,10 +18,11 @@ func init() {
 
 // transfer is the process root for a funds transfer.
 type transferProcess struct {
-	FromAccountID string
-	ToAccountID   string
-	Amount        int64
-	DeclineReason messages.DebitFailureReason
+	FromAccountID    string
+	ToAccountID      string
+	ToThirdPartyBank bool
+	Amount           int64
+	DeclineReason    messages.DebitFailureReason
 }
 
 // MarshalBinary returns the transferProcess encoded as binary data.
@@ -54,13 +55,18 @@ func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 		dogma.HandlesEvent[*events.DailyDebitLimitConsumed](),
 		dogma.HandlesEvent[*events.DailyDebitLimitExceeded](),
 		dogma.HandlesEvent[*events.AccountCredited](),
+		dogma.HandlesEvent[*events.ThirdPartyAccountCredited](),
+		dogma.HandlesEvent[*events.ThirdPartyAccountCreditFailed](),
 		dogma.HandlesEvent[*events.TransferApproved](),
 		dogma.HandlesEvent[*events.TransferDeclined](),
+		dogma.HandlesEvent[*events.TransferFailed](),
 		dogma.ExecutesCommand[*commands.DebitAccount](),
 		dogma.ExecutesCommand[*commands.ConsumeDailyDebitLimit](),
 		dogma.ExecutesCommand[*commands.CreditAccount](),
+		dogma.ExecutesCommand[*commands.CreditThirdPartyAccount](),
 		dogma.ExecutesCommand[*commands.ApproveTransfer](),
 		dogma.ExecutesCommand[*commands.DeclineTransfer](),
+		dogma.ExecutesCommand[*commands.MarkTransferAsFailed](),
 		dogma.SchedulesTimeout[*TransferReadyToProceed](),
 	)
 }
@@ -84,9 +90,15 @@ func (TransferProcessHandler) RouteEventToInstance(
 		return x.TransactionID, x.DebitType == messages.Transfer, nil
 	case *events.AccountCredited:
 		return x.TransactionID, x.TransactionType == messages.Transfer, nil
+	case *events.ThirdPartyAccountCredited:
+		return x.TransactionID, true, nil
+	case *events.ThirdPartyAccountCreditFailed:
+		return x.TransactionID, true, nil
 	case *events.TransferApproved:
 		return x.TransactionID, true, nil
 	case *events.TransferDeclined:
+		return x.TransactionID, true, nil
+	case *events.TransferFailed:
 		return x.TransactionID, true, nil
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -106,6 +118,7 @@ func (TransferProcessHandler) HandleEvent(
 	case *events.TransferStarted:
 		t.FromAccountID = x.FromAccountID
 		t.ToAccountID = x.ToAccountID
+		t.ToThirdPartyBank = x.ToThirdPartyBank
 		t.Amount = x.Amount
 
 		s.ScheduleTimeout(
@@ -134,13 +147,20 @@ func (TransferProcessHandler) HandleEvent(
 		})
 
 	case *events.DailyDebitLimitConsumed:
-		// continue transfer
-		s.ExecuteCommand(&commands.CreditAccount{
-			TransactionID:   x.TransactionID,
-			AccountID:       t.ToAccountID,
-			TransactionType: messages.Transfer,
-			Amount:          x.Amount,
-		})
+		if t.ToThirdPartyBank {
+			s.ExecuteCommand(&commands.CreditThirdPartyAccount{
+				TransactionID: x.TransactionID,
+				AccountID:     t.ToAccountID,
+				Amount:        x.Amount,
+			})
+		} else {
+			s.ExecuteCommand(&commands.CreditAccount{
+				TransactionID:   x.TransactionID,
+				AccountID:       t.ToAccountID,
+				TransactionType: messages.Transfer,
+				Amount:          x.Amount,
+			})
+		}
 
 	case *events.DailyDebitLimitExceeded:
 		t.DeclineReason = messages.DailyDebitLimitExceeded
@@ -163,7 +183,7 @@ func (TransferProcessHandler) HandleEvent(
 				Amount:        x.Amount,
 			})
 		} else {
-			// it was a compensating credit to undo the transfer (failure)
+			// it was a compensating credit to undo the transfer (business rejection)
 			s.ExecuteCommand(&commands.DeclineTransfer{
 				TransactionID: x.TransactionID,
 				FromAccountID: t.FromAccountID,
@@ -173,7 +193,30 @@ func (TransferProcessHandler) HandleEvent(
 			})
 		}
 
-	case *events.TransferApproved, *events.TransferDeclined:
+	case *events.ThirdPartyAccountCredited:
+		s.ExecuteCommand(&commands.ApproveTransfer{
+			TransactionID: x.TransactionID,
+			FromAccountID: t.FromAccountID,
+			ToAccountID:   t.ToAccountID,
+			Amount:        t.Amount,
+		})
+
+	case *events.ThirdPartyAccountCreditFailed:
+		s.ExecuteCommand(&commands.MarkTransferAsFailed{
+			TransactionID: x.TransactionID,
+			FromAccountID: t.FromAccountID,
+			ToAccountID:   t.ToAccountID,
+			Amount:        t.Amount,
+		})
+
+		s.ExecuteCommand(&commands.CreditAccount{
+			TransactionID:   x.TransactionID,
+			AccountID:       t.FromAccountID,
+			TransactionType: messages.Transfer,
+			Amount:          t.Amount,
+		})
+
+	case *events.TransferApproved, *events.TransferDeclined, *events.TransferFailed:
 		s.End()
 
 	default:

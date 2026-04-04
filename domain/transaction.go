@@ -78,11 +78,12 @@ func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m *commands.T
 	}
 
 	s.RecordEvent(&events.TransferStarted{
-		TransactionID: m.TransactionID,
-		FromAccountID: m.FromAccountID,
-		ToAccountID:   m.ToAccountID,
-		Amount:        m.Amount,
-		ScheduledTime: m.ScheduledTime,
+		TransactionID:    m.TransactionID,
+		FromAccountID:    m.FromAccountID,
+		ToAccountID:      m.ToAccountID,
+		ToThirdPartyBank: m.ToThirdPartyBank,
+		Amount:           m.Amount,
+		ScheduledTime:    m.ScheduledTime,
 	})
 }
 
@@ -102,6 +103,15 @@ func (t *transaction) DeclineTransfer(s dogma.AggregateCommandScope, m *commands
 		ToAccountID:   m.ToAccountID,
 		Amount:        m.Amount,
 		Reason:        m.Reason,
+	})
+}
+
+func (t *transaction) MarkTransferAsFailed(s dogma.AggregateCommandScope, m *commands.MarkTransferAsFailed) {
+	s.RecordEvent(&events.TransferFailed{
+		TransactionID: m.TransactionID,
+		FromAccountID: m.FromAccountID,
+		ToAccountID:   m.ToAccountID,
+		Amount:        m.Amount,
 	})
 }
 
@@ -141,6 +151,7 @@ func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 		dogma.HandlesCommand[*commands.Transfer](),
 		dogma.HandlesCommand[*commands.ApproveTransfer](),
 		dogma.HandlesCommand[*commands.DeclineTransfer](),
+		dogma.HandlesCommand[*commands.MarkTransferAsFailed](),
 		dogma.RecordsEvent[*events.DepositStarted](),
 		dogma.RecordsEvent[*events.DepositApproved](),
 		dogma.RecordsEvent[*events.WithdrawalStarted](),
@@ -149,6 +160,7 @@ func (TransactionHandler) Configure(c dogma.AggregateConfigurer) {
 		dogma.RecordsEvent[*events.TransferStarted](),
 		dogma.RecordsEvent[*events.TransferApproved](),
 		dogma.RecordsEvent[*events.TransferDeclined](),
+		dogma.RecordsEvent[*events.TransferFailed](),
 	)
 }
 
@@ -171,6 +183,8 @@ func (TransactionHandler) RouteCommandToInstance(m dogma.Command) string {
 	case *commands.ApproveTransfer:
 		return x.TransactionID
 	case *commands.DeclineTransfer:
+		return x.TransactionID
+	case *commands.MarkTransferAsFailed:
 		return x.TransactionID
 	default:
 		panic(dogma.UnexpectedMessage)
@@ -203,6 +217,8 @@ func (TransactionHandler) HandleCommand(
 		t.ApproveTransfer(s, x)
 	case *commands.DeclineTransfer:
 		t.DeclineTransfer(s, x)
+	case *commands.MarkTransferAsFailed:
+		t.MarkTransferAsFailed(s, x)
 	default:
 		panic(dogma.UnexpectedMessage)
 	}
