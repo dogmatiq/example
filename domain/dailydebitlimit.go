@@ -51,7 +51,7 @@ func (d *dailyDebitLimit) wouldExceedLimit(amount int64) bool {
 func (d *dailyDebitLimit) ApplyEvent(m dogma.Event) {
 	switch x := m.(type) {
 	case *events.DailyDebitLimitConsumed:
-		d.TotalDebitsForDay = x.Amount
+		d.TotalDebitsForDay = x.TotalDebitsForDay
 	}
 }
 

@@ -78,12 +78,12 @@ func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m *commands.T
 	}
 
 	s.RecordEvent(&events.TransferStarted{
-		TransactionID:             m.TransactionID,
-		FromAccountID:             m.FromAccountID,
-		ToAccountID:               m.ToAccountID,
+		TransactionID:    m.TransactionID,
+		FromAccountID:    m.FromAccountID,
+		ToAccountID:      m.ToAccountID,
 		ToThirdPartyBank: m.ToThirdPartyBank,
-		Amount:                    m.Amount,
-		ScheduledTime:             m.ScheduledTime,
+		Amount:           m.Amount,
+		ScheduledTime:    m.ScheduledTime,
 	})
 }
 

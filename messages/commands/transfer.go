@@ -57,7 +57,7 @@ type MarkTransferAsFailed struct {
 // MessageDescription returns a human-readable description of the message.
 func (m *Transfer) MessageDescription() string {
 	return fmt.Sprintf(
-		"transfer %s: transfering %s from account %s to account %s",
+		"transfer %s: transferring %s from account %s to account %s",
 		m.TransactionID,
 		messages.FormatAmount(m.Amount),
 		m.FromAccountID,

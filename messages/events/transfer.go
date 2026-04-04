@@ -20,12 +20,12 @@ func init() {
 // TransferStarted is an event indicating that the process of transferring funds
 // from one account to another has begun.
 type TransferStarted struct {
-	TransactionID             string
-	FromAccountID             string
-	ToAccountID               string
+	TransactionID    string
+	FromAccountID    string
+	ToAccountID      string
 	ToThirdPartyBank bool
-	Amount                    int64
-	ScheduledTime             time.Time
+	Amount           int64
+	ScheduledTime    time.Time
 }
 
 // TransferApproved is an event that indicates a requested transfer has been
