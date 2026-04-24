@@ -10,12 +10,15 @@ import (
 type customer struct {
 	dogma.NoSnapshotBehavior
 
-	// Acquired is true if the customer has been acquired.
-	Acquired bool
+	Name string
+}
+
+func (c *customer) AggregateInstanceDescription() string {
+	return c.Name
 }
 
 func (c *customer) Acquire(s dogma.AggregateCommandScope, m *commands.OpenAccountForNewCustomer) {
-	if c.Acquired {
+	if c.Name != "" {
 		s.Log("customer has already been acquired")
 		return
 	}
@@ -29,9 +32,9 @@ func (c *customer) Acquire(s dogma.AggregateCommandScope, m *commands.OpenAccoun
 }
 
 func (c *customer) ApplyEvent(m dogma.Event) {
-	switch m.(type) {
+	switch m := m.(type) {
 	case *events.CustomerAcquired:
-		c.Acquired = true
+		c.Name = m.CustomerName
 	}
 }
 

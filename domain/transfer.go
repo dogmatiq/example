@@ -25,6 +25,40 @@ type transferProcess struct {
 	DeclineReason    messages.DebitFailureReason
 }
 
+// ProcessInstanceDescription returns a human-readable description of the
+// transfer's current state.
+func (p *transferProcess) ProcessInstanceDescription(ended bool) string {
+	if p.Amount == 0 {
+		return ""
+	}
+
+	if !ended {
+		return fmt.Sprintf(
+			"transferring %s from %s to %s",
+			messages.FormatAmount(p.Amount),
+			p.FromAccountID,
+			p.ToAccountID,
+		)
+	}
+
+	if p.DeclineReason != "" {
+		return fmt.Sprintf(
+			"transfer of %s from %s to %s declined: %s",
+			messages.FormatAmount(p.Amount),
+			p.FromAccountID,
+			p.ToAccountID,
+			p.DeclineReason,
+		)
+	}
+
+	return fmt.Sprintf(
+		"transferred %s from %s to %s",
+		messages.FormatAmount(p.Amount),
+		p.FromAccountID,
+		p.ToAccountID,
+	)
+}
+
 // MarshalBinary returns the transferProcess encoded as binary data.
 func (p *transferProcess) MarshalBinary() ([]byte, error) {
 	return json.Marshal(p)

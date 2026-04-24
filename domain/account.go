@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"fmt"
+
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
@@ -11,15 +13,27 @@ import (
 type account struct {
 	dogma.NoSnapshotBehavior
 
-	// Opened is true if the account has been opened.
-	Opened bool
+	// Name is the account name.
+	Name string
 
 	// Balance is the current account balance, in cents.
 	Balance int64
 }
 
+func (a *account) AggregateInstanceDescription() string {
+	if a.Name == "" {
+		return ""
+	}
+
+	return fmt.Sprintf(
+		"%s (%s)",
+		a.Name,
+		messages.FormatAmount(a.Balance),
+	)
+}
+
 func (a *account) OpenAccount(s dogma.AggregateCommandScope, m *commands.OpenAccount) {
-	if a.Opened {
+	if a.Name != "" {
 		s.Log("account has already been opened")
 		return
 	}
@@ -67,7 +81,7 @@ func (a *account) hasSufficientFunds(amount int64) bool {
 func (a *account) ApplyEvent(m dogma.Event) {
 	switch x := m.(type) {
 	case *events.AccountOpened:
-		a.Opened = true
+		a.Name = x.AccountName
 	case *events.AccountCredited:
 		a.Balance += x.Amount
 	case *events.AccountDebited:

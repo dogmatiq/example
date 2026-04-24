@@ -1,7 +1,10 @@
 package domain
 
 import (
+	"fmt"
+
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
 )
@@ -10,12 +13,26 @@ import (
 type transaction struct {
 	dogma.NoSnapshotBehavior
 
-	// Started is true if the transaction has started.
-	Started bool
+	Type   string
+	Amount int64
+	Status string
+}
+
+func (t *transaction) AggregateInstanceDescription() string {
+	if t.Type == "" {
+		return ""
+	}
+
+	return fmt.Sprintf(
+		"%s of %s (%s)",
+		t.Type,
+		messages.FormatAmount(t.Amount),
+		t.Status,
+	)
 }
 
 func (t *transaction) StartDeposit(s dogma.AggregateCommandScope, m *commands.Deposit) {
-	if t.Started {
+	if t.Status != "" {
 		s.Log("transaction already started")
 		return
 	}
@@ -36,7 +53,7 @@ func (t *transaction) ApproveDeposit(s dogma.AggregateCommandScope, m *commands.
 }
 
 func (t *transaction) StartWithdraw(s dogma.AggregateCommandScope, m *commands.Withdraw) {
-	if t.Started {
+	if t.Status != "" {
 		s.Log("transaction already started")
 		return
 	}
@@ -67,13 +84,13 @@ func (t *transaction) DeclineWithdrawal(s dogma.AggregateCommandScope, m *comman
 }
 
 func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m *commands.Transfer) {
-	if m.FromAccountID == m.ToAccountID {
-		s.Log("cannot transfer to same account")
+	if t.Status != "" {
+		s.Log("transaction already started")
 		return
 	}
 
-	if t.Started {
-		s.Log("transaction already started")
+	if m.FromAccountID == m.ToAccountID {
+		s.Log("cannot transfer to same account")
 		return
 	}
 
@@ -116,13 +133,33 @@ func (t *transaction) MarkTransferAsFailed(s dogma.AggregateCommandScope, m *com
 }
 
 func (t *transaction) ApplyEvent(m dogma.Event) {
-	switch m.(type) {
+	switch m := m.(type) {
 	case *events.DepositStarted:
-		t.Started = true
+		t.Type = "deposit"
+		t.Amount = m.Amount
+		t.Status = "pending"
+	case *events.DepositApproved:
+		t.Status = "approved"
+
 	case *events.WithdrawalStarted:
-		t.Started = true
+		t.Type = "withdrawal"
+		t.Amount = m.Amount
+		t.Status = "pending"
+	case *events.WithdrawalApproved:
+		t.Status = "approved"
+	case *events.WithdrawalDeclined:
+		t.Status = "declined: " + string(m.Reason)
+
 	case *events.TransferStarted:
-		t.Started = true
+		t.Type = "transfer"
+		t.Amount = m.Amount
+		t.Status = "pending"
+	case *events.TransferApproved:
+		t.Status = "approved"
+	case *events.TransferDeclined:
+		t.Status = "declined: " + string(m.Reason)
+	case *events.TransferFailed:
+		t.Status = "failed"
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/messages"
 	"github.com/dogmatiq/example/messages/commands"
 	"github.com/dogmatiq/example/messages/events"
 )
@@ -18,6 +19,14 @@ type dailyDebitLimit struct {
 
 	// TotalDebitsForDay is the total of all debits for the day, in cents.
 	TotalDebitsForDay int64
+}
+
+func (d *dailyDebitLimit) AggregateInstanceDescription() string {
+	return fmt.Sprintf(
+		"%s/%s",
+		messages.FormatAmount(d.TotalDebitsForDay),
+		messages.FormatAmount(maximumDailyDebitLimit),
+	)
 }
 
 func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m *commands.ConsumeDailyDebitLimit) {
