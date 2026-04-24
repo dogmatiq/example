@@ -1,7 +1,6 @@
 package projections_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dogmatiq/example"
@@ -13,8 +12,7 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened for a new customer",
 		func(t *testing.T) {
-			database, db := openDB(context.Background())
-			defer database.Close()
+			db := openDB(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("customer-list").

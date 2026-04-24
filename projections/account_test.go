@@ -1,7 +1,6 @@
 package projections_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -14,8 +13,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened",
 		func(t *testing.T) {
-			database, db := openDB(context.Background())
-			defer database.Close()
+			db := openDB(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("account-list").
@@ -100,8 +98,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is credited",
 		func(t *testing.T) {
-			database, db := openDB(context.Background())
-			defer database.Close()
+			db := openDB(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("account-list").
@@ -167,8 +164,7 @@ func Test_AccountProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is debited",
 		func(t *testing.T) {
-			database, db := openDB(context.Background())
-			defer database.Close()
+			db := openDB(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("account-list").
