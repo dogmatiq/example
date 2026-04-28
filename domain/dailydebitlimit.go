@@ -29,7 +29,7 @@ func (d *dailyDebitLimit) AggregateInstanceDescription() string {
 	)
 }
 
-func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope, m *commands.ConsumeDailyDebitLimit) {
+func (d *dailyDebitLimit) Consume(s dogma.AggregateCommandScope[*dailyDebitLimit], m *commands.ConsumeDailyDebitLimit) {
 	if d.wouldExceedLimit(m.Amount) {
 		s.RecordEvent(&events.DailyDebitLimitExceeded{
 			TransactionID:     m.TransactionID,
@@ -72,7 +72,7 @@ func (d *dailyDebitLimit) ApplyEvent(m dogma.Event) {
 type DailyDebitLimitHandler struct{}
 
 // New returns a new daily debit limit instance.
-func (DailyDebitLimitHandler) New() dogma.AggregateRoot {
+func (DailyDebitLimitHandler) New() *dailyDebitLimit {
 	return &dailyDebitLimit{}
 }
 
@@ -101,12 +101,10 @@ func (DailyDebitLimitHandler) RouteCommandToInstance(m dogma.Command) string {
 
 // HandleCommand handles a command message that has been routed to this handler.
 func (DailyDebitLimitHandler) HandleCommand(
-	r dogma.AggregateRoot,
-	s dogma.AggregateCommandScope,
+	d *dailyDebitLimit,
+	s dogma.AggregateCommandScope[*dailyDebitLimit],
 	m dogma.Command,
 ) {
-	d := r.(*dailyDebitLimit)
-
 	switch x := m.(type) {
 	case *commands.ConsumeDailyDebitLimit:
 		d.Consume(s, x)

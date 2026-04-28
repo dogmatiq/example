@@ -74,7 +74,7 @@ func (p *transferProcess) UnmarshalBinary(data []byte) error {
 type TransferProcessHandler struct{}
 
 // New returns a new transfer instance.
-func (TransferProcessHandler) New() dogma.ProcessRoot {
+func (TransferProcessHandler) New() *transferProcess {
 	return &transferProcess{}
 }
 
@@ -142,12 +142,10 @@ func (TransferProcessHandler) RouteEventToInstance(
 // HandleEvent handles an event message that has been routed to this handler.
 func (TransferProcessHandler) HandleEvent(
 	_ context.Context,
-	r dogma.ProcessRoot,
-	s dogma.ProcessEventScope,
+	t *transferProcess,
+	s dogma.ProcessEventScope[*transferProcess],
 	m dogma.Event,
 ) error {
-	t := r.(*transferProcess)
-
 	switch x := m.(type) {
 	case *events.TransferStarted:
 		t.FromAccountID = x.FromAccountID
@@ -263,12 +261,10 @@ func (TransferProcessHandler) HandleEvent(
 // HandleTimeout handles a timeout message that has been routed to this handler.
 func (TransferProcessHandler) HandleTimeout(
 	_ context.Context,
-	r dogma.ProcessRoot,
-	s dogma.ProcessTimeoutScope,
+	t *transferProcess,
+	s dogma.ProcessTimeoutScope[*transferProcess],
 	m dogma.Timeout,
 ) error {
-	t := r.(*transferProcess)
-
 	switch x := m.(type) {
 	case *TransferReadyToProceed:
 		s.ExecuteCommand(&commands.DebitAccount{

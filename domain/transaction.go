@@ -31,7 +31,7 @@ func (t *transaction) AggregateInstanceDescription() string {
 	)
 }
 
-func (t *transaction) StartDeposit(s dogma.AggregateCommandScope, m *commands.Deposit) {
+func (t *transaction) StartDeposit(s dogma.AggregateCommandScope[*transaction], m *commands.Deposit) {
 	if t.Status != "" {
 		s.Log("transaction already started")
 		return
@@ -44,7 +44,7 @@ func (t *transaction) StartDeposit(s dogma.AggregateCommandScope, m *commands.De
 	})
 }
 
-func (t *transaction) ApproveDeposit(s dogma.AggregateCommandScope, m *commands.ApproveDeposit) {
+func (t *transaction) ApproveDeposit(s dogma.AggregateCommandScope[*transaction], m *commands.ApproveDeposit) {
 	s.RecordEvent(&events.DepositApproved{
 		TransactionID: m.TransactionID,
 		AccountID:     m.AccountID,
@@ -52,7 +52,7 @@ func (t *transaction) ApproveDeposit(s dogma.AggregateCommandScope, m *commands.
 	})
 }
 
-func (t *transaction) StartWithdraw(s dogma.AggregateCommandScope, m *commands.Withdraw) {
+func (t *transaction) StartWithdraw(s dogma.AggregateCommandScope[*transaction], m *commands.Withdraw) {
 	if t.Status != "" {
 		s.Log("transaction already started")
 		return
@@ -66,7 +66,7 @@ func (t *transaction) StartWithdraw(s dogma.AggregateCommandScope, m *commands.W
 	})
 }
 
-func (t *transaction) ApproveWithdrawal(s dogma.AggregateCommandScope, m *commands.ApproveWithdrawal) {
+func (t *transaction) ApproveWithdrawal(s dogma.AggregateCommandScope[*transaction], m *commands.ApproveWithdrawal) {
 	s.RecordEvent(&events.WithdrawalApproved{
 		TransactionID: m.TransactionID,
 		AccountID:     m.AccountID,
@@ -74,7 +74,7 @@ func (t *transaction) ApproveWithdrawal(s dogma.AggregateCommandScope, m *comman
 	})
 }
 
-func (t *transaction) DeclineWithdrawal(s dogma.AggregateCommandScope, m *commands.DeclineWithdrawal) {
+func (t *transaction) DeclineWithdrawal(s dogma.AggregateCommandScope[*transaction], m *commands.DeclineWithdrawal) {
 	s.RecordEvent(&events.WithdrawalDeclined{
 		TransactionID: m.TransactionID,
 		AccountID:     m.AccountID,
@@ -83,7 +83,7 @@ func (t *transaction) DeclineWithdrawal(s dogma.AggregateCommandScope, m *comman
 	})
 }
 
-func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m *commands.Transfer) {
+func (t *transaction) StartTransfer(s dogma.AggregateCommandScope[*transaction], m *commands.Transfer) {
 	if t.Status != "" {
 		s.Log("transaction already started")
 		return
@@ -104,7 +104,7 @@ func (t *transaction) StartTransfer(s dogma.AggregateCommandScope, m *commands.T
 	})
 }
 
-func (t *transaction) ApproveTransfer(s dogma.AggregateCommandScope, m *commands.ApproveTransfer) {
+func (t *transaction) ApproveTransfer(s dogma.AggregateCommandScope[*transaction], m *commands.ApproveTransfer) {
 	s.RecordEvent(&events.TransferApproved{
 		TransactionID: m.TransactionID,
 		FromAccountID: m.FromAccountID,
@@ -113,7 +113,7 @@ func (t *transaction) ApproveTransfer(s dogma.AggregateCommandScope, m *commands
 	})
 }
 
-func (t *transaction) DeclineTransfer(s dogma.AggregateCommandScope, m *commands.DeclineTransfer) {
+func (t *transaction) DeclineTransfer(s dogma.AggregateCommandScope[*transaction], m *commands.DeclineTransfer) {
 	s.RecordEvent(&events.TransferDeclined{
 		TransactionID: m.TransactionID,
 		FromAccountID: m.FromAccountID,
@@ -123,7 +123,7 @@ func (t *transaction) DeclineTransfer(s dogma.AggregateCommandScope, m *commands
 	})
 }
 
-func (t *transaction) MarkTransferAsFailed(s dogma.AggregateCommandScope, m *commands.MarkTransferAsFailed) {
+func (t *transaction) MarkTransferAsFailed(s dogma.AggregateCommandScope[*transaction], m *commands.MarkTransferAsFailed) {
 	s.RecordEvent(&events.TransferFailed{
 		TransactionID: m.TransactionID,
 		FromAccountID: m.FromAccountID,
@@ -170,7 +170,7 @@ func (t *transaction) ApplyEvent(m dogma.Event) {
 type TransactionHandler struct{}
 
 // New returns a new transaction instance.
-func (TransactionHandler) New() dogma.AggregateRoot {
+func (TransactionHandler) New() *transaction {
 	return &transaction{}
 }
 
@@ -231,12 +231,10 @@ func (TransactionHandler) RouteCommandToInstance(m dogma.Command) string {
 // HandleCommand handles a command message that has been routed to this
 // handler.
 func (TransactionHandler) HandleCommand(
-	r dogma.AggregateRoot,
-	s dogma.AggregateCommandScope,
+	t *transaction,
+	s dogma.AggregateCommandScope[*transaction],
 	m dogma.Command,
 ) {
-	t := r.(*transaction)
-
 	switch x := m.(type) {
 	case *commands.Deposit:
 		t.StartDeposit(s, x)

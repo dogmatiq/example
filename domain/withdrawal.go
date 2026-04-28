@@ -13,7 +13,7 @@ import (
 // account.
 type WithdrawalProcessHandler struct {
 	dogma.StatelessProcessBehavior
-	dogma.NoTimeoutMessagesBehavior
+	dogma.NoTimeoutMessagesBehavior[dogma.StatelessProcessRoot]
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -69,8 +69,8 @@ func (WithdrawalProcessHandler) RouteEventToInstance(
 // HandleEvent handles an event message that has been routed to this handler.
 func (WithdrawalProcessHandler) HandleEvent(
 	_ context.Context,
-	_ dogma.ProcessRoot,
-	s dogma.ProcessEventScope,
+	_ dogma.StatelessProcessRoot,
+	s dogma.ProcessEventScope[dogma.StatelessProcessRoot],
 	m dogma.Event,
 ) error {
 	switch x := m.(type) {
