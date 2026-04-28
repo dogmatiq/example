@@ -17,7 +17,7 @@ func (c *customer) AggregateInstanceDescription() string {
 	return c.Name
 }
 
-func (c *customer) Acquire(s dogma.AggregateCommandScope, m *commands.OpenAccountForNewCustomer) {
+func (c *customer) Acquire(s dogma.AggregateCommandScope[*customer], m *commands.OpenAccountForNewCustomer) {
 	if c.Name != "" {
 		s.Log("customer has already been acquired")
 		return
@@ -53,7 +53,7 @@ func (CustomerHandler) Configure(c dogma.AggregateConfigurer) {
 }
 
 // New returns a new customer instance.
-func (CustomerHandler) New() dogma.AggregateRoot {
+func (CustomerHandler) New() *customer {
 	return &customer{}
 }
 
@@ -70,12 +70,10 @@ func (CustomerHandler) RouteCommandToInstance(m dogma.Command) string {
 
 // HandleCommand handles a command message that has been routed to this handler.
 func (CustomerHandler) HandleCommand(
-	r dogma.AggregateRoot,
-	s dogma.AggregateCommandScope,
+	c *customer,
+	s dogma.AggregateCommandScope[*customer],
 	m dogma.Command,
 ) {
-	c := r.(*customer)
-
 	switch x := m.(type) {
 	case *commands.OpenAccountForNewCustomer:
 		c.Acquire(s, x)

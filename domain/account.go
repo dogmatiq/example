@@ -32,7 +32,7 @@ func (a *account) AggregateInstanceDescription() string {
 	)
 }
 
-func (a *account) OpenAccount(s dogma.AggregateCommandScope, m *commands.OpenAccount) {
+func (a *account) OpenAccount(s dogma.AggregateCommandScope[*account], m *commands.OpenAccount) {
 	if a.Name != "" {
 		s.Log("account has already been opened")
 		return
@@ -45,7 +45,7 @@ func (a *account) OpenAccount(s dogma.AggregateCommandScope, m *commands.OpenAcc
 	})
 }
 
-func (a *account) CreditAccount(s dogma.AggregateCommandScope, m *commands.CreditAccount) {
+func (a *account) CreditAccount(s dogma.AggregateCommandScope[*account], m *commands.CreditAccount) {
 	s.RecordEvent(&events.AccountCredited{
 		TransactionID:   m.TransactionID,
 		AccountID:       m.AccountID,
@@ -54,7 +54,7 @@ func (a *account) CreditAccount(s dogma.AggregateCommandScope, m *commands.Credi
 	})
 }
 
-func (a *account) DebitAccount(s dogma.AggregateCommandScope, m *commands.DebitAccount) {
+func (a *account) DebitAccount(s dogma.AggregateCommandScope[*account], m *commands.DebitAccount) {
 	if a.hasSufficientFunds(m.Amount) {
 		s.RecordEvent(&events.AccountDebited{
 			TransactionID:   m.TransactionID,
@@ -96,7 +96,7 @@ func (a *account) ApplyEvent(m dogma.Event) {
 type AccountHandler struct{}
 
 // New returns a new account instance.
-func (AccountHandler) New() dogma.AggregateRoot {
+func (AccountHandler) New() *account {
 	return &account{}
 }
 
@@ -133,12 +133,10 @@ func (AccountHandler) RouteCommandToInstance(m dogma.Command) string {
 
 // HandleCommand handles a command message that has been routed to this handler.
 func (AccountHandler) HandleCommand(
-	r dogma.AggregateRoot,
-	s dogma.AggregateCommandScope,
+	a *account,
+	s dogma.AggregateCommandScope[*account],
 	m dogma.Command,
 ) {
-	a := r.(*account)
-
 	switch x := m.(type) {
 	case *commands.OpenAccount:
 		a.OpenAccount(s, x)
