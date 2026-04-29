@@ -47,8 +47,8 @@ github.com/dogmatiq/linger v1.1.0 h1:kGL9sL79qRa6Cr8PhadeJ/ptbum+b48pAaNWWlyVVKg
 github.com/dogmatiq/linger v1.1.0/go.mod h1:OOWJUwTxNkFolhuVdaTYjO4FmFLjZHZ8EMc5H5qOJ7Q=
 github.com/dogmatiq/projectionkit v0.10.0 h1:OXvgmyIUeJme2HdRhCa07LF4Xfhc0xYWpwDhYQfi9SQ=
 github.com/dogmatiq/projectionkit v0.10.0/go.mod h1:vs+JNhmeB5lhqPdOv5QfkGt56ZonikUCUjualGnLG8U=
-github.com/dogmatiq/testkit v0.20.2-0.20260423200200-550ddc02a2b5 h1:O4n7amPpwBxZS4hHvgSK9QHWEC8PUB2u8BLww/5yHj8=
-github.com/dogmatiq/testkit v0.20.2-0.20260423200200-550ddc02a2b5/go.mod h1:9WdmK1U73+JKMauilujivRiO58maBv5mfR6hINZfQyQ=
+github.com/dogmatiq/testkit v0.21.1 h1:oSd0n6Hct82z4UArM6pbxK2U16br+CwF81s9+WQaVsU=
+github.com/dogmatiq/testkit v0.21.1/go.mod h1:wD0t07dKTT5wbTczXe5IF94Q6VTE79c5x1auFLlrIj8=
 github.com/ebitengine/purego v0.8.4 h1:CF7LEKg5FFOsASUj0+QwaXf8Ht6TlFxg09+S9wz0omw=
 github.com/ebitengine/purego v0.8.4/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
