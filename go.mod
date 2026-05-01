@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/dogmatiq/dogma v0.23.0
-	github.com/dogmatiq/enginekit v0.24.1
+	github.com/dogmatiq/enginekit v0.25.0
 	github.com/dogmatiq/projectionkit v0.10.0
 	github.com/dogmatiq/testkit v0.21.1
 	github.com/mattn/go-sqlite3 v1.14.44
