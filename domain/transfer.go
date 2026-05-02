@@ -148,10 +148,12 @@ func (TransferProcessHandler) HandleEvent(
 ) error {
 	switch x := m.(type) {
 	case *events.TransferStarted:
-		t.FromAccountID = x.FromAccountID
-		t.ToAccountID = x.ToAccountID
-		t.ToThirdPartyBank = x.ToThirdPartyBank
-		t.Amount = x.Amount
+		s.Mutate(func(t *transferProcess) {
+			t.FromAccountID = x.FromAccountID
+			t.ToAccountID = x.ToAccountID
+			t.ToThirdPartyBank = x.ToThirdPartyBank
+			t.Amount = x.Amount
+		})
 
 		s.ScheduleTimeout(
 			&TransferReadyToProceed{
@@ -195,7 +197,9 @@ func (TransferProcessHandler) HandleEvent(
 		}
 
 	case *events.DailyDebitLimitExceeded:
-		t.DeclineReason = messages.DailyDebitLimitExceeded
+		s.Mutate(func(t *transferProcess) {
+			t.DeclineReason = messages.DailyDebitLimitExceeded
+		})
 
 		// compensate the initial debit
 		s.ExecuteCommand(&commands.CreditAccount{
