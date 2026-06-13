@@ -13,7 +13,7 @@ import (
 // account.
 type DepositProcessHandler struct {
 	dogma.StatelessProcessBehavior
-	dogma.NoTimeoutMessagesBehavior[dogma.StatelessProcessRoot]
+	dogma.NoDeadlineMessagesBehavior[*dogma.StatelessProcessRoot]
 }
 
 // Configure configures the behavior of the engine as it relates to this
@@ -30,7 +30,7 @@ func (DepositProcessHandler) Configure(c dogma.ProcessConfigurer) {
 	)
 }
 
-// RouteEventToInstance returns the ID of the process instance that is targetted
+// RouteEventToInstance returns the ID of the process instance that is targeted
 // by m.
 func (DepositProcessHandler) RouteEventToInstance(
 	_ context.Context,
@@ -51,8 +51,8 @@ func (DepositProcessHandler) RouteEventToInstance(
 // HandleEvent handles an event message that has been routed to this handler.
 func (DepositProcessHandler) HandleEvent(
 	_ context.Context,
-	_ dogma.StatelessProcessRoot,
-	s dogma.ProcessEventScope[dogma.StatelessProcessRoot],
+	_ *dogma.StatelessProcessRoot,
+	s dogma.ProcessEventScope[*dogma.StatelessProcessRoot],
 	m dogma.Event,
 ) error {
 	switch x := m.(type) {

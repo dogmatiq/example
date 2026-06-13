@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	dogma.RegisterTimeout[*TransferReadyToProceed]("b5474f89-e985-4661-b85b-645347a4a645")
+	dogma.RegisterDeadline[*TransferReadyToProceed]("b5474f89-e985-4661-b85b-645347a4a645")
 }
 
 // transfer is the process root for a funds transfer.
@@ -101,11 +101,11 @@ func (TransferProcessHandler) Configure(c dogma.ProcessConfigurer) {
 		dogma.ExecutesCommand[*commands.ApproveTransfer](),
 		dogma.ExecutesCommand[*commands.DeclineTransfer](),
 		dogma.ExecutesCommand[*commands.MarkTransferAsFailed](),
-		dogma.SchedulesTimeout[*TransferReadyToProceed](),
+		dogma.SchedulesDeadline[*TransferReadyToProceed](),
 	)
 }
 
-// RouteEventToInstance returns the ID of the process instance that is targetted
+// RouteEventToInstance returns the ID of the process instance that is targeted
 // by m.
 func (TransferProcessHandler) RouteEventToInstance(
 	_ context.Context,
@@ -148,12 +148,14 @@ func (TransferProcessHandler) HandleEvent(
 ) error {
 	switch x := m.(type) {
 	case *events.TransferStarted:
-		t.FromAccountID = x.FromAccountID
-		t.ToAccountID = x.ToAccountID
-		t.ToThirdPartyBank = x.ToThirdPartyBank
-		t.Amount = x.Amount
+		s.Mutate(func(t *transferProcess) {
+			t.FromAccountID = x.FromAccountID
+			t.ToAccountID = x.ToAccountID
+			t.ToThirdPartyBank = x.ToThirdPartyBank
+			t.Amount = x.Amount
+		})
 
-		s.ScheduleTimeout(
+		s.ScheduleDeadline(
 			&TransferReadyToProceed{
 				TransactionID: x.TransactionID,
 			},
@@ -195,7 +197,9 @@ func (TransferProcessHandler) HandleEvent(
 		}
 
 	case *events.DailyDebitLimitExceeded:
-		t.DeclineReason = messages.DailyDebitLimitExceeded
+		s.Mutate(func(t *transferProcess) {
+			t.DeclineReason = messages.DailyDebitLimitExceeded
+		})
 
 		// compensate the initial debit
 		s.ExecuteCommand(&commands.CreditAccount{
@@ -258,12 +262,12 @@ func (TransferProcessHandler) HandleEvent(
 	return nil
 }
 
-// HandleTimeout handles a timeout message that has been routed to this handler.
-func (TransferProcessHandler) HandleTimeout(
+// HandleDeadline handles a deadline message that has been routed to this handler.
+func (TransferProcessHandler) HandleDeadline(
 	_ context.Context,
 	t *transferProcess,
-	s dogma.ProcessTimeoutScope[*transferProcess],
-	m dogma.Timeout,
+	s dogma.ProcessDeadlineScope[*transferProcess],
+	m dogma.Deadline,
 ) error {
 	switch x := m.(type) {
 	case *TransferReadyToProceed:
@@ -282,7 +286,7 @@ func (TransferProcessHandler) HandleTimeout(
 	return nil
 }
 
-// TransferReadyToProceed is a timeout message notifiying that the transfer is
+// TransferReadyToProceed is a deadline message notifying that the transfer is
 // ready to proceed.
 type TransferReadyToProceed struct {
 	TransactionID string
@@ -294,7 +298,7 @@ func (m *TransferReadyToProceed) MessageDescription() string {
 }
 
 // Validate returns a non-nil error if the message is invalid.
-func (m *TransferReadyToProceed) Validate(dogma.TimeoutValidationScope) error {
+func (m *TransferReadyToProceed) Validate(dogma.DeadlineValidationScope) error {
 	if m.TransactionID == "" {
 		return errors.New("TransferReadyToProceed must not have an empty transaction ID")
 	}

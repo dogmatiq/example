@@ -44,7 +44,7 @@ func main() {
 			fact.EventRecordedByAggregate,
 			fact.EventRecordedByIntegration,
 			fact.CommandExecutedByProcess,
-			fact.TimeoutScheduledByProcess,
+			fact.DeadlineScheduledByProcess,
 			fact.MessageLoggedByAggregate,
 			fact.MessageLoggedByIntegration,
 			fact.MessageLoggedByProcess,
