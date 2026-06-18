@@ -7,7 +7,7 @@ require (
 	github.com/dogmatiq/enginekit v0.25.0
 	github.com/dogmatiq/projectionkit v0.10.0
 	github.com/dogmatiq/testkit v0.21.1
-	github.com/mattn/go-sqlite3 v1.14.45
+	github.com/mattn/go-sqlite3 v1.14.46
 )
 
 require (
