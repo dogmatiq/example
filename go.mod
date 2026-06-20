@@ -17,6 +17,7 @@ require (
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/sergi/go-diff v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/text v0.36.0 // indirect

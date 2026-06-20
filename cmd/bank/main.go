@@ -3,19 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
-	"time"
+	"net/http"
+	"os"
+	"os/signal"
 
-	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/enginekit/config/runtimeconfig"
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/database"
-	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/ui"
 	"github.com/dogmatiq/testkit/engine"
 	"github.com/dogmatiq/testkit/fact"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	db := database.MustNew()
 	defer db.Close()
 
@@ -23,64 +27,66 @@ func main() {
 		ReadDB: db,
 	}
 
-	en, err := engine.New(runtimeconfig.FromApplication(app))
+	e, err := engine.New(runtimeconfig.FromApplication(app))
 	if err != nil {
 		panic(err)
 	}
 
-	commands := []dogma.Command{
-		&commands.OpenAccountForNewCustomer{
-			CustomerID:   "cust1",
-			CustomerName: "Anna Smith",
-			AccountID:    "acct1",
-			AccountName:  "Anna Smith",
-		},
-		&commands.OpenAccountForNewCustomer{
-			CustomerID:   "cust2",
-			CustomerName: "Bob Jones",
-			AccountID:    "acct2",
-			AccountName:  "Bob Jones",
-		},
-		&commands.Deposit{
-			TransactionID: "txn1",
-			AccountID:     "acct1",
-			Amount:        10000,
-		},
-		&commands.Withdraw{
-			TransactionID: "txn2",
-			AccountID:     "acct1",
-			Amount:        500,
-			ScheduledTime: time.Now(),
-		},
-		&commands.Transfer{
-			TransactionID: "txn3",
-			FromAccountID: "acct1",
-			ToAccountID:   "acct2",
-			Amount:        2500,
-			ScheduledTime: time.Now(),
-		},
-		&commands.Transfer{
-			TransactionID: "txn4",
-			FromAccountID: "acct1",
-			ToAccountID:   "acct2",
-			Amount:        500,
-			ScheduledTime: time.Now().AddDate(0, 0, 1),
+	logger := fact.NewLogger(func(s string) {
+		fmt.Println(s)
+	})
+
+	observer := fact.ObserverFunc(func(f fact.Fact) {
+		switch f.(type) {
+		case fact.DispatchBegun,
+			fact.HandlingBegun,
+			fact.HandlingCompleted,
+			fact.EventRecordedByAggregate,
+			fact.EventRecordedByIntegration,
+			fact.CommandExecutedByProcess,
+			fact.TimeoutScheduledByProcess,
+			fact.MessageLoggedByAggregate,
+			fact.MessageLoggedByIntegration,
+			fact.MessageLoggedByProcess,
+			fact.MessageLoggedByProjection:
+			logger.Notify(f)
+		}
+	})
+
+	opts := []engine.OperationOption{
+		engine.EnableProjections(true),
+		engine.WithObserver(observer),
+	}
+
+	// Run the engine in the background. This processes timeouts and scheduled
+	// events that are triggered by process managers.
+	go func() {
+		if err := engine.Run(ctx, e, 0, opts...); err != nil {
+			fmt.Fprintln(os.Stderr, "engine error:", err)
+		}
+	}()
+
+	server := &http.Server{
+		Addr: ":8080",
+		Handler: &ui.Handler{
+			DB: db,
+			CommandExecutor: engine.CommandExecutor{
+				Engine:  e,
+				Options: opts,
+			},
 		},
 	}
 
-	for _, m := range commands {
-		err := en.Dispatch(
-			context.Background(),
-			m,
-			engine.WithObserver(
-				fact.NewLogger(func(s string) {
-					fmt.Println(s)
-				}),
-			),
-			engine.EnableProjections(true),
-		)
-		if err != nil {
-			panic(err)
-		}
+	// Shut down the HTTP server when the context is canceled.
+	go func() {
+		<-ctx.Done()
+		server.Shutdown(context.Background())
+	}()
+
+	fmt.Println("Dogmatiq Bank is running at http://localhost:8080")
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		fmt.Fprintln(os.Stderr, "server error:", err)
+		os.Exit(1)
 	}
 }

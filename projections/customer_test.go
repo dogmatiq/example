@@ -31,7 +31,7 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 				`SELECT
 					id,
 					name
-				FROM customer`,
+				FROM customers`,
 			)
 			if err != nil {
 				t.Fatal(err)

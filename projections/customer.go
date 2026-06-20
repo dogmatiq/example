@@ -35,7 +35,7 @@ func (h *CustomerProjectionHandler) HandleEvent(
 	case *events.CustomerAcquired:
 		_, err := tx.ExecContext(
 			ctx,
-			`INSERT INTO customer (
+			`INSERT INTO customers (
 				id,
 				name
 			) VALUES (
@@ -60,7 +60,7 @@ func (h *CustomerProjectionHandler) Reset(
 ) error {
 	_, err := tx.ExecContext(
 		ctx,
-		`DELETE FROM customer`,
+		`DELETE FROM customers`,
 	)
 	return err
 }

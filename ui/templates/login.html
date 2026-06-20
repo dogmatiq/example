@@ -1,0 +1,32 @@
+{{template "layout.html" .}} {{define "content"}}
+<h2>Welcome to Dogmatiq Bank</h2>
+
+<section>
+  <form method="GET">
+    <label for="customer">Customer</label>
+    <select
+      id="customer"
+      name="customer"
+      onchange="this.form.action = '/c/' + this.value + '/accounts'"
+      required
+      {{if
+      not
+      .Customers}}disabled{{end}}
+    >
+      <option value="" selected disabled>Customer</option>
+      {{range .Customers}}
+      <option value="{{.ID}}">{{.Name}}</option>
+      {{end}}
+    </select>
+
+    <div class="buttons">
+      <a href="/signup" role="button"
+        ><i data-lucide="user-plus"></i> Sign Up</a
+      >
+      <button type="submit" {{if not .Customers}}disabled{{end}}>
+        <i data-lucide="log-in"></i> Log In
+      </button>
+    </div>
+  </form>
+</section>
+{{end}}

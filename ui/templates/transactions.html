@@ -1,0 +1,79 @@
+{{template "layout.html" .}} {{define "content"}}
+<h2>Transactions</h2>
+
+<article>
+  <i data-lucide="piggy-bank"></i>
+  <div>
+    <strong>{{.AccountName}}</strong>
+    <small>{{.AccountID}}</small>
+  </div>
+
+  <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/atm" class="icon-action">
+    <i data-lucide="banknote"></i>
+    <small>Virtual ATM</small>
+  </a>
+  <a
+    href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transfer"
+    class="icon-action"
+  >
+    <i data-lucide="arrow-right-left"></i>
+    <small>Transfer</small>
+  </a>
+
+  <div>
+    <small>Balance</small>
+    <strong>{{.Balance}}</strong>
+  </div>
+</article>
+
+<div
+  hx-get="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transactions/fragment"
+  hx-trigger="every 3s"
+  hx-swap="innerHTML"
+>
+  {{template "transactions-fragment" .TransactionsFragment}}
+</div>
+
+<div class="buttons">
+  <a href="/c/{{.CustomerID}}/accounts"
+    ><i data-lucide="chevron-left"></i> Back to Accounts</a
+  >
+</div>
+{{end}} {{define "transactions-fragment"}} {{if .Transactions}}
+<table>
+  <thead>
+    <tr>
+      <th class="grow">Description</th>
+      <th class="numeric">Debit</th>
+      <th class="numeric">Credit</th>
+      <th class="numeric">Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Transactions}}
+    <tr>
+      <td class="grow">
+        <div>
+          {{.Description}}
+          <small>{{.OccurredAt | date}} &bullet; {{.OccurredAt | time}}</small>
+        </div>
+      </td>
+      <td class="numeric">{{if .Debit}}{{.Debit}}{{end}}</td>
+      <td class="numeric">{{if .Credit}}{{.Credit}}{{end}}</td>
+      <td class="numeric">{{.Balance}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<p class="admonition">
+  <i data-lucide="triangle-alert"></i>
+  <span>
+    <strong>No transactions</strong><br />
+
+    Visit the
+    <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/atm">Virtual ATM</a>
+    to make a deposit.
+  </span>
+</p>
+{{end}} {{end}}

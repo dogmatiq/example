@@ -27,9 +27,9 @@ type App struct {
 
 	ThirdPartyBank integrations.ThirdPartyBankIntegrationHandler
 
-	ReadDB             *sql.DB
-	AccountProjection  projections.AccountProjectionHandler
-	CustomerProjection projections.CustomerProjectionHandler
+	ReadDB                *sql.DB
+	CustomerProjection    projections.CustomerProjectionHandler
+	LedgerProjection projections.LedgerProjectionHandler
 }
 
 // Configure configures the Dogma engine for this application.
@@ -49,7 +49,7 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 
 		dogma.ViaIntegration(a.ThirdPartyBank),
 
-		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.AccountProjection)),
 		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.CustomerProjection)),
+		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.LedgerProjection)),
 	)
 }

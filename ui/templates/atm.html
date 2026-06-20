@@ -1,0 +1,43 @@
+{{template "layout.html" .}} {{define "content"}}
+<h2>Virtual ATM</h2>
+
+<article>
+  <i data-lucide="piggy-bank"></i>
+  <div>
+    <strong>{{.AccountName}}</strong>
+    <small>{{.AccountID}}</small>
+  </div>
+  <div>
+    <small>Balance</small>
+    <strong>{{.Balance}}</strong>
+  </div>
+</article>
+
+<form method="POST">
+  <label for="amount">Amount</label>
+  <input
+    type="text"
+    id="amount"
+    name="amount"
+    placeholder="e.g. 100.00"
+    required
+  />
+  <div class="buttons">
+    <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transactions"
+      ><i data-lucide="chevron-left"></i> Back to Transactions</a
+    >
+    <button
+      type="submit"
+      formaction="/c/{{.CustomerID}}/accounts/{{.AccountID}}/deposit"
+    >
+      <i data-lucide="banknote-arrow-up"></i> Deposit
+    </button>
+    <button
+      type="submit"
+      formaction="/c/{{.CustomerID}}/accounts/{{.AccountID}}/withdraw"
+    >
+      <i data-lucide="banknote-arrow-down"></i> Withdraw
+    </button>
+  </div>
+</form>
+{{end}}

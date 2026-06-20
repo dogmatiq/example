@@ -3,9 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"os"
-	"path/filepath"
 
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
@@ -18,18 +15,9 @@ import (
 func New() (*sql.DB, error) {
 	ctx := context.Background()
 
-	const filename = "artifacts/bank.sqlite3"
-
-	if err := os.MkdirAll(
-		filepath.Dir(filename),
-		0700,
-	); err != nil {
-		return nil, err
-	}
-
 	db, err := sql.Open(
 		"sqlite3",
-		fmt.Sprintf("file:%s?mode=rwc", filename),
+		"file::memory:?mode=memory&cache=shared",
 	)
 	if err != nil {
 		return nil, err

@@ -1,0 +1,33 @@
+{{template "layout.html" .}} {{define "content"}}
+<h2>Your Accounts</h2>
+
+<div
+  style="display: contents"
+  hx-get="/c/{{.CustomerID}}/accounts/fragment"
+  hx-trigger="every 3s"
+  hx-swap="innerHTML"
+>
+  {{template "accounts-fragment" .AccountsFragment}}
+</div>
+{{end}} {{define "accounts-fragment"}} {{range .Accounts}}
+<a href="/c/{{$.CustomerID}}/accounts/{{.ID}}/transactions">
+  <article>
+    <i data-lucide="piggy-bank"></i>
+    <div>
+      <strong>{{.Name}}</strong>
+      <small>{{.ID}}</small>
+    </div>
+    <div>
+      <small>Balance</small>
+      <strong>{{.Balance}}</strong>
+    </div>
+    <i data-lucide="chevron-right" aria-hidden="true"></i>
+  </article>
+</a>
+{{end}}
+<div class="buttons">
+  <a href="/c/{{.CustomerID}}/accounts/new" role="button"
+    ><i data-lucide="circle-plus"></i> Open a new account</a
+  >
+</div>
+{{end}}

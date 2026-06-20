@@ -1,0 +1,19 @@
+{{template "layout.html" .}} {{define "content"}}
+<h2>Open a New Account</h2>
+<div class="narrow">
+  <form method="POST" action="/c/{{.CustomerID}}/accounts">
+    <label for="account_name">Account Name</label>
+    <input
+      type="text"
+      id="account_name"
+      name="account_name"
+      placeholder="e.g. Savings"
+      required
+    />
+    <div class="buttons">
+      <a href="/c/{{.CustomerID}}/accounts"><i data-lucide="chevron-left"></i> Back to Accounts</a>
+      <button type="submit"><i data-lucide="circle-plus"></i> Open Account</button>
+    </div>
+  </form>
+</div>
+{{end}}

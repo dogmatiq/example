@@ -1,0 +1,80 @@
+{{template "layout.html" .}} {{define "content"}}
+<h2>Transfer</h2>
+
+<article>
+  <i data-lucide="piggy-bank"></i>
+  <div>
+    <strong>{{.AccountName}}</strong>
+    <small>{{.AccountID}}</small>
+  </div>
+  <div>
+    <small>Balance</small>
+    <strong>{{.Balance}}</strong>
+  </div>
+</article>
+
+<form
+  method="POST"
+  action="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transfer"
+>
+  <label for="to_account_id">Destination Account</label>
+  <select
+    id="to_account_id"
+    name="to_account_id"
+    required
+    {{if
+    not
+    .AccountGroups}}disabled{{end}}
+  >
+    {{if .AccountGroups}} {{range .AccountGroups}}
+    <optgroup label="{{.CustomerName}}">
+      {{$isOwn := .IsOwn}} {{range .Accounts}}
+      <option value="{{.ID}}">
+        {{.Name}}{{if $isOwn}} ({{.Balance}}){{end}}
+      </option>
+      {{end}}
+    </optgroup>
+    {{end}} {{else}}
+    <option>No other accounts</option>
+    {{end}}
+  </select>
+
+  <label for="amount">Amount</label>
+  <input
+    type="text"
+    id="amount"
+    name="amount"
+    placeholder="e.g. 25.00"
+    required
+  />
+
+  <label>Schedule</label>
+  <div class="radio-group">
+    <label>
+      <input type="radio" name="schedule" value="now" checked />
+      <i data-lucide="circle" class="unchecked"></i>
+      <i data-lucide="circle-check-big" class="checked"></i>
+      Now
+    </label>
+    <label>
+      <input type="radio" name="schedule" value="10s" />
+      <i data-lucide="circle" class="unchecked"></i>
+      <i data-lucide="circle-check-big" class="checked"></i>
+      In 10 seconds
+    </label>
+    <label>
+      <input type="radio" name="schedule" value="1m" />
+      <i data-lucide="circle" class="unchecked"></i>
+      <i data-lucide="circle-check-big" class="checked"></i>
+      In 1 minute
+    </label>
+  </div>
+
+  <div class="buttons">
+    <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transactions"><i data-lucide="chevron-left"></i> Back to Transactions</a>
+    <button type="submit" {{if not .AccountGroups}}disabled{{end}}>
+      <i data-lucide="arrow-right-left"></i> Transfer
+    </button>
+  </div>
+</form>
+{{end}}
