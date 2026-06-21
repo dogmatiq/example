@@ -24,7 +24,10 @@ var funcs = template.FuncMap{
 
 func init() {
 	layout := template.Must(
-		template.New("layout.html").Funcs(funcs).ParseFS(content, "layout.html", "layout.css"),
+		template.
+			New("layout.html").
+			Funcs(funcs).
+			ParseFS(content, "layout.html", "layout.css"),
 	)
 
 	files, err := fs.Glob(content, "*.html")

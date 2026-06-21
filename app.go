@@ -6,7 +6,7 @@ import (
 	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example/domain"
 	"github.com/dogmatiq/example/integrations"
-	"github.com/dogmatiq/example/projections"
+	"github.com/dogmatiq/example/ui/projections"
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
 

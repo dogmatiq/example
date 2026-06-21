@@ -36,6 +36,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.mux.HandleFunc("POST /c/{customerID}/accounts/{accountID}/withdraw", h.withdraw)
 		h.mux.HandleFunc("GET  /c/{customerID}/accounts/{accountID}/transfer", h.renderTransferPage)
 		h.mux.HandleFunc("POST /c/{customerID}/accounts/{accountID}/transfer", h.transfer)
+
 		h.mux.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
 			renderError(w, http.StatusNotFound)
 		})
