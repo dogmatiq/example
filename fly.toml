@@ -1,4 +1,4 @@
-app            = 'dogmatiq-example'
+app            = 'dogma-example'
 primary_region = 'syd'
 
 [build]
