@@ -3,6 +3,7 @@ package ui
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"net/http"
 	"sync"
 	"time"
@@ -86,4 +87,20 @@ func (h *Handler) queryAccountDetails(
 	)
 
 	return name, balance, err
+}
+
+// httpError writes an appropriate HTTP error response for the given error. It
+// returns true if err is non-nil (and a response was written).
+func httpError(w http.ResponseWriter, err error) bool {
+	if err == nil {
+		return false
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		http.Error(w, "Page Not Found", http.StatusNotFound)
+	} else {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	return true
 }

@@ -15,14 +15,12 @@ func (h *Handler) renderATMPage(w http.ResponseWriter, r *http.Request) {
 	accountID := r.PathValue("accountID")
 
 	customerName, err := h.queryCustomerName(r.Context(), customerID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if httpError(w, err) {
 		return
 	}
 
 	accountName, balance, err := h.queryAccountDetails(r.Context(), accountID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if httpError(w, err) {
 		return
 	}
 
