@@ -33,19 +33,19 @@ func (h *Handler) renderTransactionsPage(w http.ResponseWriter, r *http.Request)
 
 	customerName, err := h.queryCustomerName(r.Context(), customerID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
 	accountName, balance, err := h.queryAccountDetails(r.Context(), accountID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
 	transactions, err := h.queryTransactions(r.Context(), accountID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
@@ -72,7 +72,7 @@ func (h *Handler) renderTransactionsPage(w http.ResponseWriter, r *http.Request)
 	}
 
 	if err := templates.Get("transactions").ExecuteTemplate(w, "transactions.html", data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 	}
 }
 
@@ -84,7 +84,7 @@ func (h *Handler) renderTransactionsFragment(w http.ResponseWriter, r *http.Requ
 
 	transactions, err := h.queryTransactions(r.Context(), accountID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
@@ -95,7 +95,7 @@ func (h *Handler) renderTransactionsFragment(w http.ResponseWriter, r *http.Requ
 	}
 
 	if err := templates.Get("transactions").ExecuteTemplate(w, "transactions-fragment", data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 	}
 }
 

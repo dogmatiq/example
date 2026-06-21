@@ -27,9 +27,9 @@ type App struct {
 
 	ThirdPartyBank integrations.ThirdPartyBankIntegrationHandler
 
-	ReadDB                *sql.DB
-	CustomerProjection    projections.CustomerProjectionHandler
-	LedgerProjection projections.LedgerProjectionHandler
+	ReadDB             *sql.DB
+	CustomerProjection projections.CustomerProjectionHandler
+	LedgerProjection   projections.LedgerProjectionHandler
 }
 
 // Configure configures the Dogma engine for this application.

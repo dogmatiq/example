@@ -1,6 +1,13 @@
 {{template "layout.html" .}} {{define "content"}}
 <h2>Sign Up</h2>
 
+{{if .Error}}
+<div class="admonition error">
+  <i data-lucide="circle-alert"></i>
+  <p>{{.Error}}</p>
+</div>
+{{end}}
+
 <div class="narrow">
   <form method="POST" action="/signup">
     <label for="customer_name">Your Name</label>

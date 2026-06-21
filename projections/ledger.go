@@ -69,10 +69,29 @@ func (h *LedgerProjectionHandler) HandleEvent(
 			return err
 		}
 
+		desc := creditDescription(x.TransactionType)
+		if x.TransactionType == messages.Transfer {
+			var exists bool
+			_ = tx.QueryRowContext(
+				ctx,
+				`SELECT 1
+				FROM ledger
+				WHERE account_id = ?
+				AND transaction_id = ?
+				AND debit > 0`,
+				x.AccountID,
+				x.TransactionID,
+			).Scan(&exists)
+			if exists {
+				desc = "Transfer reversal"
+			}
+		}
+
 		_, err = tx.ExecContext(
 			ctx,
 			`INSERT INTO ledger (
 				account_id,
+				transaction_id,
 				description,
 				credit,
 				balance,
@@ -82,10 +101,12 @@ func (h *LedgerProjectionHandler) HandleEvent(
 				?,
 				?,
 				?,
+				?,
 				?
 			)`,
 			x.AccountID,
-			creditDescription(x.TransactionType),
+			x.TransactionID,
+			desc,
 			x.Amount,
 			balance,
 			s.RecordedAt(),
@@ -111,6 +132,7 @@ func (h *LedgerProjectionHandler) HandleEvent(
 			ctx,
 			`INSERT INTO ledger (
 				account_id,
+				transaction_id,
 				description,
 				debit,
 				balance,
@@ -120,9 +142,11 @@ func (h *LedgerProjectionHandler) HandleEvent(
 				?,
 				?,
 				?,
+				?,
 				?
 			)`,
 			x.AccountID,
+			x.TransactionID,
 			debitDescription(x.TransactionType),
 			x.Amount,
 			balance,
@@ -157,7 +181,7 @@ func creditDescription(t messages.TransactionType) string {
 	case messages.Deposit:
 		return "Deposit"
 	case messages.Transfer:
-		return "Transfer (incoming)"
+		return "Incoming transfer"
 	default:
 		return string(t)
 	}
@@ -168,7 +192,7 @@ func debitDescription(t messages.TransactionType) string {
 	case messages.Withdrawal:
 		return "Withdrawal"
 	case messages.Transfer:
-		return "Transfer (outgoing)"
+		return "Outgoing transfer"
 	default:
 		return string(t)
 	}

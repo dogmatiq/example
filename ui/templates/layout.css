@@ -74,15 +74,18 @@ strong {
 }
 
 a {
-  text-decoration: none;
+  all: unset;
+  cursor: pointer;
 }
 
-a:not([role]) {
-  color: var(--porcelain);
+a[role="link"]:hover {
+  text-decoration: underline;
+}
 
-  &:hover {
-    text-decoration: underline;
-  }
+h1 a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 header {
@@ -92,6 +95,10 @@ header {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+
+  a[role="link"] {
+    color: var(--porcelain);
+  }
 
   .user-info {
     display: flex;
@@ -117,17 +124,8 @@ main {
   flex-direction: column;
   gap: 1.5rem;
 
-  a:not([role]) {
-    color: inherit;
-
-    &:hover {
-      text-decoration: none;
-    }
-  }
-
-  p a:not([role]) {
+  a[role="link"] {
     color: var(--deep-teal);
-    text-decoration: underline;
   }
 }
 
@@ -177,6 +175,10 @@ footer {
   gap: 0.75rem;
   font-size: 0.85rem;
 
+  a[role="link"] {
+    color: var(--porcelain);
+  }
+
   a[role="button"] {
     background: color-mix(in srgb, var(--porcelain) 15%, transparent);
     color: var(--porcelain);
@@ -208,6 +210,10 @@ footer {
     height: 1.5em;
     align-self: center;
     color: var(--tiger-orange);
+  }
+
+  &.error {
+    background: color-mix(in srgb, var(--tiger-orange) 10%, var(--porcelain));
   }
 }
 
@@ -363,7 +369,6 @@ article {
   gap: 0.125rem;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  color: var(--deep-teal);
 
   [data-lucide] {
     width: 1em;

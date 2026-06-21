@@ -7,7 +7,9 @@ require (
 	github.com/dogmatiq/enginekit v0.25.0
 	github.com/dogmatiq/projectionkit v0.10.0
 	github.com/dogmatiq/testkit v0.21.1
+	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.46
+	golang.org/x/text v0.36.0
 )
 
 require (
@@ -17,9 +19,7 @@ require (
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/sergi/go-diff v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )

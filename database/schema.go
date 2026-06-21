@@ -28,13 +28,14 @@ func CreateSchema(ctx context.Context, db *sql.DB) error {
 		CREATE INDEX IF NOT EXISTS idx_accounts_customer ON accounts (customer_id);
 
 		CREATE TABLE IF NOT EXISTS ledger (
-			entry_id    INTEGER   PRIMARY KEY,
-			account_id  TEXT      NOT NULL,
-			description TEXT      NOT NULL,
-			debit       INTEGER   NOT NULL DEFAULT 0,
-			credit      INTEGER   NOT NULL DEFAULT 0,
-			balance     INTEGER   NOT NULL,
-			created_at  TIMESTAMP NOT NULL
+			entry_id       INTEGER   PRIMARY KEY,
+			account_id     TEXT      NOT NULL,
+			transaction_id TEXT      NOT NULL DEFAULT '',
+			description    TEXT      NOT NULL,
+			debit          INTEGER   NOT NULL DEFAULT 0,
+			credit         INTEGER   NOT NULL DEFAULT 0,
+			balance        INTEGER   NOT NULL,
+			created_at     TIMESTAMP NOT NULL
 		);
 
 		CREATE INDEX IF NOT EXISTS idx_ledger_account ON ledger (account_id);

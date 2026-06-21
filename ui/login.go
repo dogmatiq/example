@@ -22,7 +22,7 @@ type customer struct {
 func (h *Handler) renderLoginPage(w http.ResponseWriter, r *http.Request) {
 	customers, err := h.queryCustomers(r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -35,16 +35,30 @@ func (h *Handler) renderLoginPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := templates.Get("login").ExecuteTemplate(w, "login.html", data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 	}
 }
 
 // renderSignupPage renders the form for new customers to open their first account.
 func (h *Handler) renderSignupPage(w http.ResponseWriter, r *http.Request) {
-	data := pageData{Title: "Sign Up"}
+	h.renderSignup(w, r, "")
+}
+
+func (h *Handler) renderSignup(w http.ResponseWriter, r *http.Request, formError string) {
+	data := struct {
+		pageData
+		Error string
+	}{
+		pageData: pageData{Title: "Sign Up"},
+		Error:    formError,
+	}
+
+	if formError != "" {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+	}
 
 	if err := templates.Get("signup").ExecuteTemplate(w, "signup.html", data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 	}
 }
 
@@ -56,7 +70,7 @@ func (h *Handler) openAccountForNewCustomer(w http.ResponseWriter, r *http.Reque
 	accountName := strings.TrimSpace(r.FormValue("account_name"))
 
 	if customerName == "" || accountName == "" {
-		http.Error(w, "name is required", http.StatusBadRequest)
+		h.renderSignup(w, r, "Name is required.")
 		return
 	}
 
@@ -72,7 +86,7 @@ func (h *Handler) openAccountForNewCustomer(w http.ResponseWriter, r *http.Reque
 			AccountName:  accountName,
 		},
 	); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

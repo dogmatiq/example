@@ -67,12 +67,14 @@
 </table>
 {{else}}
 <p class="admonition">
-  <i data-lucide="triangle-alert"></i>
+  <i data-lucide="banknote-x"></i>
   <span>
     <strong>No transactions</strong><br />
 
     Visit the
-    <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/atm">Virtual ATM</a>
+    <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/atm" role="link"
+      >Virtual ATM</a
+    >
     to make a deposit.
   </span>
 </p>

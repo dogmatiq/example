@@ -32,13 +32,13 @@ func (h *Handler) renderAccountsPage(w http.ResponseWriter, r *http.Request) {
 
 	customerName, err := h.queryCustomerName(r.Context(), customerID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
 	accounts, err := h.queryAccounts(r.Context(), customerID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
@@ -58,7 +58,7 @@ func (h *Handler) renderAccountsPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := templates.Get("accounts").ExecuteTemplate(w, "accounts.html", data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 	}
 }
 
@@ -70,7 +70,7 @@ func (h *Handler) renderAccountsFragment(w http.ResponseWriter, r *http.Request)
 
 	accounts, err := h.queryAccounts(r.Context(), customerID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
@@ -80,28 +80,42 @@ func (h *Handler) renderAccountsFragment(w http.ResponseWriter, r *http.Request)
 	}
 
 	if err := templates.Get("accounts").ExecuteTemplate(w, "accounts-fragment", data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 	}
 }
 
 // renderOpenAccountPage renders the form for opening a new account.
 func (h *Handler) renderOpenAccountPage(w http.ResponseWriter, r *http.Request) {
+	h.renderOpenAccount(w, r, "")
+}
+
+func (h *Handler) renderOpenAccount(w http.ResponseWriter, r *http.Request, formError string) {
 	customerID := r.PathValue("customerID")
 
 	customerName, err := h.queryCustomerName(r.Context(), customerID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusNotFound)
 		return
 	}
 
-	data := pageData{
-		Title:        "Open a New Account",
-		CustomerID:   customerID,
-		CustomerName: customerName,
+	data := struct {
+		pageData
+		Error string
+	}{
+		pageData: pageData{
+			Title:        "Open a New Account",
+			CustomerID:   customerID,
+			CustomerName: customerName,
+		},
+		Error: formError,
+	}
+
+	if formError != "" {
+		w.WriteHeader(http.StatusUnprocessableEntity)
 	}
 
 	if err := templates.Get("openaccount").ExecuteTemplate(w, "openaccount.html", data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 	}
 }
 
@@ -112,7 +126,7 @@ func (h *Handler) openAccount(w http.ResponseWriter, r *http.Request) {
 	accountName := strings.TrimSpace(r.FormValue("account_name"))
 
 	if accountName == "" {
-		http.Error(w, "account name is required", http.StatusBadRequest)
+		h.renderOpenAccount(w, r, "Account name is required.")
 		return
 	}
 
@@ -127,7 +141,7 @@ func (h *Handler) openAccount(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

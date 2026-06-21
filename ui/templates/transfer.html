@@ -13,6 +13,13 @@
   </div>
 </article>
 
+{{if .Error}}
+<div class="admonition error">
+  <i data-lucide="circle-alert"></i>
+  <p>{{.Error}}</p>
+</div>
+{{end}}
+
 <form
   method="POST"
   action="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transfer"
@@ -26,11 +33,15 @@
     not
     .AccountGroups}}disabled{{end}}
   >
-    {{if .AccountGroups}} {{range .AccountGroups}}
+    {{if .AccountGroups}}
+    <option value="" selected disabled>
+      Select a destination account&hellip;
+    </option>
+    {{range .AccountGroups}}
     <optgroup label="{{.CustomerName}}">
       {{$isOwn := .IsOwn}} {{range .Accounts}}
       <option value="{{.ID}}">
-        {{.Name}}{{if $isOwn}} ({{.Balance}}){{end}}
+        {{.Name}} ({{.ID}}){{if $isOwn}} — {{.Balance}}{{end}}
       </option>
       {{end}}
     </optgroup>
@@ -71,7 +82,9 @@
   </div>
 
   <div class="buttons">
-    <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transactions"><i data-lucide="chevron-left"></i> Back to Transactions</a>
+    <a href="/c/{{.CustomerID}}/accounts/{{.AccountID}}/transactions"
+      ><i data-lucide="chevron-left"></i> Back to Transactions</a
+    >
     <button type="submit" {{if not .AccountGroups}}disabled{{end}}>
       <i data-lucide="arrow-right-left"></i> Transfer
     </button>

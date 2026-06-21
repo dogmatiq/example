@@ -1,0 +1,25 @@
+{{template "layout.html" .}} {{define "content"}}
+<h2>
+  {{.StatusText}}
+  <small style="display: block">HTTP {{.StatusCode}}</small>
+</h2>
+
+<div class="admonition">
+  {{if eq .StatusCode 404}}
+  <i data-lucide="search-x"></i>
+  {{else}}
+  <i data-lucide="server-crash"></i>
+  {{end}}
+  {{if .Detail}}
+  <p>{{.Detail}}</p>
+  {{else if eq .StatusCode 404}}
+  <p>The page you're looking for doesn't exist or may have been removed.</p>
+  {{else}}
+  <p>Something went wrong. Please try again later.</p>
+  {{end}}
+</div>
+
+<div class="buttons">
+  <a href="/"><i data-lucide="chevron-left"></i> Home</a>
+</div>
+{{end}}

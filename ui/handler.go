@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dogmatiq/dogma"
+	"github.com/dogmatiq/example/ui/templates"
 )
 
 // Handler is an [http.Handler] that serves the Dogmatiq Bank UI.
@@ -21,7 +22,7 @@ type Handler struct {
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.once.Do(func() {
-		h.mux.HandleFunc("GET  /", h.renderLoginPage)
+		h.mux.HandleFunc("GET  /{$}", h.renderLoginPage)
 		h.mux.HandleFunc("GET  /signup", h.renderSignupPage)
 		h.mux.HandleFunc("POST /signup", h.openAccountForNewCustomer)
 		h.mux.HandleFunc("GET  /c/{customerID}/accounts", h.renderAccountsPage)
@@ -35,6 +36,9 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.mux.HandleFunc("POST /c/{customerID}/accounts/{accountID}/withdraw", h.withdraw)
 		h.mux.HandleFunc("GET  /c/{customerID}/accounts/{accountID}/transfer", h.renderTransferPage)
 		h.mux.HandleFunc("POST /c/{customerID}/accounts/{accountID}/transfer", h.transfer)
+		h.mux.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
+			renderError(w, http.StatusNotFound)
+		})
 	})
 
 	h.mux.ServeHTTP(w, r)
@@ -86,4 +90,26 @@ func (h *Handler) queryAccountDetails(
 	)
 
 	return name, balance, err
+}
+
+// renderError writes a styled error page with the given HTTP status code and
+// an optional detail message.
+func renderError(w http.ResponseWriter, code int, detail ...string) {
+	message := ""
+	if len(detail) > 0 {
+		message = detail[0]
+	}
+
+	w.WriteHeader(code)
+	templates.Get("error").ExecuteTemplate(w, "error.html", struct {
+		pageData
+		StatusCode int
+		StatusText string
+		Detail     string
+	}{
+		pageData:   pageData{Title: http.StatusText(code)},
+		StatusCode: code,
+		StatusText: http.StatusText(code),
+		Detail:     message,
+	})
 }

@@ -13,6 +13,13 @@
   </div>
 </article>
 
+{{if .Error}}
+<div class="admonition error">
+  <i data-lucide="circle-alert"></i>
+  <p>{{.Error}}</p>
+</div>
+{{end}}
+
 <form method="POST">
   <label for="amount">Amount</label>
   <input

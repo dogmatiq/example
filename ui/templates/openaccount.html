@@ -1,5 +1,12 @@
 {{template "layout.html" .}} {{define "content"}}
 <h2>Open a New Account</h2>
+{{if .Error}}
+<div class="admonition error">
+  <i data-lucide="circle-alert"></i>
+  <p>{{.Error}}</p>
+</div>
+{{end}}
+
 <div class="narrow">
   <form method="POST" action="/c/{{.CustomerID}}/accounts">
     <label for="account_name">Account Name</label>
