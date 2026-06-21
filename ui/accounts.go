@@ -31,12 +31,14 @@ func (h *Handler) renderAccountsPage(w http.ResponseWriter, r *http.Request) {
 	customerID := r.PathValue("customerID")
 
 	customerName, err := h.queryCustomerName(r.Context(), customerID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	accounts, err := h.queryAccounts(r.Context(), customerID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -67,7 +69,8 @@ func (h *Handler) renderAccountsFragment(w http.ResponseWriter, r *http.Request)
 	customerID := r.PathValue("customerID")
 
 	accounts, err := h.queryAccounts(r.Context(), customerID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -86,7 +89,8 @@ func (h *Handler) renderOpenAccountPage(w http.ResponseWriter, r *http.Request) 
 	customerID := r.PathValue("customerID")
 
 	customerName, err := h.queryCustomerName(r.Context(), customerID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

@@ -32,17 +32,20 @@ func (h *Handler) renderTransactionsPage(w http.ResponseWriter, r *http.Request)
 	accountID := r.PathValue("accountID")
 
 	customerName, err := h.queryCustomerName(r.Context(), customerID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	accountName, balance, err := h.queryAccountDetails(r.Context(), accountID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	transactions, err := h.queryTransactions(r.Context(), accountID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -80,7 +83,8 @@ func (h *Handler) renderTransactionsFragment(w http.ResponseWriter, r *http.Requ
 	accountID := r.PathValue("accountID")
 
 	transactions, err := h.queryTransactions(r.Context(), accountID)
-	if httpError(w, err) {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
