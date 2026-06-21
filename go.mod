@@ -3,7 +3,7 @@ module github.com/dogmatiq/example
 go 1.26
 
 require (
-	github.com/dogmatiq/dogma v0.23.0
+	github.com/dogmatiq/dogma v0.25.0
 	github.com/dogmatiq/enginekit v0.25.0
 	github.com/dogmatiq/projectionkit v0.10.0
 	github.com/dogmatiq/testkit v0.21.1
