@@ -9,7 +9,7 @@ require (
 	github.com/dogmatiq/testkit v0.21.1
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.46
-	golang.org/x/text v0.36.0
+	golang.org/x/text v0.38.0
 )
 
 require (
