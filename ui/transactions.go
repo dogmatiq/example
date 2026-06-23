@@ -111,7 +111,9 @@ func (h *Handler) queryTransactions(ctx context.Context, accountID string) ([]tr
 			balance
 		FROM ledger
 		WHERE account_id = ?
-		ORDER BY created_at DESC`,
+		ORDER BY
+			created_at DESC,
+			transaction_order DESC`,
 		accountID,
 	)
 	if err != nil {

@@ -9,22 +9,27 @@ import (
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 )
 
-// CustomerProjectionHandler is a projection that builds a report of customers
-// acquired by the bank.
+// CustomerProjectionHandler maintains a list of the bank's customers.
+//
+// The UI queries the customers table to populate the login page, which simply
+// lets the user pick an existing customer rather than performing any real
+// authentication. It is also used to display the customer's name throughout the
+// interface.
 type CustomerProjectionHandler struct {
 	sqlprojection.NoCompactBehavior
 }
 
 // Configure configs the engine for this projection.
 func (h *CustomerProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
-	c.Identity("customer-list", "70b58269-931a-46d6-b745-286a670fb6f7")
+	c.Identity("customers", "70b58269-931a-46d6-b745-286a670fb6f7")
 
 	c.Routes(
 		dogma.HandlesEvent[*events.CustomerAcquired](),
 	)
 }
 
-// HandleEvent updates the in-memory records to reflect the occurence of m.
+// HandleEvent inserts into the "customers" table whenever the bank acquires a
+// new customer.
 func (h *CustomerProjectionHandler) HandleEvent(
 	ctx context.Context,
 	tx *sql.Tx,

@@ -40,11 +40,11 @@ func (h *Handler) renderLoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 // renderSignupPage renders the form for new customers to open their first account.
-func (h *Handler) renderSignupPage(w http.ResponseWriter, r *http.Request) {
-	h.renderSignup(w, r, "")
+func (h *Handler) renderSignupPage(w http.ResponseWriter, _ *http.Request) {
+	h.renderSignup(w, "")
 }
 
-func (h *Handler) renderSignup(w http.ResponseWriter, r *http.Request, formError string) {
+func (h *Handler) renderSignup(w http.ResponseWriter, formError string) {
 	data := struct {
 		pageData
 		Error string
@@ -70,7 +70,7 @@ func (h *Handler) openAccountForNewCustomer(w http.ResponseWriter, r *http.Reque
 	accountName := strings.TrimSpace(r.FormValue("account_name"))
 
 	if customerName == "" || accountName == "" {
-		h.renderSignup(w, r, "Name is required.")
+		h.renderSignup(w, "Name is required.")
 		return
 	}
 

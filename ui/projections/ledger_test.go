@@ -6,6 +6,7 @@ import (
 
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/messages/commands"
+	"github.com/dogmatiq/example/ui/projections"
 	. "github.com/dogmatiq/testkit"
 )
 
@@ -13,10 +14,11 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened",
 		func(t *testing.T) {
-			db := openDB(t)
+			db := projections.MustNewDB()
+			t.Cleanup(func() { db.Close() })
 
 			Begin(t, &example.App{ReadDB: db}).
-				EnableHandlers("account-ledger").
+				EnableHandlers("ledger").
 				Prepare(
 					ExecuteCommand(
 						&commands.OpenAccountForNewCustomer{
@@ -29,25 +31,26 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 				)
 
 			var (
-				id         string
 				name       string
 				customerID string
 				balance    int64
 			)
 
-			err := db.QueryRow(
-				`SELECT id, name, customer_id, balance
+			if err := db.QueryRow(
+				`SELECT
+					name,
+					customer_id,
+					balance
 				FROM accounts
-				WHERE id = ?`,
-				"A001",
-			).Scan(&id, &name, &customerID, &balance)
-			if err != nil {
+				WHERE id = "A001"`,
+			).Scan(
+				&name,
+				&customerID,
+				&balance,
+			); err != nil {
 				t.Fatal(err)
 			}
 
-			if id != "A001" {
-				t.Fatalf(`expected account ID to be "A001", got %q`, id)
-			}
 			if name != "Savings" {
 				t.Fatalf(`expected account name to be "Savings", got %q`, name)
 			}
@@ -63,10 +66,11 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is credited",
 		func(t *testing.T) {
-			db := openDB(t)
+			db := projections.MustNewDB()
+			t.Cleanup(func() { db.Close() })
 
 			Begin(t, &example.App{ReadDB: db}).
-				EnableHandlers("account-ledger").
+				EnableHandlers("ledger").
 				Prepare(
 					ExecuteCommand(
 						&commands.OpenAccountForNewCustomer{
@@ -85,32 +89,43 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 					),
 				)
 
-			var balance int64
-			err := db.QueryRow(
-				`SELECT balance FROM accounts WHERE id = ?`,
-				"A001",
-			).Scan(&balance)
-			if err != nil {
+			var accountBalance int64
+
+			if err := db.QueryRow(
+				`SELECT balance
+				FROM accounts
+				WHERE id = "A001"`,
+			).Scan(&accountBalance); err != nil {
 				t.Fatal(err)
 			}
-			if balance != 150 {
-				t.Fatalf(`expected account balance to be 150, got %d`, balance)
+
+			if accountBalance != 150 {
+				t.Fatalf(`expected account balance to be 150, got %d`, accountBalance)
 			}
 
 			var (
 				description   string
 				credit, debit int64
-				txBalance     int64
+				ledgerBalance int64
 			)
-			err = db.QueryRow(
-				`SELECT description, debit, credit, balance
+
+			if err := db.QueryRow(
+				`SELECT
+					description,
+					debit,
+					credit,
+					balance
 				FROM ledger
-				WHERE account_id = ?`,
-				"A001",
-			).Scan(&description, &debit, &credit, &txBalance)
-			if err != nil {
+				WHERE account_id = "A001"`,
+			).Scan(
+				&description,
+				&debit,
+				&credit,
+				&ledgerBalance,
+			); err != nil {
 				t.Fatal(err)
 			}
+
 			if description != "Deposit" {
 				t.Fatalf(`expected description to be "Deposit", got %q`, description)
 			}
@@ -120,8 +135,8 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 			if debit != 0 {
 				t.Fatalf(`expected debit to be 0, got %d`, debit)
 			}
-			if txBalance != 150 {
-				t.Fatalf(`expected transaction balance to be 150, got %d`, txBalance)
+			if ledgerBalance != 150 {
+				t.Fatalf(`expected transaction balance to be 150, got %d`, ledgerBalance)
 			}
 		},
 	)
@@ -129,10 +144,11 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is debited",
 		func(t *testing.T) {
-			db := openDB(t)
+			db := projections.MustNewDB()
+			t.Cleanup(func() { db.Close() })
 
 			Begin(t, &example.App{ReadDB: db}).
-				EnableHandlers("account-ledger").
+				EnableHandlers("ledger").
 				Prepare(
 					ExecuteCommand(
 						&commands.OpenAccountForNewCustomer{
@@ -159,32 +175,44 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 					),
 				)
 
-			var balance int64
-			err := db.QueryRow(
-				`SELECT balance FROM accounts WHERE id = ?`,
-				"A001",
-			).Scan(&balance)
-			if err != nil {
+			var accountBalance int64
+
+			if err := db.QueryRow(
+				`SELECT balance
+				FROM accounts
+				WHERE id = "A001"`,
+			).Scan(&accountBalance); err != nil {
 				t.Fatal(err)
 			}
-			if balance != 350 {
-				t.Fatalf(`expected account balance to be 350, got %d`, balance)
+
+			if accountBalance != 350 {
+				t.Fatalf(`expected account balance to be 350, got %d`, accountBalance)
 			}
 
 			var (
 				description   string
 				credit, debit int64
-				txBalance     int64
+				ledgerBalance int64
 			)
-			err = db.QueryRow(
-				`SELECT description, debit, credit, balance
+
+			if err := db.QueryRow(
+				`SELECT
+					description,
+					debit,
+					credit,
+					balance
 				FROM ledger
-				WHERE account_id = ? AND description = ?`,
-				"A001", "Withdrawal",
-			).Scan(&description, &debit, &credit, &txBalance)
-			if err != nil {
+				WHERE account_id = "A001"
+					AND transaction_id = "T002"`,
+			).Scan(
+				&description,
+				&debit,
+				&credit,
+				&ledgerBalance,
+			); err != nil {
 				t.Fatal(err)
 			}
+
 			if description != "Withdrawal" {
 				t.Fatalf(`expected description to be "Withdrawal", got %q`, description)
 			}
@@ -194,8 +222,144 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 			if credit != 0 {
 				t.Fatalf(`expected credit to be 0, got %d`, credit)
 			}
-			if txBalance != 350 {
-				t.Fatalf(`expected transaction balance to be 350, got %d`, txBalance)
+			if ledgerBalance != 350 {
+				t.Fatalf(`expected transaction balance to be 350, got %d`, ledgerBalance)
+			}
+		},
+	)
+
+	t.Run(
+		"when a transfer is approved",
+		func(t *testing.T) {
+			db := projections.MustNewDB()
+			t.Cleanup(func() { db.Close() })
+
+			Begin(t, &example.App{ReadDB: db}).
+				EnableHandlers("ledger").
+				Prepare(
+					ExecuteCommand(
+						&commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
+						},
+					),
+					ExecuteCommand(
+						&commands.OpenAccountForNewCustomer{
+							CustomerID:   "C002",
+							CustomerName: "Bob Jones",
+							AccountID:    "A002",
+							AccountName:  "Checking",
+						},
+					),
+					ExecuteCommand(
+						&commands.Deposit{
+							TransactionID: "T001",
+							AccountID:     "A001",
+							Amount:        500,
+						},
+					),
+					ExecuteCommand(
+						&commands.Transfer{
+							TransactionID: "T002",
+							FromAccountID: "A001",
+							ToAccountID:   "A002",
+							Amount:        200,
+							ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+						},
+					),
+				)
+
+			var description string
+
+			if err := db.QueryRow(
+				`SELECT description
+				FROM ledger
+				WHERE account_id = "A001"
+					AND transaction_id = "T002"
+					AND debit > 0`,
+			).Scan(&description); err != nil {
+				t.Fatal(err)
+			}
+
+			if description != "Outgoing transfer" {
+				t.Fatalf(`expected description to be "Outgoing transfer", got %q`, description)
+			}
+
+			if err := db.QueryRow(
+				`SELECT description
+				FROM ledger
+				WHERE account_id = "A002"
+					AND transaction_id = "T002"
+					AND credit > 0`,
+			).Scan(&description); err != nil {
+				t.Fatal(err)
+			}
+
+			if description != "Incoming transfer" {
+				t.Fatalf(`expected description to be "Incoming transfer", got %q`, description)
+			}
+		},
+	)
+
+	t.Run(
+		"when a transfer is declined after debiting",
+		func(t *testing.T) {
+			db := projections.MustNewDB()
+			t.Cleanup(func() { db.Close() })
+
+			Begin(t, &example.App{ReadDB: db}).
+				EnableHandlers("ledger").
+				Prepare(
+					ExecuteCommand(
+						&commands.OpenAccountForNewCustomer{
+							CustomerID:   "C001",
+							CustomerName: "Anna Smith",
+							AccountID:    "A001",
+							AccountName:  "Savings",
+						},
+					),
+					ExecuteCommand(
+						&commands.OpenAccountForNewCustomer{
+							CustomerID:   "C002",
+							CustomerName: "Bob Jones",
+							AccountID:    "A002",
+							AccountName:  "Checking",
+						},
+					),
+					ExecuteCommand(
+						&commands.Deposit{
+							TransactionID: "T001",
+							AccountID:     "A001",
+							Amount:        1000000,
+						},
+					),
+					ExecuteCommand(
+						&commands.Transfer{
+							TransactionID: "T002",
+							FromAccountID: "A001",
+							ToAccountID:   "A002",
+							Amount:        900001,
+							ScheduledTime: time.Date(2001, time.February, 3, 0, 0, 0, 0, time.UTC),
+						},
+					),
+				)
+
+			var description string
+
+			if err := db.QueryRow(
+				`SELECT description
+				FROM ledger
+				WHERE account_id = "A001"
+					AND transaction_id = "T002"
+					AND credit > 0`,
+			).Scan(&description); err != nil {
+				t.Fatal(err)
+			}
+
+			if description != "Outgoing transfer refund" {
+				t.Fatalf(`expected description to be "Outgoing transfer refund", got %q`, description)
 			}
 		},
 	)

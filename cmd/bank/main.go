@@ -9,18 +9,17 @@ import (
 
 	"github.com/dogmatiq/enginekit/config/runtimeconfig"
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/database"
 	"github.com/dogmatiq/example/ui"
+	"github.com/dogmatiq/example/ui/projections"
 	"github.com/dogmatiq/testkit/engine"
 	"github.com/dogmatiq/testkit/fact"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	db := database.MustNew()
+	db := projections.MustNewDB()
 	defer db.Close()
 
 	app := &example.App{
