@@ -8,7 +8,7 @@ require (
 	github.com/dogmatiq/projectionkit v0.10.0
 	github.com/dogmatiq/testkit v0.22.0
 	github.com/google/uuid v1.6.0
-	github.com/mattn/go-sqlite3 v1.14.46
+	github.com/mattn/go-sqlite3 v1.14.47
 	golang.org/x/text v0.38.0
 )
 
