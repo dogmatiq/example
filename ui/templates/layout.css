@@ -127,6 +127,10 @@ main {
   a[role="link"] {
     color: var(--deep-teal);
   }
+
+  small {
+    color: var(--deep-teal);
+  }
 }
 
 button,
@@ -169,10 +173,12 @@ main a[role="button"] {
 }
 
 footer {
-  display: flex;
+  margin: 0 auto;
+  width: 90%;
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
   font-size: 0.85rem;
 
   a[role="link"] {
@@ -193,6 +199,11 @@ footer {
     display: inline-block;
     width: 1.25em;
     height: 1.25em;
+  }
+
+  .version {
+    grid-column: 2;
+    text-align: center;
   }
 }
 
@@ -388,7 +399,7 @@ small {
   margin: 0;
   padding: 0;
   font-size: 0.675rem;
-  color: var(--deep-teal);
+  color: color-mix(in srgb, var(--honeydew) 50%, transparent);
   text-transform: uppercase;
 }
 

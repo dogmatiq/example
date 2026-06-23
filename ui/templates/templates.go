@@ -4,23 +4,34 @@ import (
 	"embed"
 	"html/template"
 	"io/fs"
+	"runtime/debug"
 	"strings"
 	"time"
 )
 
-//go:embed *.html *.css
-var content embed.FS
-
-var pages map[string]*template.Template
-
-var funcs = template.FuncMap{
-	"date": func(t time.Time) string {
-		return strings.ToUpper(t.Format("Jan 02"))
-	},
-	"time": func(t time.Time) string {
-		return t.Format("3:04 PM")
-	},
-}
+var (
+	//go:embed *.html *.css
+	content embed.FS
+	pages   map[string]*template.Template
+	funcs   = template.FuncMap{
+		"date": func(t time.Time) string {
+			return strings.ToUpper(t.Format("Jan 02"))
+		},
+		"time": func(t time.Time) string {
+			return t.Format("3:04 PM")
+		},
+		"commitHash": func() string {
+			if info, ok := debug.ReadBuildInfo(); ok {
+				for _, s := range info.Settings {
+					if s.Key == "vcs.revision" {
+						return s.Value
+					}
+				}
+			}
+			return ""
+		},
+	}
+)
 
 func init() {
 	layout := template.Must(
