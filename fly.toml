@@ -2,6 +2,7 @@ app            = 'dogma-example'
 primary_region = 'syd'
 
 [build]
+    dockerfile = 'Dockerfile.fly'
 
 [http_service]
     internal_port        = 8080

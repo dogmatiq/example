@@ -1,0 +1,20 @@
+# This Dockerfile is used to build the application for deployment on Fly.io. It
+# uses a multi-stage build to create a statically linked binary that can run in
+# a scratch container.
+#
+# It is not built using the http://makefiles.dev build system.
+
+FROM golang:latest AS build
+
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+# Build the application with CGO enabled and static linking so that it can run
+# in a scratch container.
+RUN CGO_ENABLED=1 GOOS=linux go build -ldflags '-extldflags "-static"' -o /bank ./cmd/bank
+
+FROM scratch
+COPY --from=build /bank /usr/local/bin/bank
+ENTRYPOINT ["bank"]
