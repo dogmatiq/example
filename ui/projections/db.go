@@ -4,18 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"embed"
-	"fmt"
-	"sync/atomic"
+	"os"
 
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 	_ "github.com/mattn/go-sqlite3" // install "sqlite3" driver
 )
 
 var (
-	// counter is used to build a unique name for each in-memory database
-	// instance.
-	counter atomic.Int64
-
 	// schema contains the SQL schema files.
 	//
 	//go:embed *.sql
@@ -30,9 +25,15 @@ var (
 func NewDB() (*sql.DB, error) {
 	ctx := context.Background()
 
+	file, err := os.CreateTemp("", "bank-*.sqlite3")
+	if err != nil {
+		return nil, err
+	}
+	file.Close()
+
 	db, err := sql.Open(
 		"sqlite3",
-		fmt.Sprintf("file:db%d?mode=memory&cache=shared", counter.Add(1)),
+		file.Name()+"?_journal_mode=WAL&_busy_timeout=5000",
 	)
 	if err != nil {
 		return nil, err

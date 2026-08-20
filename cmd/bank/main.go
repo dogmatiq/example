@@ -2,90 +2,98 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"database/sql"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
-	"github.com/dogmatiq/enginekit/config/runtimeconfig"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/ui"
 	"github.com/dogmatiq/example/ui/projections"
-	"github.com/dogmatiq/testkit/engine"
-	"github.com/dogmatiq/testkit/fact"
+	"github.com/dogmatiq/runkit"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/lmittmann/tint"
 )
 
 func main() {
+	logger := slog.New(
+		tint.NewHandler(os.Stderr, &tint.Options{
+			Level: slog.LevelDebug,
+		}),
+	)
+
+	if err := run(logger); err != nil {
+		logger.Error(
+			"application error",
+			slog.String("error", err.Error()),
+		)
+
+		os.Exit(1)
+	}
+}
+
+func run(logger *slog.Logger) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	db := projections.MustNewDB()
-	defer db.Close()
+	engineDB, err := sql.Open("pgx", os.Getenv("RUNKIT_DSN"))
+	if err != nil {
+		return err
+	}
+	defer engineDB.Close()
+
+	if err := runkit.CreateSchema(ctx, engineDB); err != nil {
+		return err
+	}
+
+	readDB := projections.MustNewDB()
+	defer readDB.Close()
 
 	app := &example.App{
-		ReadDB: db,
+		ReadDB: readDB,
 	}
 
-	e, err := engine.New(runtimeconfig.FromApplication(app))
-	if err != nil {
-		panic(err)
+	engine := &runkit.Engine{
+		DB:     engineDB,
+		App:    app,
+		Logger: logger,
 	}
-
-	logger := fact.NewLogger(func(s string) {
-		fmt.Println(s)
-	})
-
-	observer := fact.ObserverFunc(func(f fact.Fact) {
-		switch f.(type) {
-		case fact.DispatchBegun,
-			fact.HandlingBegun,
-			fact.HandlingCompleted,
-			fact.EventRecordedByAggregate,
-			fact.EventRecordedByIntegration,
-			fact.CommandExecutedByProcess,
-			fact.DeadlineScheduledByProcess,
-			fact.MessageLoggedByAggregate,
-			fact.MessageLoggedByIntegration,
-			fact.MessageLoggedByProcess,
-			fact.MessageLoggedByProjection:
-			logger.Notify(f)
-		}
-	})
-
-	opts := []engine.OperationOption{
-		engine.EnableProjections(true),
-		engine.WithObserver(observer),
-	}
-
-	// Run the engine in the background. This processes timeouts and scheduled
-	// events that are triggered by process managers.
-	go func() {
-		if err := engine.Run(ctx, e, 0, opts...); err != nil {
-			fmt.Fprintln(os.Stderr, "engine error:", err)
-		}
-	}()
 
 	server := &http.Server{
 		Addr: ":8080",
-		Handler: &ui.Handler{
-			DB: db,
-			CommandExecutor: engine.CommandExecutor{
-				Engine:  e,
-				Options: opts,
+		Handler: http.TimeoutHandler(
+			&ui.Handler{
+				DB:              readDB,
+				CommandExecutor: engine,
 			},
-		},
+			10*time.Second,
+			"request timed out",
+		),
 	}
 
-	// Shut down the HTTP server when the context is canceled.
-	go func() {
-		<-ctx.Done()
-		server.Shutdown(context.Background())
-	}()
+	logger.InfoContext(
+		ctx,
+		"Dogmatiq Bank is running",
+		slog.String("url", "http://localhost:8080"),
+	)
 
-	fmt.Println("Dogmatiq Bank is running at http://localhost:8080")
+	group, ctx := errgroup.WithContext(ctx)
 
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		fmt.Fprintln(os.Stderr, "server error:", err)
-		os.Exit(1)
-	}
+	group.Go(func() error {
+		context.AfterFunc(ctx, func() {
+			server.Shutdown(context.Background())
+		})
+		return server.ListenAndServe()
+	})
+
+	group.Go(func() error {
+
+		return engine.Run(ctx)
+	})
+
+	return group.Wait()
 }
