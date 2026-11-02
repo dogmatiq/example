@@ -31,8 +31,8 @@ github.com/docker/go-connections v0.6.0 h1:LlMG9azAe1TqfR7sO+NJttz1gy6KO7VJBh+pM
 github.com/docker/go-connections v0.6.0/go.mod h1:AahvXYshr6JgfUJGdDCs2b5EZG/vmaMAntpSFH5BFKE=
 github.com/docker/go-units v0.5.0 h1:69rxXcBk27SvSaaxTtLh/8llcHD8vYHT7WSdRZ/jvr4=
 github.com/docker/go-units v0.5.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
-github.com/dogmatiq/dapper v0.6.1 h1:4hRKC6IyQbP5D603D8hBWRbA4hT55rgB3Of0bNjTkwQ=
-github.com/dogmatiq/dapper v0.6.1/go.mod h1:TeeI2qSWx22eOT8zuvObWJp544rggYs9NIdGWx2AeCc=
+github.com/dogmatiq/dapper v0.7.0 h1:8vSP/XRaP8nrQDNHVrd2h9J9L/byGy6RM1j4CDZeFzw=
+github.com/dogmatiq/dapper v0.7.0/go.mod h1:ennQpTWjcfVwwjYa+CTdYZ2FiIbCNOb1szfxBiPLOtE=
 github.com/dogmatiq/dogma v0.25.0 h1:L1NM8xBaQMyJ+oFSKSH9FWqyQyf91I50qFN/Bz4WsT0=
 github.com/dogmatiq/dogma v0.25.0/go.mod h1:BNKrZq9wm3jRu35XUWQXkMRhq4EzYK+rOVbGjrbCVyI=
 github.com/dogmatiq/enginekit v0.27.7 h1:7QaVnNs9x20Z/HV4mQRBqXqvJz8rIz/4uOsaadgWI5c=
@@ -45,8 +45,8 @@ github.com/dogmatiq/linger v1.1.0 h1:kGL9sL79qRa6Cr8PhadeJ/ptbum+b48pAaNWWlyVVKg
 github.com/dogmatiq/linger v1.1.0/go.mod h1:OOWJUwTxNkFolhuVdaTYjO4FmFLjZHZ8EMc5H5qOJ7Q=
 github.com/dogmatiq/projectionkit v0.10.0 h1:OXvgmyIUeJme2HdRhCa07LF4Xfhc0xYWpwDhYQfi9SQ=
 github.com/dogmatiq/projectionkit v0.10.0/go.mod h1:vs+JNhmeB5lhqPdOv5QfkGt56ZonikUCUjualGnLG8U=
-github.com/dogmatiq/testkit v0.22.2 h1:x7zn01EErMSj5xIcadQUOQ0rB/CPLXdh/5Vd2lnp3qk=
-github.com/dogmatiq/testkit v0.22.2/go.mod h1:zTGGMnXvKWsM7jdrgQHEQ3ihH6BCHH2vHKU+Di7XQS0=
+github.com/dogmatiq/testkit v0.23.0 h1:3qwwNnlRfTtnnKyKQT2Sb561UrblfOiPZZmZqACvnDE=
+github.com/dogmatiq/testkit v0.23.0/go.mod h1:J5EUX85wwMyvwTr01IUkubUChu1+quKmFc18y0sfVLE=
 github.com/ebitengine/purego v0.8.4 h1:CF7LEKg5FFOsASUj0+QwaXf8Ht6TlFxg09+S9wz0omw=
 github.com/ebitengine/purego v0.8.4/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
