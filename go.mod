@@ -6,7 +6,7 @@ require (
 	github.com/dogmatiq/dogma v0.25.0
 	github.com/dogmatiq/enginekit v0.27.7
 	github.com/dogmatiq/projectionkit v0.10.0
-	github.com/dogmatiq/testkit v0.22.2
+	github.com/dogmatiq/testkit v0.23.0
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.52
 	golang.org/x/text v0.43.0
@@ -14,7 +14,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.1 // indirect
-	github.com/dogmatiq/dapper v0.6.1 // indirect
+	github.com/dogmatiq/dapper v0.7.0 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
