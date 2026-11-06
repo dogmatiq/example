@@ -1,12 +1,12 @@
 module github.com/dogmatiq/example
 
-go 1.26.0
+go 1.27
 
 require (
 	github.com/dogmatiq/dogma v0.25.0
-	github.com/dogmatiq/enginekit v0.27.7
+	github.com/dogmatiq/enginekit v0.29.0
 	github.com/dogmatiq/projectionkit v0.11.0
-	github.com/dogmatiq/testkit v0.23.0
+	github.com/dogmatiq/testkit v0.24.0
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.52
 	golang.org/x/text v0.43.0
