@@ -46,11 +46,9 @@ func (h *Handler) renderAccountsPage(w http.ResponseWriter, r *http.Request) {
 		pageData
 		AccountsFragment accountsFragment
 	}{
-		pageData: pageData{
-			Title:        "Your Accounts",
-			CustomerID:   customerID,
-			CustomerName: customerName,
-		},
+		Title:        "Your Accounts",
+		CustomerID:   customerID,
+		CustomerName: customerName,
 		AccountsFragment: accountsFragment{
 			CustomerID: customerID,
 			Accounts:   accounts,
@@ -102,12 +100,10 @@ func (h *Handler) renderOpenAccount(w http.ResponseWriter, r *http.Request, form
 		pageData
 		Error string
 	}{
-		pageData: pageData{
-			Title:        "Open a New Account",
-			CustomerID:   customerID,
-			CustomerName: customerName,
-		},
-		Error: formError,
+		Title:        "Open a New Account",
+		CustomerID:   customerID,
+		CustomerName: customerName,
+		Error:        formError,
 	}
 
 	if formError != "" {
