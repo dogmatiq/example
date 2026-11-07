@@ -48,11 +48,9 @@ func (h *Handler) renderTransfer(w http.ResponseWriter, r *http.Request, formErr
 		AccountGroups []accountGroup
 		Error         string
 	}{
-		pageData: pageData{
-			Title:        "Transfer",
-			CustomerID:   customerID,
-			CustomerName: customerName,
-		},
+		Title:         "Transfer",
+		CustomerID:    customerID,
+		CustomerName:  customerName,
 		AccountID:     accountID,
 		AccountName:   accountName,
 		Balance:       money(balance),

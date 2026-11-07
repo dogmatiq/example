@@ -30,7 +30,7 @@ func (h *Handler) renderLoginPage(w http.ResponseWriter, r *http.Request) {
 		pageData
 		Customers []customer
 	}{
-		pageData:  pageData{Title: "Welcome"},
+		Title:     "Welcome",
 		Customers: customers,
 	}
 
@@ -49,8 +49,8 @@ func (h *Handler) renderSignup(w http.ResponseWriter, formError string) {
 		pageData
 		Error string
 	}{
-		pageData: pageData{Title: "Sign Up"},
-		Error:    formError,
+		Title: "Sign Up",
+		Error: formError,
 	}
 
 	if formError != "" {

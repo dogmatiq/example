@@ -108,7 +108,7 @@ func renderError(w http.ResponseWriter, code int, detail ...string) {
 		StatusText string
 		Detail     string
 	}{
-		pageData:   pageData{Title: http.StatusText(code)},
+		Title:      http.StatusText(code),
 		StatusCode: code,
 		StatusText: http.StatusText(code),
 		Detail:     message,

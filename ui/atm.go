@@ -41,15 +41,13 @@ func (h *Handler) renderATM(w http.ResponseWriter, r *http.Request, formError st
 		Balance     money
 		Error       string
 	}{
-		pageData: pageData{
-			Title:        "Virtual ATM: " + accountName,
-			CustomerID:   customerID,
-			CustomerName: customerName,
-		},
-		AccountID:   accountID,
-		AccountName: accountName,
-		Balance:     money(balance),
-		Error:       formError,
+		Title:        "Virtual ATM: " + accountName,
+		CustomerID:   customerID,
+		CustomerName: customerName,
+		AccountID:    accountID,
+		AccountName:  accountName,
+		Balance:      money(balance),
+		Error:        formError,
 	}
 
 	if formError != "" {

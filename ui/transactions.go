@@ -56,14 +56,12 @@ func (h *Handler) renderTransactionsPage(w http.ResponseWriter, r *http.Request)
 		Balance              money
 		TransactionsFragment transactionsFragment
 	}{
-		pageData: pageData{
-			Title:        "Transactions: " + accountName,
-			CustomerID:   customerID,
-			CustomerName: customerName,
-		},
-		AccountID:   accountID,
-		AccountName: accountName,
-		Balance:     money(balance),
+		Title:        "Transactions: " + accountName,
+		CustomerID:   customerID,
+		CustomerName: customerName,
+		AccountID:    accountID,
+		AccountName:  accountName,
+		Balance:      money(balance),
 		TransactionsFragment: transactionsFragment{
 			CustomerID:   customerID,
 			AccountID:    accountID,
