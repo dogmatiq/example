@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	dogma.RegisterCommand[*CreditThirdPartyAccount]("c4a2e6f1-8b3d-4e7a-9f5c-2d1b0e8a3c6f")
+	dogma.RegisterCommand[*CreditThirdPartyAccount]("6e945bf3-d745-4d8c-9935-fcb71acec3f7")
 }
 
 // CreditThirdPartyAccount is a command to credit an account held at a

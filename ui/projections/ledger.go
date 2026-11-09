@@ -25,7 +25,7 @@ type LedgerProjectionHandler struct {
 
 // Configure configs the engine for this projection.
 func (h *LedgerProjectionHandler) Configure(c dogma.ProjectionConfigurer) {
-	c.Identity("ledger", "a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+	c.Identity("ledger", "917784c8-a2dd-4db9-9a53-5be4925b9e1b")
 
 	c.Routes(
 		dogma.HandlesEvent[*events.AccountOpened](),

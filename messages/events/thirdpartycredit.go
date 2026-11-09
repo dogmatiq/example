@@ -10,8 +10,8 @@ import (
 )
 
 func init() {
-	dogma.RegisterEvent[*ThirdPartyAccountCredited]("a7f3c8e2-5d1b-4a9e-8c6f-3b2d0e7a1c5d")
-	dogma.RegisterEvent[*ThirdPartyAccountCreditFailed]("e9b4d7f0-2c6a-4e8b-9d3f-1a5c0b8e4d2a")
+	dogma.RegisterEvent[*ThirdPartyAccountCredited]("bfecec06-c8ce-45a3-ba10-4d4e3649dc2e")
+	dogma.RegisterEvent[*ThirdPartyAccountCreditFailed]("7970983c-2ba2-440b-8c25-88c17e9705e0")
 }
 
 // ThirdPartyAccountCredited is an event indicating that the credit to a
