@@ -16,7 +16,7 @@ type ThirdPartyBankIntegrationHandler struct{}
 
 // Configure configures the behavior of the engine as it relates to this handler.
 func (ThirdPartyBankIntegrationHandler) Configure(c dogma.IntegrationConfigurer) {
-	c.Identity("third-party-bank", "f2a7e4b1-9c3d-4f8a-b6e5-1d0c2a9f7e3b")
+	c.Identity("third-party-bank", "fb528b87-a11a-4f13-963b-26a4b75f1e4b")
 
 	c.Routes(
 		dogma.HandlesCommand[*commands.CreditThirdPartyAccount](),

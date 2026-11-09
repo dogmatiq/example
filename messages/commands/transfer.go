@@ -14,7 +14,7 @@ func init() {
 	dogma.RegisterCommand[*Transfer]("5ee87c7b-bde3-4b39-9f12-44968cdb9889")
 	dogma.RegisterCommand[*ApproveTransfer]("0d22aaa5-4449-459a-b9b1-c5fb0ce4a990")
 	dogma.RegisterCommand[*DeclineTransfer]("d7d069a2-41fc-415e-91dd-7db3affa9f6d")
-	dogma.RegisterCommand[*MarkTransferAsFailed]("b3e5f6a2-7c1d-4e8b-a9f0-3d2c1e4b5f6a")
+	dogma.RegisterCommand[*MarkTransferAsFailed]("c88cf6df-6c43-48bd-828c-0575bdb99d27")
 }
 
 // Transfer is a command requesting that funds be transferred from one bank

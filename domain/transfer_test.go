@@ -170,9 +170,7 @@ func Test_Transfer(t *testing.T) {
 							).
 							Expect(
 								ExecuteCommand(&transfer),
-								NoneOf(
-									ToRecordEventOfType(&events.TransferApproved{}),
-								),
+								Not(ToRecordEventType[*events.TransferApproved]()),
 							).
 							Expect(
 								AdvanceTime(

@@ -62,9 +62,7 @@ func Test_OpenAccount(t *testing.T) {
 									AccountName: "Anna Smith",
 								},
 							),
-							NoneOf(
-								ToRecordEventOfType(&events.AccountOpened{}),
-							),
+							Not(ToRecordEventType[*events.AccountOpened]()),
 						)
 				},
 			)
