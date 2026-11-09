@@ -16,7 +16,7 @@ func init() {
 	dogma.RegisterDeadline[*TransferReadyToProceed]("b5474f89-e985-4661-b85b-645347a4a645")
 }
 
-// transfer is the process root for a funds transfer.
+// transferProcess is the process root for a funds transfer.
 type transferProcess struct {
 	FromAccountID    string
 	ToAccountID      string
