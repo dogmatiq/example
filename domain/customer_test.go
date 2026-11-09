@@ -59,9 +59,7 @@ func Test_OpenAccountForNewCustomer(t *testing.T) {
 						).
 						Expect(
 							ExecuteCommand(cmd),
-							NoneOf(
-								ToRecordEventOfType(&events.CustomerAcquired{}),
-							),
+							Not(ToRecordEventType[*events.CustomerAcquired]()),
 						)
 				},
 			)
