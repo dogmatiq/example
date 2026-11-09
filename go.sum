@@ -32,8 +32,8 @@ github.com/dogmatiq/dapper v0.7.0 h1:8vSP/XRaP8nrQDNHVrd2h9J9L/byGy6RM1j4CDZeFzw
 github.com/dogmatiq/dapper v0.7.0/go.mod h1:ennQpTWjcfVwwjYa+CTdYZ2FiIbCNOb1szfxBiPLOtE=
 github.com/dogmatiq/dogma v0.25.0 h1:L1NM8xBaQMyJ+oFSKSH9FWqyQyf91I50qFN/Bz4WsT0=
 github.com/dogmatiq/dogma v0.25.0/go.mod h1:BNKrZq9wm3jRu35XUWQXkMRhq4EzYK+rOVbGjrbCVyI=
-github.com/dogmatiq/enginekit v0.29.0 h1:c1Spx+9WXDY6vQPzTccro3k7vWH8A0yq2ScDiDjxWi8=
-github.com/dogmatiq/enginekit v0.29.0/go.mod h1:dQrqLUtFTSD6qFgpz1yTfeG5+dMCtjTaVGVZdPBbzME=
+github.com/dogmatiq/enginekit v0.31.0 h1:1V2c+OJAwT2Vsn0Cfz/Rm9srbU71iOhx6SW9P0avsMM=
+github.com/dogmatiq/enginekit v0.31.0/go.mod h1:SQhPlUPtSPw/3ASEwUHkk+Kpp2FoHucX6ric0bN5s5c=
 github.com/dogmatiq/iago v0.4.0 h1:57nZqVT34IZxtCZEW/RFif7DNUEjMXgevfr/Mmd0N8I=
 github.com/dogmatiq/iago v0.4.0/go.mod h1:fishMWBtzYcjgis6d873VTv9kFm/wHYLOzOyO9ECBDc=
 github.com/dogmatiq/jumble v0.1.0 h1:Cb3ExfxY+AoUP4G9/sOwoOdYX8o+kOLK8+dhXAry+QA=
@@ -42,8 +42,8 @@ github.com/dogmatiq/linger v1.1.0 h1:kGL9sL79qRa6Cr8PhadeJ/ptbum+b48pAaNWWlyVVKg
 github.com/dogmatiq/linger v1.1.0/go.mod h1:OOWJUwTxNkFolhuVdaTYjO4FmFLjZHZ8EMc5H5qOJ7Q=
 github.com/dogmatiq/projectionkit v0.11.0 h1:oB1uQDX8eCgf9Xux0MtNyvBY9RAgU85d3D5QKAZFmUw=
 github.com/dogmatiq/projectionkit v0.11.0/go.mod h1:/4ApE37Sq4fOJ0hXJN8/+LzhA9q9ft13q5wjzp4qqDY=
-github.com/dogmatiq/protobuf v0.2.0 h1:HMbG3Ur30fglm1Q+4EenIxNxAuiyJhqMWaLmtdxyO/k=
-github.com/dogmatiq/protobuf v0.2.0/go.mod h1:wRsDs0xjHx0Hhfvh7n4xzSngeAl3YGZFOgtxyalDzQE=
+github.com/dogmatiq/protobuf v0.7.0 h1:en8A3FA7MwB7vyqCyTftuC4r4+CAeypJd2b3i8SKkHw=
+github.com/dogmatiq/protobuf v0.7.0/go.mod h1:wRsDs0xjHx0Hhfvh7n4xzSngeAl3YGZFOgtxyalDzQE=
 github.com/dogmatiq/testkit v0.24.0 h1:RHQGAhNDjVWdLBC3Znkfwovg+pAyDoy2D5hwBNmOSyo=
 github.com/dogmatiq/testkit v0.24.0/go.mod h1:446Kovs6/AS7gNIaq3vgdqAeQwNhC/inSPW7gGm+AqA=
 github.com/ebitengine/purego v0.10.1 h1:dewVBCBT2GaMu1SrNTYxQhgQBethzfhiwvZiLGP/qyY=
