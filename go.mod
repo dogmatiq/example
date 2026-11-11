@@ -5,7 +5,7 @@ go 1.27
 require (
 	github.com/dogmatiq/dogma v0.25.0
 	github.com/dogmatiq/enginekit v0.31.0
-	github.com/dogmatiq/projectionkit v0.11.0
+	github.com/dogmatiq/projectionkit v0.12.0
 	github.com/dogmatiq/testkit v0.24.0
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.53
