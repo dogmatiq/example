@@ -1,15 +1,15 @@
 module github.com/dogmatiq/example
 
-go 1.27
+go 1.27.0
 
 require (
-	github.com/dogmatiq/dogma v0.25.0
-	github.com/dogmatiq/enginekit v0.31.0
-	github.com/dogmatiq/projectionkit v0.12.0
-	github.com/dogmatiq/testkit v0.24.0
+	github.com/dogmatiq/dogma v0.26.0
+	github.com/dogmatiq/enginekit v0.32.0
+	github.com/dogmatiq/projectionkit v0.13.0
+	github.com/dogmatiq/testkit v0.25.0
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.53
-	golang.org/x/text v0.43.0
+	golang.org/x/text v0.44.0
 )
 
 require (
@@ -17,7 +17,7 @@ require (
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
-	github.com/dogmatiq/protobuf v0.7.0 // indirect
+	github.com/dogmatiq/protobuf v0.8.0 // indirect
 	github.com/sergi/go-diff v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
