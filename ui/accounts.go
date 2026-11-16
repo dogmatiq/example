@@ -141,6 +141,11 @@ func (h *Handler) openAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := h.waitForAccount(r.Context(), accountID); err != nil {
+		renderError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	http.Redirect(w, r, fmt.Sprintf("/c/%s/accounts", customerID), http.StatusSeeOther)
 }
 

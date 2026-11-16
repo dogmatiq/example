@@ -42,7 +42,11 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	})
 
-	h.mux.ServeHTTP(w, r)
+	// Event observers require a deadline, and command handling must not hold
+	// an HTTP request open indefinitely.
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+	h.mux.ServeHTTP(w, r.WithContext(ctx))
 }
 
 // parseSchedule converts a schedule radio value into a time.
@@ -113,4 +117,32 @@ func renderError(w http.ResponseWriter, code int, detail ...string) {
 		StatusText: http.StatusText(code),
 		Detail:     message,
 	})
+}
+
+// waitForAccount waits until both the account and its customer are projected,
+// so the page we redirect to can read them after asynchronous command handling.
+func (h *Handler) waitForAccount(ctx context.Context, accountID string) error {
+	ticker := time.NewTicker(25 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		var exists bool
+		if err := h.DB.QueryRowContext(ctx,
+			`SELECT EXISTS (
+				SELECT 1 FROM accounts AS a
+				INNER JOIN customers AS c ON c.id = a.customer_id
+				WHERE a.id = $1
+			)`, accountID,
+		).Scan(&exists); err != nil {
+			return err
+		}
+		if exists {
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+		}
+	}
 }

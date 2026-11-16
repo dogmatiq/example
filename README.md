@@ -23,12 +23,15 @@ docker run --rm -d --name dogma-example-postgres \
 Once PostgreSQL is ready, run the example:
 
 ```sh
-DOGMA_EXAMPLE_PROJECTION_DSN='postgres://postgres:password@localhost:5432/bank?sslmode=disable' go run ./cmd/bank
+DOGMA_EXAMPLE_ENGINE_DSN='postgres://postgres:password@localhost:5432/bank?sslmode=disable' \
+DOGMA_EXAMPLE_PROJECTION_DSN='postgres://postgres:password@localhost:5432/bank?sslmode=disable' \
+  go run ./cmd/bank
 ```
 
-The application creates its projection schema on startup. Use `sslmode=disable`
-only for local databases. The engine still uses in-memory testkit storage, so
-use a fresh projection database for each run.
+The application creates the engine and projection schemas on startup and
+preserves state across restarts. Both DSNs can use the same PostgreSQL 18
+database, as above, or separate databases. Use `sslmode=disable` only for local
+databases.
 
 Run `go test ./...` with Docker available. Projection tests use testcontainers
 with PostgreSQL 18 and an isolated database per test. CGO is not required.
