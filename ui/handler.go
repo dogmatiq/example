@@ -114,3 +114,35 @@ func renderError(w http.ResponseWriter, code int, detail ...string) {
 		Detail:     message,
 	})
 }
+
+// waitForAccount bridges asynchronous command handling to this synchronous UI:
+// the redirect target needs both projected rows to exist. Event observers only
+// confirm events were recorded; they do not wait for projections.
+// A UI that shows pending work and updates as projections catch up can avoid
+// holding this request open.
+func (h *Handler) waitForAccount(ctx context.Context, accountID string) error {
+	ticker := time.NewTicker(25 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		var exists bool
+		if err := h.DB.QueryRowContext(ctx,
+			`SELECT EXISTS (
+				SELECT 1 FROM accounts AS a
+				INNER JOIN customers AS c
+					ON c.id = a.customer_id
+				WHERE a.id = $1
+			)`, accountID,
+		).Scan(&exists); err != nil {
+			return err
+		}
+		if exists {
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+		}
+	}
+}
