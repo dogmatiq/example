@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/internal/xtesting"
+	"github.com/dogmatiq/example/internal/databasetest"
 	"github.com/dogmatiq/example/messages/commands"
 	. "github.com/dogmatiq/testkit"
 )
@@ -14,7 +14,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened",
 		func(t *testing.T) {
-			db := xtesting.NewDatabase(t)
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -65,7 +65,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is credited",
 		func(t *testing.T) {
-			db := xtesting.NewDatabase(t)
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -142,7 +142,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is debited",
 		func(t *testing.T) {
-			db := xtesting.NewDatabase(t)
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -228,7 +228,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when a transfer is approved",
 		func(t *testing.T) {
-			db := xtesting.NewDatabase(t)
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -302,7 +302,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when a transfer is declined after debiting",
 		func(t *testing.T) {
-			db := xtesting.NewDatabase(t)
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").

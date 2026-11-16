@@ -1,5 +1,5 @@
-// Package xtesting provides shared test helpers for the example application.
-package xtesting
+// Package databasetest provides PostgreSQL databases for tests.
+package databasetest
 
 import (
 	"database/sql"
