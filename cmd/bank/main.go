@@ -29,7 +29,6 @@ func main() {
 		os.Interrupt,
 		syscall.SIGTERM,
 	)
-
 	defer stop()
 
 	err := run(ctx, logger)
@@ -54,7 +53,6 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-
 	defer projectionDB.Close()
 
 	// Runkit stores events and pending work using its own connection pool.
@@ -67,7 +65,6 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-
 	defer engineDB.Close()
 
 	// Create the engine's schema before starting message delivery.
@@ -109,7 +106,6 @@ func run(ctx context.Context, logger *slog.Logger) error {
 				request.Context(),
 				5*time.Second,
 			)
-
 			defer cancel()
 
 			uiHandler.ServeHTTP(w, request.WithContext(ctx))
@@ -144,7 +140,6 @@ func run(ctx context.Context, logger *slog.Logger) error {
 			context.Background(),
 			5*time.Second,
 		)
-
 		defer cancel()
 
 		return server.Shutdown(shutdownCtx)
