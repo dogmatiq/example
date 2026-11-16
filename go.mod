@@ -3,10 +3,10 @@ module github.com/dogmatiq/example
 go 1.27.0
 
 require (
-	github.com/dogmatiq/dogma v0.26.0
-	github.com/dogmatiq/projectionkit v0.13.0
+	github.com/dogmatiq/dogma v0.25.0
+	github.com/dogmatiq/projectionkit v0.12.0
 	github.com/dogmatiq/runkit v0.2.1-0.20261116022011-630c5967c062
-	github.com/dogmatiq/testkit v0.25.1
+	github.com/dogmatiq/testkit v0.24.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.12.0
 	github.com/testcontainers/testcontainers-go v0.45.0
@@ -31,11 +31,11 @@ require (
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dogmatiq/cosyne v0.4.0 // indirect
 	github.com/dogmatiq/dapper v0.7.0 // indirect
-	github.com/dogmatiq/enginekit v0.32.0 // indirect
+	github.com/dogmatiq/enginekit v0.31.0 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
 	github.com/dogmatiq/jumble v0.1.0 // indirect
 	github.com/dogmatiq/linger v1.1.0 // indirect
-	github.com/dogmatiq/protobuf v0.8.0 // indirect
+	github.com/dogmatiq/protobuf v0.7.0 // indirect
 	github.com/ebitengine/purego v0.10.1 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
