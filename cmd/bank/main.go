@@ -57,7 +57,7 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		return err
 	}
 
-	// Bind the application's handlers to the persistent engine.
+	// Create an engine to execute the application and persist its state.
 	application := &example.App{ReadDB: projectionDB}
 	engine := runkit.New(application, engineDB, runkit.WithLogger(logger))
 	group, ctx := errgroup.WithContext(ctx)
