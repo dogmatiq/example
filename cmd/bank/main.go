@@ -24,7 +24,11 @@ func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	// Stop the engine and HTTP server together on interrupt or termination.
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
 	defer stop()
 
 	if err := run(ctx, logger); err != nil {
@@ -35,7 +39,10 @@ func main() {
 
 func run(ctx context.Context, logger *slog.Logger) error {
 	// The UI reads projections of the bank's events from this database.
-	projectionDB, err := projections.NewDB(ctx, os.Getenv("DOGMA_EXAMPLE_PROJECTION_DSN"))
+	projectionDB, err := projections.NewDB(
+		ctx,
+		os.Getenv("DOGMA_EXAMPLE_PROJECTION_DSN"),
+	)
 	if err != nil {
 		return err
 	}
@@ -61,11 +68,17 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	application := &example.App{ReadDB: projectionDB}
 
 	// Create an engine to execute the application and persist its state.
-	engine := runkit.New(application, engineDB, runkit.WithLogger(logger))
+	engine := runkit.New(
+		application,
+		engineDB,
+		runkit.WithLogger(logger),
+	)
 
 	// Run the engine in the background to deliver messages to the handlers.
 	group, ctx := errgroup.WithContext(ctx)
-	group.Go(func() error { return engine.Run(ctx) })
+	group.Go(func() error {
+		return engine.Run(ctx)
+	})
 
 	// The UI submits commands to the engine and reads the resulting projections.
 	uiHandler := &ui.Handler{
@@ -79,7 +92,10 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		},
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
 			// Event observers require a deadline; bound each request's wait.
-			ctx, cancel := context.WithTimeout(request.Context(), 5*time.Second)
+			ctx, cancel := context.WithTimeout(
+				request.Context(),
+				5*time.Second,
+			)
 			defer cancel()
 			uiHandler.ServeHTTP(w, request.WithContext(ctx))
 		}),
@@ -91,7 +107,11 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		if err != nil {
 			return err
 		}
-		logger.Info("HTTP server listening", "address", listener.Addr())
+		logger.Info(
+			"HTTP server listening",
+			"address",
+			listener.Addr(),
+		)
 		if err := server.Serve(listener); err != http.ErrServerClosed {
 			return err
 		}
@@ -101,7 +121,10 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	// Drain HTTP requests when the engine stops or the process is signaled.
 	group.Go(func() error {
 		<-ctx.Done()
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		shutdownCtx, cancel := context.WithTimeout(
+			context.Background(),
+			5*time.Second,
+		)
 		defer cancel()
 		return server.Shutdown(shutdownCtx)
 	})
