@@ -6,7 +6,7 @@ require (
 	github.com/dogmatiq/dogma v0.26.0
 	github.com/dogmatiq/enginekit v0.32.0
 	github.com/dogmatiq/projectionkit v0.13.0
-	github.com/dogmatiq/testkit v0.25.0
+	github.com/dogmatiq/testkit v0.25.1
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.53
 	golang.org/x/text v0.44.0

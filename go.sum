@@ -44,8 +44,8 @@ github.com/dogmatiq/projectionkit v0.13.0 h1:4y5XJQOIFiwegfiG81K/O9D1xwKGDt3Hhej
 github.com/dogmatiq/projectionkit v0.13.0/go.mod h1:L0B3IB4QkMUy3MXTMkC1QUEAGVw2cPI7Cq62RR17qbk=
 github.com/dogmatiq/protobuf v0.8.0 h1:DE9TMU866bSo4ITWcECQbByngXk0s696WMXcCCzfQiY=
 github.com/dogmatiq/protobuf v0.8.0/go.mod h1:96bKDt02UetlEs2RxjOPE8TQvVnk2bVRre5Q3o/cDYg=
-github.com/dogmatiq/testkit v0.25.0 h1:7mT1AtFUp0GOtvcv0E24sN63bEnPYrKA9rMmHMPSJbU=
-github.com/dogmatiq/testkit v0.25.0/go.mod h1:XdTKU5LQQIouR2U5rKKywPOxbqta3hU3sEII/4sAebo=
+github.com/dogmatiq/testkit v0.25.1 h1:kKZt6zy4dB/ohnFtpN9wrL04oqKbYVPIDNxSgC1I1ck=
+github.com/dogmatiq/testkit v0.25.1/go.mod h1:XdTKU5LQQIouR2U5rKKywPOxbqta3hU3sEII/4sAebo=
 github.com/ebitengine/purego v0.10.1 h1:dewVBCBT2GaMu1SrNTYxQhgQBethzfhiwvZiLGP/qyY=
 github.com/ebitengine/purego v0.10.1/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeORc=
