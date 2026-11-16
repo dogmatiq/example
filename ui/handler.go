@@ -42,11 +42,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	})
 
-	// Event observers require a deadline, and command handling must not hold
-	// an HTTP request open indefinitely.
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-	defer cancel()
-	h.mux.ServeHTTP(w, r.WithContext(ctx))
+	h.mux.ServeHTTP(w, r)
 }
 
 // parseSchedule converts a schedule radio value into a time.
@@ -119,8 +115,11 @@ func renderError(w http.ResponseWriter, code int, detail ...string) {
 	})
 }
 
-// waitForAccount waits until both the account and its customer are projected,
-// so the page we redirect to can read them after asynchronous command handling.
+// waitForAccount bridges asynchronous command handling to this synchronous UI:
+// the redirect target needs both projected rows to exist. Event observers only
+// confirm events were recorded; they do not wait for projections.
+// A UI that shows pending work and updates as projections catch up can avoid
+// holding this request open.
 func (h *Handler) waitForAccount(ctx context.Context, accountID string) error {
 	ticker := time.NewTicker(25 * time.Millisecond)
 	defer ticker.Stop()
@@ -130,7 +129,8 @@ func (h *Handler) waitForAccount(ctx context.Context, accountID string) error {
 		if err := h.DB.QueryRowContext(ctx,
 			`SELECT EXISTS (
 				SELECT 1 FROM accounts AS a
-				INNER JOIN customers AS c ON c.id = a.customer_id
+				INNER JOIN customers AS c
+					ON c.id = a.customer_id
 				WHERE a.id = $1
 			)`, accountID,
 		).Scan(&exists); err != nil {

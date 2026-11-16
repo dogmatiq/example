@@ -4,7 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
+	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,56 +20,81 @@ import (
 )
 
 func main() {
+	// Use one logger for engine, application, and HTTP lifecycle messages.
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+
+	// Stop the engine and HTTP server together on interrupt or termination.
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	if err := run(ctx); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	if err := run(ctx, logger); err != nil {
+		logger.Error("bank stopped", "error", err)
 		os.Exit(1)
 	}
 }
 
-func run(ctx context.Context) error {
-	db, err := projections.NewDB(ctx, os.Getenv("DOGMA_EXAMPLE_PROJECTION_DSN"))
+func run(ctx context.Context, logger *slog.Logger) error {
+	// The UI reads projections of the bank's events from this database.
+	projectionDB, err := projections.NewDB(ctx, os.Getenv("DOGMA_EXAMPLE_PROJECTION_DSN"))
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer projectionDB.Close()
 
-	dsn := os.Getenv("DOGMA_EXAMPLE_ENGINE_DSN")
-	if dsn == "" {
+	// Runkit stores events and pending work using its own connection pool.
+	engineDSN := os.Getenv("DOGMA_EXAMPLE_ENGINE_DSN")
+	if engineDSN == "" {
 		return errors.New("DOGMA_EXAMPLE_ENGINE_DSN is required")
 	}
-	engineDB, err := sql.Open("pgx", dsn)
+	engineDB, err := sql.Open("pgx", engineDSN)
 	if err != nil {
 		return err
 	}
 	defer engineDB.Close()
 
+	// Create the engine's schema before starting message delivery.
 	if err := runkit.CreateSchema(ctx, engineDB); err != nil {
 		return err
 	}
 
-	e := runkit.New(&example.App{ReadDB: db}, engineDB)
+	// Bind the application's handlers to the persistent engine.
+	application := &example.App{ReadDB: projectionDB}
+	engine := runkit.New(application, engineDB, runkit.WithLogger(logger))
 	group, ctx := errgroup.WithContext(ctx)
-	group.Go(func() error { return e.Run(ctx) })
+	group.Go(func() error { return engine.Run(ctx) })
 
+	// The UI submits commands to the engine and reads the resulting projections.
+	uiHandler := &ui.Handler{
+		DB:              projectionDB,
+		CommandExecutor: engine,
+	}
 	server := &http.Server{
 		Addr: ":8080",
-		Handler: &ui.Handler{
-			DB:              db,
-			CommandExecutor: e,
+		BaseContext: func(net.Listener) context.Context {
+			return ctx
 		},
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
+			// Event observers require a deadline; bound each request's wait.
+			requestCtx, cancel := context.WithTimeout(request.Context(), 5*time.Second)
+			defer cancel()
+			uiHandler.ServeHTTP(w, request.WithContext(requestCtx))
+		}),
 	}
 
+	// Start accepting HTTP requests and report the actual listening address.
 	group.Go(func() error {
-		fmt.Println("Dogmatiq Bank is running at http://localhost:8080")
-		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		listener, err := net.Listen("tcp", server.Addr)
+		if err != nil {
+			return err
+		}
+		logger.Info("HTTP server listening", "address", listener.Addr())
+		if err := server.Serve(listener); err != http.ErrServerClosed {
 			return err
 		}
 		return nil
 	})
 
+	// Drain HTTP requests when the engine stops or the process is signaled.
 	group.Go(func() error {
 		<-ctx.Done()
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -76,6 +102,7 @@ func run(ctx context.Context) error {
 		return server.Shutdown(shutdownCtx)
 	})
 
+	// Wait for shutdown before closing either database pool.
 	if err := group.Wait(); err != nil && !errors.Is(err, context.Canceled) {
 		return err
 	}

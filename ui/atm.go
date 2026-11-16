@@ -70,6 +70,7 @@ func (h *Handler) deposit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Observe the command's outcome event, which can precede projection updates.
 	err = h.CommandExecutor.ExecuteCommand(
 		r.Context(),
 		&commands.Deposit{

@@ -35,3 +35,17 @@ databases.
 
 Run `go test ./...` with Docker available. Projection tests use testcontainers
 with PostgreSQL 18 and an isolated database per test. CGO is not required.
+
+## Commands and the UI
+
+Runkit accepts commands asynchronously. The deposit, withdrawal, and transfer
+handlers use `WithEventObserver()` to wait for outcome events, so the UI can
+show a result such as a declined withdrawal. These waits are bounded by the
+request deadline; a timeout does not cancel a command already accepted by the
+engine.
+
+An observed event does not mean the UI projections have caught up. Account
+creation uses `waitForAccount()` before redirecting so the next page can read
+the customer and account. This demonstrates one way to support a synchronous
+UI; a UI that shows pending work and updates as projections arrive would avoid
+holding the request open.

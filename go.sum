@@ -32,8 +32,8 @@ github.com/docker/go-connections v0.8.2 h1:9d9DEokx5W7qlr0shkFXIxEA7+TTD+llwzcyk
 github.com/docker/go-connections v0.8.2/go.mod h1:no1qkHdjq7kLMGUXYAduOhYPSJxxvgWBh7ogVvptn3Q=
 github.com/docker/go-units v0.5.0 h1:69rxXcBk27SvSaaxTtLh/8llcHD8vYHT7WSdRZ/jvr4=
 github.com/docker/go-units v0.5.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
-github.com/dogmatiq/cosyne v0.4.0 h1:oLvifGpodobSHJ8+L2NybF8Q05Q5jwVUrqMuvEyukNw=
-github.com/dogmatiq/cosyne v0.4.0/go.mod h1:DdokMx3IgzRsh7MGfB2o0Yotbv+1vArWh0RYk6q2Ets=
+github.com/dogmatiq/cosyne v0.3.0 h1:hZrAhT0nesTMd1lwAn5F3bDcjvsfQTwyfRH+RYMEdHM=
+github.com/dogmatiq/cosyne v0.3.0/go.mod h1:DdokMx3IgzRsh7MGfB2o0Yotbv+1vArWh0RYk6q2Ets=
 github.com/dogmatiq/dapper v0.7.0 h1:8vSP/XRaP8nrQDNHVrd2h9J9L/byGy6RM1j4CDZeFzw=
 github.com/dogmatiq/dapper v0.7.0/go.mod h1:ennQpTWjcfVwwjYa+CTdYZ2FiIbCNOb1szfxBiPLOtE=
 github.com/dogmatiq/dogma v0.25.0 h1:L1NM8xBaQMyJ+oFSKSH9FWqyQyf91I50qFN/Bz4WsT0=
@@ -50,8 +50,8 @@ github.com/dogmatiq/projectionkit v0.12.0 h1:fF3V2KCbGZxwYAr/RknCmYFqMZFEHAMqLSy
 github.com/dogmatiq/projectionkit v0.12.0/go.mod h1:UHZ8bqXMbeViKmPTTmGr4o9yvgUs7jVBfp/7LRcE0Rs=
 github.com/dogmatiq/protobuf v0.7.0 h1:en8A3FA7MwB7vyqCyTftuC4r4+CAeypJd2b3i8SKkHw=
 github.com/dogmatiq/protobuf v0.7.0/go.mod h1:wRsDs0xjHx0Hhfvh7n4xzSngeAl3YGZFOgtxyalDzQE=
-github.com/dogmatiq/runkit v0.2.1-0.20261116022011-630c5967c062 h1:o8Uk6yAyN0yQaDpwZNoyRT1FLqtAp5PMpucoqgl1m1w=
-github.com/dogmatiq/runkit v0.2.1-0.20261116022011-630c5967c062/go.mod h1:yWwq+ISRqrI6Q8cZJIsl+CwjLk146KXH7cdXa5sb+80=
+github.com/dogmatiq/runkit v0.2.0 h1:cvT9gZ6pwnIQkjMKIz8UJ4UKXUM9rKuHO5QFQrLDywg=
+github.com/dogmatiq/runkit v0.2.0/go.mod h1:edLMKVa5HIQhEDiLWum5K5DhODXn6HvY9yVwjmgpB94=
 github.com/dogmatiq/spruce v0.2.4 h1:32HqvqvlINlvMKzQ4eWO97+MdI+1CfLfr9RmsTvDphk=
 github.com/dogmatiq/spruce v0.2.4/go.mod h1:za5ZdNvh+FRWg4B3DCn8jfNB2LVR/9Dk3fkuHVDJLrk=
 github.com/dogmatiq/testkit v0.24.0 h1:RHQGAhNDjVWdLBC3Znkfwovg+pAyDoy2D5hwBNmOSyo=

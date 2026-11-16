@@ -5,7 +5,7 @@ go 1.27.0
 require (
 	github.com/dogmatiq/dogma v0.25.0
 	github.com/dogmatiq/projectionkit v0.12.0
-	github.com/dogmatiq/runkit v0.2.1-0.20261116022011-630c5967c062
+	github.com/dogmatiq/runkit v0.2.0
 	github.com/dogmatiq/testkit v0.24.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.12.0
@@ -29,7 +29,7 @@ require (
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/go-connections v0.8.2 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/dogmatiq/cosyne v0.4.0 // indirect
+	github.com/dogmatiq/cosyne v0.3.0 // indirect
 	github.com/dogmatiq/dapper v0.7.0 // indirect
 	github.com/dogmatiq/enginekit v0.31.0 // indirect
 	github.com/dogmatiq/iago v0.4.0 // indirect
