@@ -75,9 +75,9 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		},
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
 			// Event observers require a deadline; bound each request's wait.
-			requestCtx, cancel := context.WithTimeout(request.Context(), 5*time.Second)
+			ctx, cancel := context.WithTimeout(request.Context(), 5*time.Second)
 			defer cancel()
-			uiHandler.ServeHTTP(w, request.WithContext(requestCtx))
+			uiHandler.ServeHTTP(w, request.WithContext(ctx))
 		}),
 	}
 
