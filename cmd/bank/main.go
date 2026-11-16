@@ -57,9 +57,13 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		return err
 	}
 
-	// Create an engine to execute the application and persist its state.
+	// The application describes the bank's message handlers and their routes.
 	application := &example.App{ReadDB: projectionDB}
+
+	// Create an engine to execute the application and persist its state.
 	engine := runkit.New(application, engineDB, runkit.WithLogger(logger))
+
+	// Run the engine in the background to deliver messages to the handlers.
 	group, ctx := errgroup.WithContext(ctx)
 	group.Go(func() error { return engine.Run(ctx) })
 
