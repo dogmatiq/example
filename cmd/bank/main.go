@@ -29,14 +29,18 @@ func main() {
 		os.Interrupt,
 		syscall.SIGTERM,
 	)
+
 	defer stop()
 
 	err := run(ctx, logger)
+
 	if errors.Is(err, context.Canceled) {
 		return
 	}
+
 	if err != nil {
 		logger.Error("bank stopped", "error", err)
+
 		os.Exit(1)
 	}
 }
@@ -50,6 +54,7 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	if err != nil {
 		return err
 	}
+
 	defer projectionDB.Close()
 
 	// Runkit stores events and pending work using its own connection pool.
@@ -57,10 +62,12 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	if engineDSN == "" {
 		return errors.New("DOGMA_EXAMPLE_ENGINE_DSN is required")
 	}
+
 	engineDB, err := sql.Open("pgx", engineDSN)
 	if err != nil {
 		return err
 	}
+
 	defer engineDB.Close()
 
 	// Create the engine's schema before starting message delivery.
@@ -80,6 +87,7 @@ func run(ctx context.Context, logger *slog.Logger) error {
 
 	// Run the engine in the background to deliver messages to the handlers.
 	group, ctx := errgroup.WithContext(ctx)
+
 	group.Go(func() error {
 		return engine.Run(ctx)
 	})
@@ -89,6 +97,7 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		DB:              projectionDB,
 		CommandExecutor: engine,
 	}
+
 	server := &http.Server{
 		Addr: ":8080",
 		BaseContext: func(net.Listener) context.Context {
@@ -100,7 +109,9 @@ func run(ctx context.Context, logger *slog.Logger) error {
 				request.Context(),
 				5*time.Second,
 			)
+
 			defer cancel()
+
 			uiHandler.ServeHTTP(w, request.WithContext(ctx))
 		}),
 	}
@@ -111,25 +122,31 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		if err != nil {
 			return err
 		}
+
 		logger.Info(
 			"HTTP server listening",
 			"address",
 			listener.Addr(),
 		)
+
 		if err := server.Serve(listener); err != http.ErrServerClosed {
 			return err
 		}
+
 		return nil
 	})
 
 	// Drain HTTP requests when the engine stops or the process is signaled.
 	group.Go(func() error {
 		<-ctx.Done()
+
 		shutdownCtx, cancel := context.WithTimeout(
 			context.Background(),
 			5*time.Second,
 		)
+
 		defer cancel()
+
 		return server.Shutdown(shutdownCtx)
 	})
 
