@@ -12,7 +12,15 @@ implements the features of a simple bank.
 
 ## Running locally
 
-Set `DOGMA_EXAMPLE_PROJECTION_DSN` to a PostgreSQL connection string:
+Start PostgreSQL:
+
+```sh
+docker run --rm -d --name dogma-example-postgres \
+  -e POSTGRES_PASSWORD=password -e POSTGRES_DB=bank \
+  -p 5432:5432 postgres:18-alpine
+```
+
+Once PostgreSQL is ready, run the example:
 
 ```sh
 DOGMA_EXAMPLE_PROJECTION_DSN='postgres://postgres:password@localhost:5432/bank?sslmode=disable' go run ./cmd/bank

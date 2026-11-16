@@ -45,20 +45,6 @@ func NewDB(ctx context.Context, dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
-// MustNewDB returns a PostgreSQL database, with database tables
-// necessary to run the example application.
-//
-// It panics if the database is unable to be opened, or the schema is unable to
-// be created.
-func MustNewDB(ctx context.Context, dsn string) *sql.DB {
-	db, err := NewDB(ctx, dsn)
-	if err != nil {
-		panic(err)
-	}
-
-	return db
-}
-
 // CreateSchema creates the schema elements required by the projection handlers.
 func CreateSchema(ctx context.Context, db *sql.DB) error {
 	entries, err := schema.ReadDir(".")
