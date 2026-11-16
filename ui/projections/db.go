@@ -5,24 +5,26 @@ import (
 	"database/sql"
 	"embed"
 	"errors"
-	"fmt"
 
 	"github.com/dogmatiq/projectionkit/sqlprojection"
 	_ "github.com/jackc/pgx/v5/stdlib" // install "pgx" driver
 )
 
-// schema contains the SQL schema files.
-//
-//go:embed *.sql
-var schema embed.FS
+var (
+	// schema contains the SQL schema files.
+	//
+	//go:embed *.sql
+	schema embed.FS
+)
 
-// NewDB opens a PostgreSQL database and creates the schema needed by the UI
-// projections. dsn is a PostgreSQL connection string.
+// NewDB returns a PostgreSQL database, with database tables necessary to
+// run the example application.
 //
-// The caller must close the returned database.
+// It returns an error if the database is unable to be opened, or the schema is
+// unable to be created.
 func NewDB(ctx context.Context, dsn string) (*sql.DB, error) {
 	if dsn == "" {
-		return nil, errors.New("PostgreSQL connection string is required (set DATABASE_URL)")
+		return nil, errors.New("DOGMA_EXAMPLE_PROJECTION_DSN is required")
 	}
 
 	db, err := sql.Open("pgx", dsn)
@@ -30,9 +32,9 @@ func NewDB(ctx context.Context, dsn string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	if err := db.PingContext(ctx); err != nil {
+	if err := sqlprojection.PostgresDriver.CreateSchema(ctx, db); err != nil {
 		db.Close()
-		return nil, fmt.Errorf("unable to connect to PostgreSQL: %w", err)
+		return nil, err
 	}
 
 	if err := CreateSchema(ctx, db); err != nil {
@@ -43,13 +45,22 @@ func NewDB(ctx context.Context, dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
-// CreateSchema creates the schema elements required by the projection adapter
-// and handlers. It can be called again on an existing database.
-func CreateSchema(ctx context.Context, db *sql.DB) error {
-	if err := sqlprojection.PostgresDriver.CreateSchema(ctx, db); err != nil {
-		return err
+// MustNewDB returns a PostgreSQL database, with database tables
+// necessary to run the example application.
+//
+// It panics if the database is unable to be opened, or the schema is unable to
+// be created.
+func MustNewDB(ctx context.Context, dsn string) *sql.DB {
+	db, err := NewDB(ctx, dsn)
+	if err != nil {
+		panic(err)
 	}
 
+	return db
+}
+
+// CreateSchema creates the schema elements required by the projection handlers.
+func CreateSchema(ctx context.Context, db *sql.DB) error {
 	entries, err := schema.ReadDir(".")
 	if err != nil {
 		return err

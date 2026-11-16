@@ -19,11 +19,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	db, err := projections.NewDB(ctx, os.Getenv("DATABASE_URL"))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "database error:", err)
-		os.Exit(1)
-	}
+	db := projections.MustNewDB(ctx, os.Getenv("DOGMA_EXAMPLE_PROJECTION_DSN"))
 	defer db.Close()
 
 	app := &example.App{
