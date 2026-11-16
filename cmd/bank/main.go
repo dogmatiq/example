@@ -16,6 +16,7 @@ import (
 	"github.com/dogmatiq/example/ui"
 	"github.com/dogmatiq/example/ui/projections"
 	"github.com/dogmatiq/runkit"
+	_ "golang.org/x/crypto/x509roots/fallback" // Provide root certificates in scratch containers.
 	"golang.org/x/sync/errgroup"
 )
 
