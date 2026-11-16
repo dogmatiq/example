@@ -58,9 +58,3 @@ pushed, for example `ghcr.io/dogmatiq/example:v0.1.0`.
 
 The image listens on port 8080 and requires `DOGMA_EXAMPLE_ENGINE_DSN` and
 `DOGMA_EXAMPLE_PROJECTION_DSN`. Both can point to the same PostgreSQL 18 database.
-
-Railway can deploy the published image and follow new versions using
-[image auto updates](https://docs.railway.com/deployments/image-auto-updates).
-Make the GHCR package public after its first publication, configure the service's
-DSNs, target port 8080 and health check path `/`, and disable sleeping so scheduled
-operations continue to run.
