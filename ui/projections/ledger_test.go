@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/example/internal/databasetest"
 	"github.com/dogmatiq/example/messages/commands"
-	"github.com/dogmatiq/example/ui/projections"
 	. "github.com/dogmatiq/testkit"
 )
 
@@ -14,8 +14,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened",
 		func(t *testing.T) {
-			db := projections.MustNewDB()
-			t.Cleanup(func() { db.Close() })
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -42,7 +41,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 					customer_id,
 					balance
 				FROM accounts
-				WHERE id = "A001"`,
+				WHERE id = 'A001'`,
 			).Scan(
 				&name,
 				&customerID,
@@ -66,8 +65,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is credited",
 		func(t *testing.T) {
-			db := projections.MustNewDB()
-			t.Cleanup(func() { db.Close() })
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -94,7 +92,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 			if err := db.QueryRow(
 				`SELECT balance
 				FROM accounts
-				WHERE id = "A001"`,
+				WHERE id = 'A001'`,
 			).Scan(&accountBalance); err != nil {
 				t.Fatal(err)
 			}
@@ -116,7 +114,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 					credit,
 					balance
 				FROM ledger
-				WHERE account_id = "A001"`,
+				WHERE account_id = 'A001'`,
 			).Scan(
 				&description,
 				&debit,
@@ -144,8 +142,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is debited",
 		func(t *testing.T) {
-			db := projections.MustNewDB()
-			t.Cleanup(func() { db.Close() })
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -180,7 +177,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 			if err := db.QueryRow(
 				`SELECT balance
 				FROM accounts
-				WHERE id = "A001"`,
+				WHERE id = 'A001'`,
 			).Scan(&accountBalance); err != nil {
 				t.Fatal(err)
 			}
@@ -202,8 +199,8 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 					credit,
 					balance
 				FROM ledger
-				WHERE account_id = "A001"
-					AND transaction_id = "T002"`,
+				WHERE account_id = 'A001'
+					AND transaction_id = 'T002'`,
 			).Scan(
 				&description,
 				&debit,
@@ -231,8 +228,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when a transfer is approved",
 		func(t *testing.T) {
-			db := projections.MustNewDB()
-			t.Cleanup(func() { db.Close() })
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -276,8 +272,8 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 			if err := db.QueryRow(
 				`SELECT description
 				FROM ledger
-				WHERE account_id = "A001"
-					AND transaction_id = "T002"
+				WHERE account_id = 'A001'
+					AND transaction_id = 'T002'
 					AND debit > 0`,
 			).Scan(&description); err != nil {
 				t.Fatal(err)
@@ -290,8 +286,8 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 			if err := db.QueryRow(
 				`SELECT description
 				FROM ledger
-				WHERE account_id = "A002"
-					AND transaction_id = "T002"
+				WHERE account_id = 'A002'
+					AND transaction_id = 'T002'
 					AND credit > 0`,
 			).Scan(&description); err != nil {
 				t.Fatal(err)
@@ -306,8 +302,7 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when a transfer is declined after debiting",
 		func(t *testing.T) {
-			db := projections.MustNewDB()
-			t.Cleanup(func() { db.Close() })
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("ledger").
@@ -351,8 +346,8 @@ func Test_LedgerProjectionHandler(t *testing.T) {
 			if err := db.QueryRow(
 				`SELECT description
 				FROM ledger
-				WHERE account_id = "A001"
-					AND transaction_id = "T002"
+				WHERE account_id = 'A001'
+					AND transaction_id = 'T002'
 					AND credit > 0`,
 			).Scan(&description); err != nil {
 				t.Fatal(err)

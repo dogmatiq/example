@@ -153,7 +153,7 @@ func (h *Handler) queryAccounts(ctx context.Context, customerID string) ([]accou
 			name,
 			balance
 		FROM accounts
-		WHERE customer_id = ?
+		WHERE customer_id = $1
 		ORDER BY name`,
 		customerID,
 	)
@@ -204,9 +204,9 @@ func (h *Handler) queryAllAccountsGrouped(ctx context.Context, currentCustomerID
 		FROM accounts AS a
 		INNER JOIN customers AS c
 			ON c.id = a.customer_id
-		WHERE a.id != ?
+		WHERE a.id != $1
 		ORDER BY
-			CASE WHEN a.customer_id = ? THEN 0 ELSE 1 END,
+			CASE WHEN a.customer_id = $2 THEN 0 ELSE 1 END,
 			c.name,
 			a.name`,
 		excludeAccountID,

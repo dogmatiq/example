@@ -44,8 +44,8 @@ func (h *CustomerProjectionHandler) HandleEvent(
 				id,
 				name
 			) VALUES (
-				?,
-				?
+				$1,
+				$2
 			)`,
 			x.CustomerID,
 			x.CustomerName,

@@ -9,3 +9,26 @@ implements the features of a simple bank.
 [![Code Coverage](https://img.shields.io/codecov/c/github/dogmatiq/example/main.svg?style=for-the-badge)](https://codecov.io/github/dogmatiq/example)
 
 </div>
+
+## Running locally
+
+Start PostgreSQL:
+
+```sh
+docker run --rm -d --name dogma-example-postgres \
+  -e POSTGRES_PASSWORD=password -e POSTGRES_DB=bank \
+  -p 5432:5432 postgres:18-alpine
+```
+
+Once PostgreSQL is ready, run the example:
+
+```sh
+DOGMA_EXAMPLE_PROJECTION_DSN='postgres://postgres:password@localhost:5432/bank?sslmode=disable' go run ./cmd/bank
+```
+
+The application creates its projection schema on startup. Use `sslmode=disable`
+only for local databases. The engine still uses in-memory testkit storage, so
+use a fresh projection database for each run.
+
+Run `go test ./...` with Docker available. Projection tests use testcontainers
+with PostgreSQL 18 and an isolated database per test. CGO is not required.

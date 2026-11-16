@@ -108,7 +108,7 @@ func (h *Handler) queryTransactions(ctx context.Context, accountID string) ([]tr
 			credit,
 			balance
 		FROM ledger
-		WHERE account_id = ?
+		WHERE account_id = $1
 		ORDER BY
 			created_at DESC,
 			transaction_order DESC`,

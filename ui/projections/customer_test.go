@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/example/internal/databasetest"
 	"github.com/dogmatiq/example/messages/commands"
-	"github.com/dogmatiq/example/ui/projections"
 	. "github.com/dogmatiq/testkit"
 )
 
@@ -13,8 +13,7 @@ func Test_CustomerProjectionHandler(t *testing.T) {
 	t.Run(
 		"when an account is opened for a new customer",
 		func(t *testing.T) {
-			db := projections.MustNewDB()
-			t.Cleanup(func() { db.Close() })
+			db := databasetest.NewDatabase(t)
 
 			Begin(t, &example.App{ReadDB: db}).
 				EnableHandlers("customers").

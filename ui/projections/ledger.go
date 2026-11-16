@@ -66,9 +66,9 @@ func (h *LedgerProjectionHandler) accountOpened(
 			name,
 			customer_id
 		) VALUES (
-			?,
-			?,
-			?
+			$1,
+			$2,
+			$3
 		)`,
 		x.AccountID,
 		x.AccountName,
@@ -88,8 +88,8 @@ func (h *LedgerProjectionHandler) accountCredited(
 	if err := tx.QueryRowContext(
 		ctx,
 		`UPDATE accounts SET
-			balance = balance + ?
-		WHERE id = ?
+			balance = balance + $1
+		WHERE id = $2
 		RETURNING balance`,
 		x.Amount,
 		x.AccountID,
@@ -103,8 +103,8 @@ func (h *LedgerProjectionHandler) accountCredited(
 		ctx,
 		`SELECT EXISTS (
 			SELECT 1 FROM ledger
-			WHERE account_id = ?
-				AND transaction_id = ?
+			WHERE account_id = $1
+				AND transaction_id = $2
 				AND debit > 0
 		)`,
 		x.AccountID,
@@ -124,13 +124,13 @@ func (h *LedgerProjectionHandler) accountCredited(
 			balance,
 			created_at
 		) VALUES (
-			?,
-			?,
-			(SELECT COUNT(*) FROM ledger WHERE transaction_id = ?),
-			?,
-			?,
-			?,
-			?
+			$1,
+			$2,
+			(SELECT COUNT(*) FROM ledger WHERE transaction_id = $3),
+			$4,
+			$5,
+			$6,
+			$7
 		)`,
 		x.AccountID,
 		x.TransactionID,
@@ -154,8 +154,8 @@ func (h *LedgerProjectionHandler) accountDebited(
 	if err := tx.QueryRowContext(
 		ctx,
 		`UPDATE accounts SET
-			balance = balance - ?
-		WHERE id = ?
+			balance = balance - $1
+		WHERE id = $2
 		RETURNING balance`,
 		x.Amount,
 		x.AccountID,
@@ -174,13 +174,13 @@ func (h *LedgerProjectionHandler) accountDebited(
 			balance,
 			created_at
 		) VALUES (
-			?,
-			?,
-			(SELECT COUNT(*) FROM ledger WHERE transaction_id = ?),
-			?,
-			?,
-			?,
-			?
+			$1,
+			$2,
+			(SELECT COUNT(*) FROM ledger WHERE transaction_id = $3),
+			$4,
+			$5,
+			$6,
+			$7
 		)`,
 		x.AccountID,
 		x.TransactionID,
