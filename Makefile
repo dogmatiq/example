@@ -1,5 +1,8 @@
 DOCKER_REPO = ghcr.io/dogmatiq/example
 
+DOCKER_PLATFORMS += linux/amd64
+DOCKER_PLATFORMS += linux/arm64
+
 GO_EMBEDDED_FILES += $(wildcard ui/projections/*.sql)
 GO_EMBEDDED_FILES += $(wildcard ui/templates/*.html ui/templates/*.css)
 
