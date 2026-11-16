@@ -66,7 +66,7 @@ func (h *Handler) queryCustomerName(
 		ctx,
 		`SELECT name
 		FROM customers
-		WHERE id = ?`,
+		WHERE id = $1`,
 		customerID,
 	).Scan(&name)
 	return name, err
@@ -83,7 +83,7 @@ func (h *Handler) queryAccountDetails(
 			name,
 			balance
 		FROM accounts
-		WHERE id = ?`,
+		WHERE id = $1`,
 		accountID,
 	).Scan(
 		&name,

@@ -49,7 +49,7 @@ func (a *App) Configure(c dogma.ApplicationConfigurer) {
 
 		dogma.ViaIntegration(a.ThirdPartyBank),
 
-		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.CustomerProjection)),
-		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.SQLiteDriver, &a.LedgerProjection)),
+		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.PostgresDriver, &a.CustomerProjection)),
+		dogma.ViaProjection(sqlprojection.New(a.ReadDB, sqlprojection.PostgresDriver, &a.LedgerProjection)),
 	)
 }
