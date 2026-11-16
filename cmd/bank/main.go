@@ -31,7 +31,11 @@ func main() {
 	)
 	defer stop()
 
-	if err := run(ctx, logger); err != nil {
+	err := run(ctx, logger)
+	if errors.Is(err, context.Canceled) {
+		return
+	}
+	if err != nil {
 		logger.Error("bank stopped", "error", err)
 		os.Exit(1)
 	}
@@ -130,8 +134,5 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	})
 
 	// Wait for shutdown before closing either database pool.
-	if err := group.Wait(); err != nil && !errors.Is(err, context.Canceled) {
-		return err
-	}
-	return nil
+	return group.Wait()
 }
