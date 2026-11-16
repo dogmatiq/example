@@ -28,7 +28,7 @@ DOGMA_EXAMPLE_PROJECTION_DSN='postgres://postgres:password@localhost:5432/bank?s
 
 The application creates its projection schema on startup. Use `sslmode=disable`
 only for local databases. The engine still uses in-memory testkit storage, so
-use a fresh projection database for each run until the runkit migration.
+use a fresh projection database for each run.
 
 Run `go test ./...` with Docker available. Projection tests use testcontainers
 with PostgreSQL 18 and an isolated database per test. CGO is not required.
