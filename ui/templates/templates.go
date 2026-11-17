@@ -20,6 +20,12 @@ var (
 		"time": func(t time.Time) string {
 			return t.Format("3:04 PM")
 		},
+		"version": func() string {
+			if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "(devel)" {
+				return info.Main.Version
+			}
+			return ""
+		},
 		"commitHash": func() string {
 			if info, ok := debug.ReadBuildInfo(); ok {
 				for _, s := range info.Settings {

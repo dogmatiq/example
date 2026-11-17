@@ -47,11 +47,18 @@
         View on GitHub
       </a>
       <small class="version">
-        Version {{with commitHash}}
-        <a href="https://github.com/dogmatiq/example/tree/{{.}}" role="link">
-          {{slice . 0 7}}
+        Version
+        {{if version}}
+        <a href="https://github.com/dogmatiq/example/releases/tag/{{version}}" role="link">
+          {{version}}
         </a>
-        {{else}} &lt;dev&gt; {{end}}
+        {{else if commitHash}}
+        <a href="https://github.com/dogmatiq/example/tree/{{commitHash}}" role="link">
+          {{slice commitHash 0 7}}
+        </a>
+        {{else}}
+        &lt;dev&gt;
+        {{end}}
       </small>
     </footer>
 
