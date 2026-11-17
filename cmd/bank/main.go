@@ -33,9 +33,9 @@ func main() {
 	)
 	defer stop()
 
-	// See runApplication() for the Dogma example and runHTTPServer() for HTTP.
-	// This wrapper only manages idle shutdown for the public demo; you can skip
-	// its internals.
+	// See runApplication() for the Dogma example and runHTTPServer() for the
+	// HTTP server that hosts the UI. This wrapper only manages idle shutdown
+	// for the public demo; you can skip its internals.
 	err := idletimeout.Run(
 		ctx,
 		logger,
