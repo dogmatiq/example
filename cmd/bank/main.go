@@ -11,7 +11,7 @@ import (
 	"syscall"
 
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/internal/hosted"
+	"github.com/dogmatiq/example/internal/idletimeout"
 	"github.com/dogmatiq/example/ui"
 	"github.com/dogmatiq/example/ui/projections"
 	"github.com/dogmatiq/runkit"
@@ -31,9 +31,9 @@ func main() {
 	)
 	defer stop()
 
-	// The Dogma example starts in run() below. The hosted wrapper manages HTTP
+	// See runApplication() below for the Dogma example. This wrapper handles HTTP
 	// serving and idle shutdown for the public demo; you can skip its internals.
-	err := hosted.Run(ctx, logger, run)
+	err := idletimeout.Run(ctx, logger, runApplication)
 
 	if errors.Is(err, context.Canceled) {
 		return
@@ -46,7 +46,7 @@ func main() {
 	}
 }
 
-func run(
+func runApplication(
 	ctx context.Context,
 	logger *slog.Logger,
 	serveHTTP func(context.Context, http.Handler) error,

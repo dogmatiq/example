@@ -1,4 +1,4 @@
-// Package hosted contains HTTP hosting infrastructure for the public demo.
+// Package idletimeout contains HTTP hosting infrastructure for the public demo.
 // It is not part of the Dogma application or an example of engine usage.
 //
 // Set DOGMA_EXAMPLE_IDLE_TIMEOUT to a positive Go duration, such as "1m", to
@@ -13,4 +13,4 @@
 // sleep. HTTP keep-alive connections also expire after the idle timeout.
 // Platform sleeping must be enabled separately. The next visitor may experience
 // a cold start, and scheduled work becomes overdue until the application wakes.
-package hosted
+package idletimeout
