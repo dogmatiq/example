@@ -287,7 +287,7 @@ func testManagerFactory(t *testing.T, timeout time.Duration, factory func() Engi
 	t.Helper()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	manager := New(ctx, testLogger(), timeout, factory)
+	manager := New(ctx, testLogger(), timeout, factory(), factory)
 	result := make(chan error, 1)
 	done := make(chan struct{})
 

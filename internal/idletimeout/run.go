@@ -20,24 +20,27 @@ type Engine interface {
 // Request activity keeps it awake; after an idle shutdown, activity starts a new
 // engine. Database connection pools belong to the caller and remain unchanged.
 type Manager struct {
-	ctx         context.Context
-	logger      *slog.Logger
-	idleTimeout time.Duration
-	newEngine   func() Engine
-	enter       chan chan Engine
-	leave       chan struct{}
+	ctx           context.Context
+	logger        *slog.Logger
+	idleTimeout   time.Duration
+	initialEngine Engine
+	newEngine     func() Engine
+	enter         chan chan Engine
+	leave         chan struct{}
 }
 
 // New returns a manager whose Run method must be started by the caller.
-// newEngine must return a fresh engine without starting it.
-func New(ctx context.Context, logger *slog.Logger, idleTimeout time.Duration, newEngine func() Engine) *Manager {
+// engine is used for the first start. newEngine must return a fresh engine
+// without starting it for each subsequent wake-up.
+func New(ctx context.Context, logger *slog.Logger, idleTimeout time.Duration, engine Engine, newEngine func() Engine) *Manager {
 	return &Manager{
-		ctx:         ctx,
-		logger:      logger,
-		idleTimeout: idleTimeout,
-		newEngine:   newEngine,
-		enter:       make(chan chan Engine),
-		leave:       make(chan struct{}),
+		ctx:           ctx,
+		logger:        logger,
+		idleTimeout:   idleTimeout,
+		initialEngine: engine,
+		newEngine:     newEngine,
+		enter:         make(chan chan Engine),
+		leave:         make(chan struct{}),
 	}
 }
 
@@ -59,7 +62,12 @@ func (m *Manager) Run() error {
 	start := func() {
 		ctx, stop := context.WithCancel(m.ctx)
 		done := make(chan error, 1)
-		engine := m.newEngine()
+		engine := m.initialEngine
+		m.initialEngine = nil
+
+		if engine == nil {
+			engine = m.newEngine()
+		}
 
 		current, cancel, finished = engine, stop, done
 

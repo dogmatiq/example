@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -48,13 +47,13 @@ func main() {
 	}
 }
 
-// run hosts the bank's [Dogma] application using the [runkit] package, which
-// provides a reference engine implementation with PostgreSQL storage.
+// run runs the bank's [Dogma] application and serves its web UI.
 //
 // [example.App] defines the application's message handlers and routes.
-// The engine executes the application, while an HTTP server serves [ui.Handler].
-// The UI submits commands to the engine and reads projections of the bank's
-// events to display its state.
+// The [runkit] package provides an engine that executes the application and
+// persists its state in PostgreSQL. An HTTP server serves [ui.Handler], which
+// submits commands to the engine and reads projections to display the bank's
+// state.
 //
 // run blocks until ctx is canceled or the engine or HTTP server fails.
 //
@@ -87,43 +86,39 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		return err
 	}
 
+	// Describe the bank's message handlers and routes, then create its engine.
 	application := newDogmaApp(projectionDB)
+	engine := newEngine(application, engineDB, logger)
+
+	// Connect the UI to the engine and the projections it maintains.
+	uiHandler := newHTTPHandler(projectionDB, engine)
+	var handler http.Handler = uiHandler
+
 	group, ctx := errgroup.WithContext(ctx)
-
-	var (
-		executor dogma.CommandExecutor
-		manager  *idletimeout.Manager
-	)
-
-	// The public demo hosted at https://example.dogmatiq.io opts into idle
-	// shutdown. Its handler submits commands through the current-engine proxy.
-	if idle := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); idle != "" {
-		timeout, err := time.ParseDuration(idle)
-		if err != nil || timeout <= 0 {
-			return fmt.Errorf("DOGMA_EXAMPLE_IDLE_TIMEOUT must be a positive duration, got %q", idle)
-		}
-
-		// Expire idle connections without replacing the app and UI pools.
-		projectionDB.SetConnMaxIdleTime(timeout)
-		engineDB.SetConnMaxIdleTime(timeout)
-
-		manager = idletimeout.New(ctx, logger, timeout, func() idletimeout.Engine {
-			return newEngine(application, engineDB, logger)
-		})
-		executor = manager
-		group.Go(manager.Run)
-	} else {
-		// The regular example submits commands directly to its engine.
-		engine := newEngine(application, engineDB, logger)
-		executor = engine
-		group.Go(func() error {
-			return engine.Run(ctx)
-		})
+	runEngine := func() error {
+		return engine.Run(ctx)
 	}
 
-	handler := newHTTPHandler(projectionDB, executor)
-	if manager != nil {
-		handler = manager.Wrap(handler)
+	// The public demo hosted at https://example.dogmatiq.io uses
+	// idletimeout.Inject() to stop its engine between visits. This optional
+	// hosting setup can be skipped when reading the regular Dogma example.
+	if idle := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); idle != "" {
+		if err := idletimeout.Inject(
+			ctx,
+			idle,
+			&runEngine,
+			&uiHandler.CommandExecutor,
+			&handler,
+			engine,
+			func() idletimeout.Engine {
+				return newEngine(application, engineDB, logger)
+			},
+			logger,
+			engineDB,
+			projectionDB,
+		); err != nil {
+			return err
+		}
 	}
 
 	listenAddress := os.Getenv("DOGMA_EXAMPLE_LISTEN_ADDRESS")
@@ -150,6 +145,9 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		}),
 	}
 	defer server.Close()
+
+	// Run the engine alongside the HTTP server that hosts the UI.
+	group.Go(runEngine)
 
 	// Start accepting HTTP requests and report the actual listening address.
 	group.Go(func() error {
@@ -203,7 +201,7 @@ func newEngine(application *example.App, engineDB *sql.DB, logger *slog.Logger) 
 }
 
 // newHTTPHandler connects the UI to its projection database and command executor.
-func newHTTPHandler(projectionDB *sql.DB, executor dogma.CommandExecutor) http.Handler {
+func newHTTPHandler(projectionDB *sql.DB, executor dogma.CommandExecutor) *ui.Handler {
 	return &ui.Handler{
 		DB:              projectionDB,
 		CommandExecutor: executor,
