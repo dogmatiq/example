@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/dogmatiq/example"
+	"github.com/dogmatiq/example/internal/hosted"
 	"github.com/dogmatiq/example/ui"
 	"github.com/dogmatiq/example/ui/projections"
 	"github.com/dogmatiq/runkit"
@@ -32,7 +31,8 @@ func main() {
 	)
 	defer stop()
 
-	err := run(ctx, logger)
+	// The hosting layer can stop and restart the public demo when it is idle.
+	err := hosted.Run(ctx, logger, run)
 
 	if errors.Is(err, context.Canceled) {
 		return
@@ -45,7 +45,11 @@ func main() {
 	}
 }
 
-func run(ctx context.Context, logger *slog.Logger) error {
+func run(
+	ctx context.Context,
+	logger *slog.Logger,
+	serveHTTP func(context.Context, http.Handler) error,
+) error {
 	// The UI reads projections of the bank's events from this database.
 	projectionDB, err := projections.NewDB(
 		ctx,
@@ -96,54 +100,8 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		CommandExecutor: engine,
 	}
 
-	server := &http.Server{
-		Addr: ":8080",
-		BaseContext: func(net.Listener) context.Context {
-			return ctx
-		},
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
-			// Event observers require a deadline; bound each request's wait.
-			ctx, cancel := context.WithTimeout(
-				request.Context(),
-				5*time.Second,
-			)
-			defer cancel()
-
-			uiHandler.ServeHTTP(w, request.WithContext(ctx))
-		}),
-	}
-
-	// Start accepting HTTP requests and report the actual listening address.
 	group.Go(func() error {
-		listener, err := net.Listen("tcp", server.Addr)
-		if err != nil {
-			return err
-		}
-
-		logger.Info(
-			"HTTP server listening",
-			"address",
-			listener.Addr(),
-		)
-
-		if err := server.Serve(listener); err != http.ErrServerClosed {
-			return err
-		}
-
-		return nil
-	})
-
-	// Drain HTTP requests when the engine stops or the process is signaled.
-	group.Go(func() error {
-		<-ctx.Done()
-
-		shutdownCtx, cancel := context.WithTimeout(
-			context.Background(),
-			5*time.Second,
-		)
-		defer cancel()
-
-		return server.Shutdown(shutdownCtx)
+		return serveHTTP(ctx, uiHandler)
 	})
 
 	// Wait for shutdown before closing either database pool.
