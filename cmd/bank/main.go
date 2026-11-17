@@ -22,7 +22,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// main handles logging, shutdown signals, and the process exit status.
+// main handles logging and the process exit status.
 // See run() below for the Dogma application and HTTP server setup.
 //
 // run() finishes its deferred cleanup before main calls os.Exit() on failure.
@@ -30,21 +30,7 @@ func main() {
 	// Use one logger for engine, application, and HTTP lifecycle messages.
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
-	// Stop the engine and HTTP server together on interrupt or termination.
-	ctx, stop := signal.NotifyContext(
-		context.Background(),
-		os.Interrupt,
-		syscall.SIGTERM,
-	)
-	defer stop()
-
-	err := run(ctx, logger)
-
-	// An interrupt or termination signal cancels ctx. The resulting
-	// context.Canceled error represents a normal shutdown.
-	if errors.Is(err, context.Canceled) {
-		return
-	}
+	err := run(logger)
 
 	if err != nil {
 		logger.Error("bank stopped", "error", err)
@@ -61,10 +47,27 @@ func main() {
 // submits commands to the engine and reads projections to display the bank's
 // state.
 //
-// run blocks until ctx is canceled or the engine or HTTP server fails.
+// run blocks until a shutdown signal is received or the engine or HTTP server
+// fails. Shutdown signals are handled as a successful exit.
 //
 // [Dogma]: https://github.com/dogmatiq/dogma
-func run(ctx context.Context, logger *slog.Logger) error {
+func run(logger *slog.Logger) (err error) {
+	// Stop the engine and HTTP server together on interrupt or termination.
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	defer func() {
+		stop()
+
+		// A shutdown signal cancels ctx. Treat cancellation as a successful
+		// shutdown, even if it occurs during startup.
+		if errors.Is(err, context.Canceled) {
+			err = nil
+		}
+	}()
+
 	// The UI reads projections of the bank's events from this database.
 	projectionDB, err := projections.NewDB(
 		ctx,
