@@ -5,247 +5,164 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"sync"
 	"time"
 )
 
-// instance owns an application from startup until its resources are released.
-type instance struct {
-	ctx      context.Context
-	cancel   context.CancelFunc
-	ready    chan struct{}
-	done     chan struct{}
-	handler  http.Handler
-	stopping bool
-	restart  bool
-	requests sync.WaitGroup
+// controller serializes request activity and application start/stop transitions.
+type controller struct {
+	ctx   context.Context
+	enter chan chan struct{}
+	leave chan struct{}
 }
 
-type handler struct {
-	ctx         context.Context
-	logger      *slog.Logger
-	run         applicationFunc
-	idleTimeout time.Duration
-	activity    chan struct{}
-	failures    chan error
+func (c *controller) wrap(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
+		ctx, cancel := context.WithCancel(request.Context())
+		defer cancel()
 
-	mu        sync.Mutex
-	current   *instance
-	active    int
-	idleSince time.Time
-}
+		stop := context.AfterFunc(c.ctx, cancel)
+		defer stop()
 
-func newHandler(
-	ctx context.Context,
-	logger *slog.Logger,
-	run applicationFunc,
-	idleTimeout time.Duration,
-) *handler {
-	h := &handler{
-		ctx:         ctx,
-		logger:      logger,
-		run:         run,
-		idleTimeout: idleTimeout,
-		activity:    make(chan struct{}, 1),
-		failures:    make(chan error, 1),
-	}
-
-	h.start()
-
-	return h
-}
-
-func (h *handler) ServeHTTP(w http.ResponseWriter, request *http.Request) {
-	ctx, cancel := context.WithCancel(request.Context())
-	defer cancel()
-
-	h.mu.Lock()
-	h.active++
-	h.mu.Unlock()
-	defer h.release()
-
-	for {
-		if ctx.Err() != nil || h.ctx.Err() != nil {
-			http.Error(w, "application unavailable", http.StatusServiceUnavailable)
-
-			return
-		}
-
-		h.mu.Lock()
-
-		if h.current == nil {
-			h.start()
-		}
-
-		current := h.current
-		stopping := current.stopping
-		if !stopping {
-			current.requests.Add(1)
-		}
-
-		h.mu.Unlock()
-
-		if stopping {
-			select {
-			case <-ctx.Done():
-				http.Error(w, "application unavailable", http.StatusServiceUnavailable)
-
-				return
-			case <-current.done:
-				if !current.restart {
-					http.Error(w, "application stopped", http.StatusServiceUnavailable)
-
-					return
-				}
-
-				continue
-			}
-		}
-		defer current.requests.Done()
+		entered := make(chan struct{})
 
 		select {
 		case <-ctx.Done():
 			http.Error(w, "application unavailable", http.StatusServiceUnavailable)
 
 			return
-		case <-current.done:
-			http.Error(w, "application stopped", http.StatusServiceUnavailable)
-		case <-current.ready:
-			// An engine failure must also cancel requests using that instance.
-			stop := context.AfterFunc(current.ctx, cancel)
-			defer stop()
-
-			current.handler.ServeHTTP(w, request.WithContext(ctx))
+		case c.enter <- entered:
 		}
-
-		return
-	}
-}
-
-// start is called with mu held, except during construction.
-func (h *handler) start() {
-	ctx, cancel := context.WithCancel(h.ctx)
-
-	current := &instance{
-		cancel: cancel,
-		ready:  make(chan struct{}),
-		done:   make(chan struct{}),
-	}
-
-	h.current = current
-	h.idleSince = time.Now()
-
-	go func() {
-		defer cancel()
-
-		err := h.run(ctx, h.logger, func(serveCtx context.Context, handler http.Handler) error {
-			current.ctx = serveCtx
-			current.handler = handler
-
-			close(current.ready)
-
-			<-serveCtx.Done()
-
-			// Prevent new requests from entering while this instance drains.
-			h.mu.Lock()
-			current.stopping = true
-			h.mu.Unlock()
-
-			current.requests.Wait()
-
-			return nil
-		})
-
-		h.mu.Lock()
-
-		expectedStop := ctx.Err() != nil && (err == nil || errors.Is(err, context.Canceled))
-		if expectedStop {
-			h.current = nil
-		}
-
-		current.restart = expectedStop && h.ctx.Err() == nil
-
-		close(current.done)
-
-		h.mu.Unlock()
-
-		if !expectedStop {
-			if err == nil {
-				err = errors.New("application stopped unexpectedly")
+		defer func() {
+			select {
+			case c.leave <- struct{}{}:
+			case <-c.ctx.Done():
 			}
+		}()
 
-			h.failures <- err
+		select {
+		case <-ctx.Done():
+			http.Error(w, "application unavailable", http.StatusServiceUnavailable)
+		case <-entered:
+			if ctx.Err() == nil {
+				next.ServeHTTP(w, request.WithContext(ctx))
+			} else {
+				http.Error(w, "application unavailable", http.StatusServiceUnavailable)
+			}
 		}
-	}()
+	})
 }
 
-func (h *handler) release() {
-	h.mu.Lock()
-	h.active--
-	h.idleSince = time.Now()
-	h.mu.Unlock()
-
-	select {
-	case h.activity <- struct{}{}:
-	default:
-	}
-}
-
-func (h *handler) monitor() error {
-	timer := time.NewTimer(h.idleTimeout)
+func (c *controller) run(
+	logger *slog.Logger,
+	idleTimeout time.Duration,
+	run func(context.Context, func()) error,
+) error {
+	timer := time.NewTimer(idleTimeout)
 	defer timer.Stop()
 
-	if h.idleTimeout == 0 {
-		timer.Stop()
+	var (
+		active      int
+		waiting     []chan struct{}
+		ready       <-chan struct{}
+		finished    <-chan error
+		cancel      context.CancelFunc
+		initialized bool
+		stopping    bool
+	)
+
+	start := func() {
+		ctx, stop := context.WithCancel(c.ctx)
+		started := make(chan struct{})
+		done := make(chan error, 1)
+
+		cancel, ready, finished = stop, started, done
+		initialized = false
+
+		go func() {
+			defer stop()
+
+			done <- run(ctx, func() {
+				close(started)
+			})
+		}()
+
+		if idleTimeout > 0 && active == 0 {
+			timer.Reset(idleTimeout)
+		}
 	}
+
+	timer.Stop()
+	start()
 
 	for {
 		select {
-		case <-h.ctx.Done():
-			return h.ctx.Err()
-		case err := <-h.failures:
-			return err
-		case <-h.activity:
-		case <-timer.C:
-		}
+		case <-c.ctx.Done():
+			if cancel != nil {
+				cancel()
+				<-finished
+			}
 
-		h.mu.Lock()
+			return c.ctx.Err()
 
-		if h.idleTimeout == 0 || h.active != 0 || h.current == nil || h.current.stopping {
+		case entered := <-c.enter:
+			active++
 			timer.Stop()
-			h.mu.Unlock()
 
-			continue
+			if cancel == nil {
+				start()
+			}
+
+			if initialized && !stopping {
+				close(entered)
+			} else {
+				waiting = append(waiting, entered)
+			}
+
+		case <-c.leave:
+			active--
+
+			if active == 0 && cancel != nil && !stopping && idleTimeout > 0 {
+				timer.Reset(idleTimeout)
+			}
+
+		case <-ready:
+			ready = nil
+			initialized = true
+
+			for _, entered := range waiting {
+				close(entered)
+			}
+
+			waiting = nil
+
+		case <-timer.C:
+			stopping = true
+			ready = nil
+			cancel()
+
+			logger.Info("application idle; stopping engine and database connections")
+
+		case err := <-finished:
+			cancel()
+			cancel, ready, finished = nil, nil, nil
+
+			if !stopping || (err != nil && !errors.Is(err, context.Canceled)) {
+				if err == nil {
+					err = errors.New("application stopped unexpectedly")
+				}
+
+				return err
+			}
+
+			stopping = false
+			initialized = false
+			timer.Stop()
+
+			if active > 0 {
+				start()
+			} else {
+				waiting = nil
+			}
 		}
-
-		remaining := time.Until(h.idleSince.Add(h.idleTimeout))
-		if remaining > 0 {
-			timer.Reset(remaining)
-			h.mu.Unlock()
-
-			continue
-		}
-
-		h.current.stopping = true
-		h.current.cancel()
-		h.mu.Unlock()
-
-		h.logger.Info("application idle; stopping engine and database connections")
-	}
-}
-
-func (h *handler) close() {
-	h.mu.Lock()
-	current := h.current
-
-	if current != nil {
-		current.stopping = true
-		current.cancel()
-	}
-
-	h.mu.Unlock()
-
-	if current != nil {
-		<-current.done
 	}
 }

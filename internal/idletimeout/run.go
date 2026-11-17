@@ -11,22 +11,15 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type applicationFunc func(
-	context.Context,
-	*slog.Logger,
-	func(context.Context, http.Handler) error,
-) error
-
-// Run manages the application's idle lifecycle while runHTTPServer serves HTTP.
-//
-// run owns one application instance, including its engine and database pools.
-// It passes its context and UI handler to the supplied callback, which blocks
-// until its context is canceled. run releases its resources before returning.
+// Run coordinates application execution, HTTP serving, and optional idle shutdown.
+// run calls ready after initialization, then runs until its context is canceled.
+// Its resources must be released before it returns. serve wraps its HTTP handler
+// with the supplied middleware before accepting requests.
 func Run(
 	ctx context.Context,
 	logger *slog.Logger,
-	run applicationFunc,
-	runHTTPServer func(context.Context, *slog.Logger, http.Handler) error,
+	run func(context.Context, func()) error,
+	serve func(context.Context, func(http.Handler) http.Handler) error,
 ) error {
 	var idleTimeout time.Duration
 
@@ -40,16 +33,18 @@ func Run(
 	}
 
 	group, ctx := errgroup.WithContext(ctx)
-
-	handler := newHandler(ctx, logger, run, idleTimeout)
-	defer handler.close()
+	controller := &controller{
+		ctx:   ctx,
+		enter: make(chan chan struct{}),
+		leave: make(chan struct{}),
+	}
 
 	group.Go(func() error {
-		return runHTTPServer(ctx, logger, handler)
+		return controller.run(logger, idleTimeout, run)
 	})
 
 	group.Go(func() error {
-		return handler.monitor()
+		return serve(ctx, controller.wrap)
 	})
 
 	return group.Wait()
