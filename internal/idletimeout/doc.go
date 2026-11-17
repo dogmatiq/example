@@ -5,7 +5,8 @@
 // stop the application after that much time without HTTP requests. The HTTP
 // listener stays open; the next request starts a new application instance.
 // Active requests keep the application awake, and the idle period begins when
-// the last request finishes. All HTTP requests, including probes, count.
+// the last request finishes. HTTP health checks and other probes also count as
+// activity.
 // Leave the variable unset to keep the application running continuously.
 //
 // Stopping the application closes its database pools and stops the engine's
