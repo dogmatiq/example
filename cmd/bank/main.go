@@ -28,18 +28,17 @@ import (
 // after deferred cleanup. [os.Exit] skips deferred calls, so [main] calls it
 // only after [run] returns.
 func main() {
-	// Use one logger for engine, application, and HTTP lifecycle messages.
+	// Use text logs locally and JSON for the public demo's log collector.
 	newLogHandler := func() slog.Handler {
 		return slog.NewTextHandler(os.Stdout, nil)
 	}
-
-	// The public demo's log collector parses structured JSON.
 	if os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT") != "" {
 		newLogHandler = func() slog.Handler {
 			return slog.NewJSONHandler(os.Stdout, nil)
 		}
 	}
 
+	// Use one logger for engine, application, and HTTP lifecycle messages.
 	logger := slog.New(newLogHandler())
 
 	if err := run(logger); err != nil {
