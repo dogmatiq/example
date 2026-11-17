@@ -48,18 +48,17 @@ func main() {
 	}
 }
 
-// run hosts the bank's [Dogma] application using [Runkit], a reference Dogma
-// engine that stores events and pending work in PostgreSQL.
+// run hosts the bank's [Dogma] application using the [runkit] package, which
+// provides a reference engine implementation with PostgreSQL storage.
 //
 // [example.App] defines the application's message handlers and routes.
-// Runkit executes the application, while an HTTP server serves [ui.Handler].
+// The engine executes the application, while an HTTP server serves [ui.Handler].
 // The UI submits commands to the engine and reads projections of the bank's
 // events to display its state.
 //
 // run blocks until ctx is canceled or the engine or HTTP server fails.
 //
 // [Dogma]: https://github.com/dogmatiq/dogma
-// [Runkit]: https://github.com/dogmatiq/runkit
 func run(ctx context.Context, logger *slog.Logger) error {
 	// The UI reads projections of the bank's events from this database.
 	projectionDB, err := projections.NewDB(
@@ -71,7 +70,7 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	}
 	defer projectionDB.Close()
 
-	// Runkit stores events and pending work using its own connection pool.
+	// The engine stores events and pending work using its own connection pool.
 	engineDSN := os.Getenv("DOGMA_EXAMPLE_ENGINE_DSN")
 	if engineDSN == "" {
 		return errors.New("DOGMA_EXAMPLE_ENGINE_DSN is required")
@@ -92,9 +91,8 @@ func run(ctx context.Context, logger *slog.Logger) error {
 	group, ctx := errgroup.WithContext(ctx)
 
 	var (
-		executor  dogma.CommandExecutor
-		runEngine func() error
-		manager   *idletimeout.Manager
+		executor dogma.CommandExecutor
+		manager  *idletimeout.Manager
 	)
 
 	// The public demo hosted at https://example.dogmatiq.io opts into idle
@@ -113,24 +111,20 @@ func run(ctx context.Context, logger *slog.Logger) error {
 			return newEngine(application, engineDB, logger)
 		})
 		executor = manager
-		runEngine = manager.Run
+		group.Go(manager.Run)
 	} else {
 		// The regular example submits commands directly to its engine.
 		engine := newEngine(application, engineDB, logger)
 		executor = engine
-		runEngine = func() error {
+		group.Go(func() error {
 			return engine.Run(ctx)
-		}
+		})
 	}
 
 	handler := newHTTPHandler(projectionDB, executor)
 	if manager != nil {
 		handler = manager.Wrap(handler)
 	}
-
-	group.Go(func() error {
-		return runEngine()
-	})
 
 	listenAddress := os.Getenv("DOGMA_EXAMPLE_LISTEN_ADDRESS")
 	if listenAddress == "" {
