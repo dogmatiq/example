@@ -49,9 +49,9 @@
       <small class="version">
         Version {{with commitHash}}
         <a href="https://github.com/dogmatiq/example/tree/{{.}}" role="link">
-          {{slice . 0 7}}
+          {{or version (slice . 0 7)}}
         </a>
-        {{else}} &lt;dev&gt; {{end}}
+        {{else}} {{or version "<dev>"}} {{end}}
       </small>
     </footer>
 
