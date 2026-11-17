@@ -49,7 +49,6 @@ func main() {
 }
 
 // run starts the bank's engine and the HTTP server that hosts its UI.
-// Both database pools close after the engine and server have stopped.
 func run(ctx context.Context, logger *slog.Logger) error {
 	// The UI reads projections of the bank's events from this database.
 	projectionDB, err := projections.NewDB(
