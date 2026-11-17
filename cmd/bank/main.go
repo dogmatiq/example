@@ -31,7 +31,8 @@ func main() {
 	)
 	defer stop()
 
-	// The hosting layer can stop and restart the public demo when it is idle.
+	// The Dogma example starts in run() below. The hosted wrapper manages HTTP
+	// serving and idle shutdown for the public demo; you can skip its internals.
 	err := hosted.Run(ctx, logger, run)
 
 	if errors.Is(err, context.Canceled) {
