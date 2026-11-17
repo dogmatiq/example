@@ -46,6 +46,11 @@ func main() {
 	}
 }
 
+// runApplication opens the bank's databases and runs its engine and UI until
+// ctx is canceled or an error occurs. Both database pools close before it returns.
+//
+// serveHTTP connects the UI handler to the HTTP server and blocks until its
+// context is canceled.
 func runApplication(
 	ctx context.Context,
 	logger *slog.Logger,
