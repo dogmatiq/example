@@ -55,8 +55,9 @@ func main() {
 	}
 }
 
-// runDogmaApp opens the bank's databases and runs its engine and UI until
-// ctx is canceled or an error occurs. Both database pools close before it returns.
+// runDogmaApp opens the bank's databases, runs its engine, and passes the UI
+// handler to serveHTTP. It blocks until ctx is canceled or an error occurs,
+// then closes both database pools.
 //
 // serveHTTP connects the UI handler to the HTTP server and blocks until its
 // context is canceled.
