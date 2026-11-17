@@ -5,10 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/dogmatiq/example"
 	"github.com/dogmatiq/example/internal/idletimeout"
@@ -31,9 +33,15 @@ func main() {
 	)
 	defer stop()
 
-	// See runApplication() below for the Dogma example. This wrapper handles HTTP
-	// serving and idle shutdown for the public demo; you can skip its internals.
-	err := idletimeout.Run(ctx, logger, runApplication)
+	// See runApplication() for the Dogma example and runHTTPServer() for HTTP.
+	// This wrapper only manages idle shutdown for the public demo; you can skip
+	// its internals.
+	err := idletimeout.Run(
+		ctx,
+		logger,
+		runApplication,
+		runHTTPServer,
+	)
 
 	if errors.Is(err, context.Canceled) {
 		return
@@ -111,5 +119,72 @@ func runApplication(
 	})
 
 	// Wait for shutdown before closing either database pool.
+	return group.Wait()
+}
+
+// runHTTPServer serves the UI until ctx is canceled or the server fails.
+// DOGMA_EXAMPLE_LISTEN_ADDRESS overrides the default listen address, ":8080".
+func runHTTPServer(ctx context.Context, logger *slog.Logger, handler http.Handler) error {
+	listenAddress := os.Getenv("DOGMA_EXAMPLE_LISTEN_ADDRESS")
+	if listenAddress == "" {
+		listenAddress = ":8080"
+	}
+
+	group, ctx := errgroup.WithContext(ctx)
+
+	server := &http.Server{
+		Addr:        listenAddress,
+		ReadTimeout: 5 * time.Second,
+		// Bound idle connections so TCP keep-alives do not prevent sleeping.
+		IdleTimeout: time.Minute,
+		BaseContext: func(net.Listener) context.Context {
+			return ctx
+		},
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
+			// Event observers require a deadline; bound each request's wait.
+			ctx, cancel := context.WithTimeout(
+				request.Context(),
+				5*time.Second,
+			)
+			defer cancel()
+
+			handler.ServeHTTP(w, request.WithContext(ctx))
+		}),
+	}
+	defer server.Close()
+
+	// Start accepting HTTP requests and report the actual listening address.
+	group.Go(func() error {
+		listener, err := net.Listen("tcp", server.Addr)
+		if err != nil {
+			return err
+		}
+
+		logger.Info(
+			"HTTP server listening",
+			"address",
+			listener.Addr(),
+		)
+
+		if err := server.Serve(listener); !errors.Is(err, http.ErrServerClosed) {
+			return err
+		}
+
+		return nil
+	})
+
+	// Drain HTTP requests when the application stops or the process is signaled.
+	group.Go(func() error {
+		<-ctx.Done()
+
+		shutdownCtx, cancel := context.WithTimeout(
+			context.Background(),
+			5*time.Second,
+		)
+		defer cancel()
+
+		return server.Shutdown(shutdownCtx)
+	})
+
 	return group.Wait()
 }

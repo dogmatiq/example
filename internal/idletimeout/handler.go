@@ -56,8 +56,7 @@ func newHandler(
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, request *http.Request) {
-	// Event observers require a deadline; bound startup and each request's wait.
-	ctx, cancel := context.WithTimeout(request.Context(), 5*time.Second)
+	ctx, cancel := context.WithCancel(request.Context())
 	defer cancel()
 
 	h.mu.Lock()

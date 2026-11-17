@@ -1,4 +1,4 @@
-// Package idletimeout contains HTTP hosting infrastructure for the public demo.
+// Package idletimeout manages idle shutdown for the public demo.
 // It is not part of the Dogma application or an example of engine usage.
 //
 // Set DOGMA_EXAMPLE_IDLE_TIMEOUT to a positive Go duration, such as "1m", to
@@ -11,7 +11,7 @@
 //
 // Stopping the application closes its database pools and stops the engine's
 // background traffic, allowing the hosting platform to put the container to
-// sleep. HTTP keep-alive connections also expire after the idle timeout.
+// sleep. The HTTP server should also expire idle keep-alive connections.
 // Platform sleeping must be enabled separately. The next visitor may experience
 // a cold start, and scheduled work becomes overdue until the application wakes.
 package idletimeout

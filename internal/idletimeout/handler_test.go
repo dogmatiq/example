@@ -355,8 +355,10 @@ func TestSlowStartupDoesNotReturnSuccess(t *testing.T) {
 		})
 
 		response := httptest.NewRecorder()
+		ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+		defer cancel()
 
-		handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+		handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil).WithContext(ctx))
 
 		if response.Code != http.StatusServiceUnavailable {
 			t.Fatalf("got status %d during slow startup", response.Code)
@@ -369,7 +371,7 @@ func TestInvalidIdleTimeout(t *testing.T) {
 		t.Run(value, func(t *testing.T) {
 			t.Setenv("DOGMA_EXAMPLE_IDLE_TIMEOUT", value)
 
-			err := Run(context.Background(), testLogger(), nil)
+			err := Run(context.Background(), testLogger(), nil, nil)
 			if err == nil {
 				t.Fatal("invalid idle timeout was accepted")
 			}
@@ -399,8 +401,10 @@ func request(t *testing.T, handler http.Handler) {
 	t.Helper()
 
 	response := httptest.NewRecorder()
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
 
-	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil).WithContext(ctx))
 
 	if response.Code != http.StatusNoContent {
 		t.Errorf("got HTTP status %d, want %d", response.Code, http.StatusNoContent)
