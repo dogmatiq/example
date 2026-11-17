@@ -29,17 +29,13 @@ import (
 // only after [run] returns.
 func main() {
 	// Use text logs locally and JSON for the public demo's log collector.
-	newLogHandler := func() slog.Handler {
-		return slog.NewTextHandler(os.Stdout, nil)
-	}
+	var logHandler slog.Handler = slog.NewTextHandler(os.Stdout, nil)
 	if os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT") != "" {
-		newLogHandler = func() slog.Handler {
-			return slog.NewJSONHandler(os.Stdout, nil)
-		}
+		logHandler = slog.NewJSONHandler(os.Stdout, nil)
 	}
 
 	// Use one logger for engine, application, and HTTP lifecycle messages.
-	logger := slog.New(newLogHandler())
+	logger := slog.New(logHandler)
 
 	if err := run(logger); err != nil {
 		logger.Error("bank stopped", "error", err)
