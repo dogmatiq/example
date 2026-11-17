@@ -33,13 +33,13 @@ func main() {
 	)
 	defer stop()
 
-	// See runApplication() for the Dogma example and runHTTPServer() for the
-	// HTTP server that hosts the UI. This wrapper only manages idle shutdown
-	// for the public demo; you can skip its internals.
+	// See runDogmaApp() for the Dogma example and runHTTPServer() for the
+	// HTTP server that hosts the UI. idletimeout.Run() only manages idle
+	// shutdown for the public demo; you can skip its internals.
 	err := idletimeout.Run(
 		ctx,
 		logger,
-		runApplication,
+		runDogmaApp,
 		runHTTPServer,
 	)
 
@@ -54,12 +54,12 @@ func main() {
 	}
 }
 
-// runApplication opens the bank's databases and runs its engine and UI until
+// runDogmaApp opens the bank's databases and runs its engine and UI until
 // ctx is canceled or an error occurs. Both database pools close before it returns.
 //
 // serveHTTP connects the UI handler to the HTTP server and blocks until its
 // context is canceled.
-func runApplication(
+func runDogmaApp(
 	ctx context.Context,
 	logger *slog.Logger,
 	serveHTTP func(context.Context, http.Handler) error,
