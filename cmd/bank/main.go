@@ -33,10 +33,10 @@ func main() {
 	)
 	defer stop()
 
-	// The public demo hosted at https://example.dogmatiq.io uses its own
-	// startup path. run() below is the regular Dogma example.
 	var err error
 
+	// The public demo hosted at https://example.dogmatiq.io uses its own
+	// startup path. run() below is the regular Dogma example.
 	if idle := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); idle != "" {
 		err = publicdemo.Run(ctx, logger, idle)
 	} else {
