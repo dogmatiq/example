@@ -33,7 +33,8 @@ func main() {
 	)
 	defer stop()
 
-	// The idle request gate synchronizes updates and use of this handler.
+	// Each wake creates a new engine and database pool, so it also needs a new UI
+	// handler. Requests wait until that handler is ready before using it.
 	var uiHandler http.Handler
 
 	startApplication := func(ctx context.Context, ready func()) error {
