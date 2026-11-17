@@ -221,8 +221,7 @@ func TestIdleShutdownDisabled(t *testing.T) {
 func TestApplicationFailureIsReported(t *testing.T) {
 	for _, ready := range []bool{false, true} {
 		t.Run(map[bool]string{false: "startup", true: "running"}[ready], func(t *testing.T) {
-			ctx, cancel := context.WithCancel(context.Background())
-			defer cancel()
+			ctx := t.Context()
 
 			failure := errors.New("engine failed")
 			handler := newHandler(ctx, testLogger(), func(
