@@ -48,7 +48,18 @@ func main() {
 	}
 }
 
-// run starts the bank's engine and the HTTP server that hosts its UI.
+// run hosts the bank's [Dogma] application using [Runkit], a reference Dogma
+// engine that stores events and pending work in PostgreSQL.
+//
+// [example.App] defines the application's message handlers and routes.
+// Runkit executes the application, while an HTTP server serves [ui.Handler].
+// The UI submits commands to the engine and reads projections of the bank's
+// events to display its state.
+//
+// run blocks until ctx is canceled or the engine or HTTP server fails.
+//
+// [Dogma]: https://github.com/dogmatiq/dogma
+// [Runkit]: https://github.com/dogmatiq/runkit
 func run(ctx context.Context, logger *slog.Logger) error {
 	// The UI reads projections of the bank's events from this database.
 	projectionDB, err := projections.NewDB(
