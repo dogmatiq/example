@@ -10,7 +10,7 @@ import (
 )
 
 // Engine is the part of a Dogma engine used by the lifetime manager. Command
-// execution must support waiting for initialization while Run starts.
+// execution must support waiting for initialization while [Engine.Run] starts.
 type Engine interface {
 	dogma.CommandExecutor
 	Run(context.Context) error
@@ -29,7 +29,7 @@ type Manager struct {
 	leave         chan struct{}
 }
 
-// New returns a manager whose Run method must be started by the caller.
+// New returns a manager whose [Manager.Run] method must be started by the caller.
 // engine is used for the first start. newEngine must return a fresh engine
 // without starting it for each subsequent wake-up.
 func New(ctx context.Context, logger *slog.Logger, idleTimeout time.Duration, engine Engine, newEngine func() Engine) *Manager {

@@ -18,7 +18,7 @@ import (
 //
 // idle must be a positive duration. Unused database connections expire after
 // that duration; the caller retains ownership of the pools and UI handler.
-// If idle is invalid, Inject returns an error without changing the arguments.
+// If idle is invalid, [Inject] returns an error without changing the arguments.
 func Inject(
 	ctx context.Context,
 	idle string,

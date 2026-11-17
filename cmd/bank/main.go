@@ -23,9 +23,10 @@ import (
 )
 
 // main handles logging and the process exit status.
-// See run() below for the Dogma application and HTTP server setup.
 //
-// run() finishes its deferred cleanup before main calls os.Exit() on failure.
+// Application and HTTP server setup lives in [run] so errors can be returned
+// after deferred cleanup. [os.Exit] skips deferred calls, so [main] calls it
+// only after [run] returns.
 func main() {
 	// Use one logger for engine, application, and HTTP lifecycle messages.
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
@@ -34,7 +35,6 @@ func main() {
 
 	if err != nil {
 		logger.Error("bank stopped", "error", err)
-
 		os.Exit(1)
 	}
 }
@@ -47,7 +47,7 @@ func main() {
 // submits commands to the engine and reads projections to display the bank's
 // state.
 //
-// run blocks until a shutdown signal is received or the engine or HTTP server
+// [run] blocks until a shutdown signal is received or the engine or HTTP server
 // fails. Shutdown signals are handled as a successful exit.
 //
 // [Dogma]: https://github.com/dogmatiq/dogma
@@ -109,7 +109,7 @@ func run(logger *slog.Logger) (err error) {
 	}
 
 	// The public demo hosted at https://example.dogmatiq.io uses
-	// idletimeout.Inject() to stop its engine between visits. This optional
+	// [idletimeout.Inject] to stop its engine between visits. This optional
 	// hosting setup can be skipped when reading the regular Dogma example.
 	if idle := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); idle != "" {
 		if err := idletimeout.Inject(

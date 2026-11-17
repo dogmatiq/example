@@ -2,7 +2,7 @@
 // https://example.dogmatiq.io. It is hosting infrastructure, separate from the
 // illustrative application and HTTP server setup in cmd/bank.
 //
-// Inject adds idle shutdown to an otherwise ordinary application setup. It
+// [Inject] adds idle shutdown to an otherwise ordinary application setup. It
 // replaces the engine runner and command executor, wraps the HTTP handler to
 // track request activity, and configures database pools to expire idle
 // connections. The engine stops after an idle period, and the next request
