@@ -31,9 +31,7 @@ func main() {
 	// Use one logger for engine, application, and HTTP lifecycle messages.
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
-	err := run(logger)
-
-	if err != nil {
+	if err := run(logger); err != nil {
 		logger.Error("bank stopped", "error", err)
 		os.Exit(1)
 	}
