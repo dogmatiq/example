@@ -12,27 +12,23 @@ import (
 	"testing"
 	"testing/synctest"
 	"time"
+
+	"github.com/dogmatiq/dogma"
 )
 
 func TestIdleAndConcurrentWake(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var starts, stops atomic.Int32
-		var current int32
 
-		controller, _ := testController(t, time.Second, func(ctx context.Context, ready func()) error {
-			current = starts.Add(1)
+		manager, _ := testManager(t, time.Second, func(ctx context.Context) error {
+			starts.Add(1)
 			defer stops.Add(1)
 
-			ready()
 			<-ctx.Done()
 
 			return ctx.Err()
 		})
-		handler := controller.wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-			if current == 0 {
-				t.Error("request dispatched before initialization")
-			}
-
+		handler := manager.Wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 		}))
 
@@ -53,6 +49,7 @@ func TestIdleAndConcurrentWake(t *testing.T) {
 		}
 
 		visitors.Wait()
+		synctest.Wait()
 
 		if starts.Load() != 2 || stops.Load() != 1 {
 			t.Fatalf("wake: starts=%d, stops=%d", starts.Load(), stops.Load())
@@ -63,14 +60,14 @@ func TestIdleAndConcurrentWake(t *testing.T) {
 func TestRequestsKeepApplicationAwake(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		app := &testApp{}
-		controller, _ := testController(t, time.Second, app.run)
+		manager, _ := testManager(t, time.Second, app.run)
 		finish := make(chan struct{})
 		unblock := sync.OnceFunc(func() {
 			close(finish)
 		})
 		defer unblock()
 
-		handler := controller.wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		handler := manager.Wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			<-finish
 
 			w.WriteHeader(http.StatusNoContent)
@@ -120,8 +117,8 @@ func TestWakeWaitsForCleanup(t *testing.T) {
 				<-cleanup
 			}
 		}
-		controller, _ := testController(t, time.Second, app.run)
-		handler := controller.wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		manager, _ := testManager(t, time.Second, app.run)
+		handler := manager.Wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 		}))
 
@@ -149,7 +146,7 @@ func TestWakeWaitsForCleanup(t *testing.T) {
 func TestIdleDisabled(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		app := &testApp{}
-		controller, _ := testController(t, 0, app.run)
+		manager, _ := testManager(t, 0, app.run)
 
 		time.Sleep(time.Hour)
 		synctest.Wait()
@@ -158,7 +155,7 @@ func TestIdleDisabled(t *testing.T) {
 			t.Fatal("application did not run continuously")
 		}
 
-		hit(t, controller.wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		hit(t, manager.Wrap(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 		})))
 	})
@@ -166,7 +163,7 @@ func TestIdleDisabled(t *testing.T) {
 
 func TestStartupFailure(t *testing.T) {
 	failure := errors.New("startup failed")
-	_, result := testController(t, time.Second, func(context.Context, func()) error {
+	_, result := testManager(t, time.Second, func(context.Context) error {
 		return failure
 	})
 
@@ -179,8 +176,7 @@ func TestFailureCancelsRequests(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		failure := errors.New("engine failed")
 		fail := make(chan struct{})
-		controller, result := testController(t, time.Second, func(ctx context.Context, ready func()) error {
-			ready()
+		manager, result := testManager(t, time.Second, func(ctx context.Context) error {
 
 			select {
 			case <-fail:
@@ -189,7 +185,7 @@ func TestFailureCancelsRequests(t *testing.T) {
 				return ctx.Err()
 			}
 		})
-		handler := controller.wrap(http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
+		handler := manager.Wrap(http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
 			<-request.Context().Done()
 
 			w.WriteHeader(http.StatusServiceUnavailable)
@@ -212,25 +208,33 @@ func TestFailureCancelsRequests(t *testing.T) {
 	})
 }
 
-func TestRequestDeadlineDuringStartup(t *testing.T) {
+func TestRequestDeadlineDuringShutdown(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
-		controller, _ := testController(t, time.Minute, func(ctx context.Context, _ func()) error {
-			<-ctx.Done()
-
-			return ctx.Err()
+		cleanup := make(chan struct{})
+		unblock := sync.OnceFunc(func() {
+			close(cleanup)
 		})
+		defer unblock()
+
+		app := &testApp{cleanup: func() {
+			<-cleanup
+		}}
+		manager, _ := testManager(t, time.Second, app.run)
+		handler := manager.Wrap(http.NotFoundHandler())
+
+		synctest.Wait()
+		time.Sleep(time.Second)
+		synctest.Wait()
+
 		ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 		defer cancel()
 
 		response := httptest.NewRecorder()
 
-		controller.wrap(http.NotFoundHandler()).ServeHTTP(
-			response,
-			httptest.NewRequest(http.MethodGet, "/", nil).WithContext(ctx),
-		)
+		handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil).WithContext(ctx))
 
 		if response.Code != http.StatusServiceUnavailable {
-			t.Fatalf("got status %d during startup", response.Code)
+			t.Fatalf("got status %d while shutdown was pending", response.Code)
 		}
 	})
 }
@@ -241,7 +245,7 @@ type testApp struct {
 	cleanup func()
 }
 
-func (app *testApp) run(ctx context.Context, ready func()) error {
+func (app *testApp) run(ctx context.Context) error {
 	app.starts.Add(1)
 	defer app.stops.Add(1)
 
@@ -249,22 +253,46 @@ func (app *testApp) run(ctx context.Context, ready func()) error {
 		defer app.cleanup()
 	}
 
-	ready()
 	<-ctx.Done()
 
 	return ctx.Err()
 }
 
-func testController(t *testing.T, timeout time.Duration, run func(context.Context, func()) error) (*controller, <-chan error) {
+type testEngine struct {
+	run     func(context.Context) error
+	execute func(context.Context, dogma.Command, ...dogma.ExecuteCommandOption) error
+}
+
+func (engine *testEngine) Run(ctx context.Context) error {
+	return engine.run(ctx)
+}
+
+func (engine *testEngine) ExecuteCommand(ctx context.Context, command dogma.Command, options ...dogma.ExecuteCommandOption) error {
+	if engine.execute != nil {
+		return engine.execute(ctx, command, options...)
+	}
+
+	return nil
+}
+
+func testManager(t *testing.T, timeout time.Duration, run func(context.Context) error) (*Manager, <-chan error) {
+	t.Helper()
+
+	return testManagerFactory(t, timeout, func() Engine {
+		return &testEngine{run: run}
+	})
+}
+
+func testManagerFactory(t *testing.T, timeout time.Duration, factory func() Engine) (*Manager, <-chan error) {
 	t.Helper()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	controller := &controller{ctx: ctx, enter: make(chan chan struct{}), leave: make(chan struct{})}
+	manager := New(ctx, testLogger(), timeout, factory)
 	result := make(chan error, 1)
 	done := make(chan struct{})
 
 	go func() {
-		result <- controller.run(testLogger(), timeout, run)
+		result <- manager.Run()
 
 		cancel()
 		close(done)
@@ -275,7 +303,7 @@ func testController(t *testing.T, timeout time.Duration, run func(context.Contex
 		<-done
 	})
 
-	return controller, result
+	return manager, result
 }
 
 func hit(t *testing.T, handler http.Handler) {

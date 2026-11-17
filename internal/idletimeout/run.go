@@ -2,38 +2,144 @@ package idletimeout
 
 import (
 	"context"
+	"errors"
 	"log/slog"
-	"net/http"
 	"time"
 
-	"golang.org/x/sync/errgroup"
+	"github.com/dogmatiq/dogma"
 )
 
-// Run coordinates application execution, HTTP serving, and optional idle shutdown.
-// run calls ready after initialization, then runs until its context is canceled.
-// Its resources must be released before it returns. serve wraps its HTTP handler
-// with the supplied middleware before accepting requests.
-func Run(
-	ctx context.Context,
-	logger *slog.Logger,
-	idleTimeout time.Duration,
-	run func(context.Context, func()) error,
-	serve func(context.Context, func(http.Handler) http.Handler) error,
-) error {
-	group, ctx := errgroup.WithContext(ctx)
-	controller := &controller{
-		ctx:   ctx,
-		enter: make(chan chan struct{}),
-		leave: make(chan struct{}),
+// Engine is the part of a Dogma engine used by the lifetime manager. Command
+// execution must support waiting for initialization while Run starts.
+type Engine interface {
+	dogma.CommandExecutor
+	Run(context.Context) error
+}
+
+// Manager runs one engine at a time and forwards commands to the current engine.
+// Request activity keeps it awake; after an idle shutdown, activity starts a new
+// engine. Database connection pools belong to the caller and remain unchanged.
+type Manager struct {
+	ctx         context.Context
+	logger      *slog.Logger
+	idleTimeout time.Duration
+	newEngine   func() Engine
+	enter       chan chan Engine
+	leave       chan struct{}
+}
+
+// New returns a manager whose Run method must be started by the caller.
+// newEngine must return a fresh engine without starting it.
+func New(ctx context.Context, logger *slog.Logger, idleTimeout time.Duration, newEngine func() Engine) *Manager {
+	return &Manager{
+		ctx:         ctx,
+		logger:      logger,
+		idleTimeout: idleTimeout,
+		newEngine:   newEngine,
+		enter:       make(chan chan Engine),
+		leave:       make(chan struct{}),
+	}
+}
+
+// Run starts the engine and manages its lifetime until the context is canceled
+// or an engine fails. It waits for a stopped engine before starting another.
+func (m *Manager) Run() error {
+	timer := time.NewTimer(m.idleTimeout)
+	defer timer.Stop()
+
+	var (
+		active   int
+		waiting  []chan Engine
+		current  Engine
+		finished <-chan error
+		cancel   context.CancelFunc
+		stopping bool
+	)
+
+	start := func() {
+		ctx, stop := context.WithCancel(m.ctx)
+		done := make(chan error, 1)
+		engine := m.newEngine()
+
+		current, cancel, finished = engine, stop, done
+
+		go func() {
+			defer stop()
+
+			done <- engine.Run(ctx)
+		}()
+
+		for _, entered := range waiting {
+			entered <- engine
+		}
+
+		waiting = nil
+
+		if m.idleTimeout > 0 && active == 0 {
+			timer.Reset(m.idleTimeout)
+		}
 	}
 
-	group.Go(func() error {
-		return controller.run(logger, idleTimeout, run)
-	})
+	timer.Stop()
+	start()
 
-	group.Go(func() error {
-		return serve(ctx, controller.wrap)
-	})
+	for {
+		select {
+		case <-m.ctx.Done():
+			if cancel != nil {
+				cancel()
+				<-finished
+			}
 
-	return group.Wait()
+			return m.ctx.Err()
+
+		case entered := <-m.enter:
+			active++
+			timer.Stop()
+
+			if cancel == nil {
+				start()
+			}
+
+			if stopping {
+				waiting = append(waiting, entered)
+			} else {
+				entered <- current
+			}
+
+		case <-m.leave:
+			active--
+
+			if active == 0 && cancel != nil && !stopping && m.idleTimeout > 0 {
+				timer.Reset(m.idleTimeout)
+			}
+
+		case <-timer.C:
+			stopping = true
+			cancel()
+
+			m.logger.Info("application idle; stopping engine")
+
+		case err := <-finished:
+			cancel()
+			current, cancel, finished = nil, nil, nil
+
+			if !stopping || (err != nil && !errors.Is(err, context.Canceled)) {
+				if err == nil {
+					err = errors.New("engine stopped unexpectedly")
+				}
+
+				return err
+			}
+
+			stopping = false
+			timer.Stop()
+
+			if active > 0 {
+				start()
+			} else {
+				waiting = nil
+			}
+		}
+	}
 }

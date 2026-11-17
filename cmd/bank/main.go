@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -12,8 +13,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dogmatiq/dogma"
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/internal/publicdemo"
+	"github.com/dogmatiq/example/internal/idletimeout"
 	"github.com/dogmatiq/example/ui"
 	"github.com/dogmatiq/example/ui/projections"
 	"github.com/dogmatiq/runkit"
@@ -33,15 +35,7 @@ func main() {
 	)
 	defer stop()
 
-	var err error
-
-	// The public demo hosted at https://example.dogmatiq.io uses its own
-	// startup path. run() below is the regular Dogma example.
-	if idle := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); idle != "" {
-		err = publicdemo.Run(ctx, logger, idle)
-	} else {
-		err = run(ctx, logger)
-	}
+	err := run(ctx, logger)
 
 	if errors.Is(err, context.Canceled) {
 		return
@@ -84,46 +78,54 @@ func run(ctx context.Context, logger *slog.Logger) error {
 		return err
 	}
 
-	// The application describes the bank's message handlers and their routes.
-	application := &example.App{ReadDB: projectionDB}
-
-	// Create an engine to execute the application and persist its state.
-	engine := runkit.New(
-		application,
-		engineDB,
-		runkit.WithLogger(logger),
-	)
-
-	// Run the engine in the background to deliver messages to the handlers.
+	application := newDogmaApp(projectionDB)
 	group, ctx := errgroup.WithContext(ctx)
 
-	group.Go(func() error {
-		return engine.Run(ctx)
-	})
+	var (
+		executor  dogma.CommandExecutor
+		runEngine func() error
+		manager   *idletimeout.Manager
+	)
 
-	// The UI submits commands to the engine and reads the resulting projections.
-	uiHandler := &ui.Handler{
-		DB:              projectionDB,
-		CommandExecutor: engine,
+	// The public demo hosted at https://example.dogmatiq.io opts into idle
+	// shutdown. Its handler submits commands through the current-engine proxy.
+	if idle := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); idle != "" {
+		timeout, err := time.ParseDuration(idle)
+		if err != nil || timeout <= 0 {
+			return fmt.Errorf("DOGMA_EXAMPLE_IDLE_TIMEOUT must be a positive duration, got %q", idle)
+		}
+
+		// Expire idle connections without replacing the app and UI pools.
+		projectionDB.SetConnMaxIdleTime(timeout)
+		engineDB.SetConnMaxIdleTime(timeout)
+
+		manager = idletimeout.New(ctx, logger, timeout, func() idletimeout.Engine {
+			return newEngine(application, engineDB, logger)
+		})
+		executor = manager
+		runEngine = manager.Run
+	} else {
+		// The regular example submits commands directly to its engine.
+		engine := newEngine(application, engineDB, logger)
+		executor = engine
+		runEngine = func() error {
+			return engine.Run(ctx)
+		}
+	}
+
+	handler := newHTTPHandler(projectionDB, executor)
+	if manager != nil {
+		handler = manager.Wrap(handler)
 	}
 
 	group.Go(func() error {
-		return runHTTPServer(ctx, logger, uiHandler)
+		return runEngine()
 	})
 
-	// Wait for shutdown before closing either database pool.
-	return group.Wait()
-}
-
-// runHTTPServer serves the UI until ctx is canceled or the server fails.
-// DOGMA_EXAMPLE_LISTEN_ADDRESS overrides the default listen address, ":8080".
-func runHTTPServer(ctx context.Context, logger *slog.Logger, handler http.Handler) error {
 	listenAddress := os.Getenv("DOGMA_EXAMPLE_LISTEN_ADDRESS")
 	if listenAddress == "" {
 		listenAddress = ":8080"
 	}
-
-	group, ctx := errgroup.WithContext(ctx)
 
 	server := &http.Server{
 		Addr:        listenAddress,
@@ -178,5 +180,28 @@ func runHTTPServer(ctx context.Context, logger *slog.Logger, handler http.Handle
 		return server.Shutdown(shutdownCtx)
 	})
 
+	// Wait for the engine and HTTP server before closing their pools.
 	return group.Wait()
+}
+
+// newDogmaApp describes the bank's message handlers and their routes.
+func newDogmaApp(projectionDB *sql.DB) *example.App {
+	return &example.App{ReadDB: projectionDB}
+}
+
+// newEngine creates an engine that executes the application and persists its state.
+func newEngine(application *example.App, engineDB *sql.DB, logger *slog.Logger) *runkit.Engine {
+	return runkit.New(
+		application,
+		engineDB,
+		runkit.WithLogger(logger),
+	)
+}
+
+// newHTTPHandler connects the UI to its projection database and command executor.
+func newHTTPHandler(projectionDB *sql.DB, executor dogma.CommandExecutor) http.Handler {
+	return &ui.Handler{
+		DB:              projectionDB,
+		CommandExecutor: executor,
+	}
 }
