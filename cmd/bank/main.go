@@ -29,7 +29,14 @@ import (
 // only after [run] returns.
 func main() {
 	// Use one logger for engine, application, and HTTP lifecycle messages.
-	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+	var logHandler slog.Handler = slog.NewTextHandler(os.Stderr, nil)
+
+	// The public demo's log collector reads structured JSON from stdout.
+	if os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT") != "" {
+		logHandler = slog.NewJSONHandler(os.Stdout, nil)
+	}
+
+	logger := slog.New(logHandler)
 
 	if err := run(logger); err != nil {
 		logger.Error("bank stopped", "error", err)
