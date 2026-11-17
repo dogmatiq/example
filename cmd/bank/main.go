@@ -35,7 +35,8 @@ func main() {
 
 	// See runDogmaApp() for the Dogma example and runHTTPServer() for the
 	// HTTP server that hosts the UI. idletimeout.Run() only manages idle
-	// shutdown for the public demo; you can skip its internals.
+	// shutdown for the public demo hosted at https://example.dogmatiq.io;
+	// you can skip its internals.
 	err := idletimeout.Run(
 		ctx,
 		logger,
