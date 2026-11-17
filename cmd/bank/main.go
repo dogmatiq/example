@@ -22,6 +22,10 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// main handles logging, shutdown signals, and the process exit status.
+// See run() below for the Dogma application and HTTP server setup.
+//
+// run() finishes its deferred cleanup before main calls os.Exit() on failure.
 func main() {
 	// Use one logger for engine, application, and HTTP lifecycle messages.
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
@@ -36,6 +40,8 @@ func main() {
 
 	err := run(ctx, logger)
 
+	// An interrupt or termination signal cancels ctx. The resulting
+	// context.Canceled error represents a normal shutdown.
 	if errors.Is(err, context.Canceled) {
 		return
 	}
