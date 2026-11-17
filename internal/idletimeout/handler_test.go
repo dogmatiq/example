@@ -235,18 +235,6 @@ func TestRequestDeadlineDuringStartup(t *testing.T) {
 	})
 }
 
-func TestInvalidIdleTimeout(t *testing.T) {
-	for _, value := range []string{"invalid", "0", "-1s"} {
-		t.Run(value, func(t *testing.T) {
-			t.Setenv("DOGMA_EXAMPLE_IDLE_TIMEOUT", value)
-
-			if err := Run(t.Context(), testLogger(), nil, nil); err == nil {
-				t.Fatal("invalid idle timeout was accepted")
-			}
-		})
-	}
-}
-
 type testApp struct {
 	starts  atomic.Int32
 	stops   atomic.Int32

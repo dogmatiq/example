@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/dogmatiq/example"
-	"github.com/dogmatiq/example/internal/idletimeout"
+	"github.com/dogmatiq/example/internal/publicdemo"
 	"github.com/dogmatiq/example/ui"
 	"github.com/dogmatiq/example/ui/projections"
 	"github.com/dogmatiq/runkit"
@@ -33,44 +33,15 @@ func main() {
 	)
 	defer stop()
 
-	// Each wake creates a new engine and database pool, so it also needs a new UI
-	// handler. Requests wait until that handler is ready before using it.
-	var uiHandler http.Handler
+	// The public demo hosted at https://example.dogmatiq.io uses its own
+	// startup path. run() below is the regular Dogma example.
+	var err error
 
-	startApplication := func(ctx context.Context, ready func()) error {
-		return runDogmaApp(
-			ctx,
-			logger,
-			func(engine *runkit.Engine, projectionDB *sql.DB) {
-				// Rebuild the UI when its engine and database pool are recreated.
-				uiHandler = &ui.Handler{
-					DB:              projectionDB,
-					CommandExecutor: engine,
-				}
-
-				ready()
-			},
-		)
+	if idle := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); idle != "" {
+		err = publicdemo.Run(ctx, logger, idle)
+	} else {
+		err = run(ctx, logger)
 	}
-
-	serveUI := func(ctx context.Context, wrap func(http.Handler) http.Handler) error {
-		handler := http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
-			uiHandler.ServeHTTP(w, request)
-		})
-
-		return runHTTPServer(ctx, logger, wrap(handler))
-	}
-
-	// See runDogmaApp() for the Dogma example and runHTTPServer() for the
-	// HTTP server that hosts the UI. idletimeout.Run() only manages idle
-	// shutdown for the public demo hosted at https://example.dogmatiq.io;
-	// you can skip its internals.
-	err := idletimeout.Run(
-		ctx,
-		logger,
-		startApplication,
-		serveUI,
-	)
 
 	if errors.Is(err, context.Canceled) {
 		return
@@ -83,14 +54,9 @@ func main() {
 	}
 }
 
-// runDogmaApp opens the bank's databases and runs its engine until ctx is
-// canceled or an error occurs, then closes both database pools. ready receives
-// the initialized engine and projection pool before the engine starts.
-func runDogmaApp(
-	ctx context.Context,
-	logger *slog.Logger,
-	ready func(*runkit.Engine, *sql.DB),
-) error {
+// run starts the bank's engine and the HTTP server that hosts its UI.
+// Both database pools close after the engine and server have stopped.
+func run(ctx context.Context, logger *slog.Logger) error {
 	// The UI reads projections of the bank's events from this database.
 	projectionDB, err := projections.NewDB(
 		ctx,
@@ -128,10 +94,25 @@ func runDogmaApp(
 		runkit.WithLogger(logger),
 	)
 
-	ready(engine, projectionDB)
+	// Run the engine in the background to deliver messages to the handlers.
+	group, ctx := errgroup.WithContext(ctx)
 
-	// Deliver messages until the application is stopped.
-	return engine.Run(ctx)
+	group.Go(func() error {
+		return engine.Run(ctx)
+	})
+
+	// The UI submits commands to the engine and reads the resulting projections.
+	uiHandler := &ui.Handler{
+		DB:              projectionDB,
+		CommandExecutor: engine,
+	}
+
+	group.Go(func() error {
+		return runHTTPServer(ctx, logger, uiHandler)
+	})
+
+	// Wait for shutdown before closing either database pool.
+	return group.Wait()
 }
 
 // runHTTPServer serves the UI until ctx is canceled or the server fails.
@@ -147,7 +128,6 @@ func runHTTPServer(ctx context.Context, logger *slog.Logger, handler http.Handle
 	server := &http.Server{
 		Addr:        listenAddress,
 		ReadTimeout: 5 * time.Second,
-		// Bound idle connections so TCP keep-alives do not prevent sleeping.
 		IdleTimeout: time.Minute,
 		BaseContext: func(net.Listener) context.Context {
 			return ctx

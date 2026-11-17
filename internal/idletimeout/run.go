@@ -2,10 +2,8 @@ package idletimeout
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -18,20 +16,10 @@ import (
 func Run(
 	ctx context.Context,
 	logger *slog.Logger,
+	idleTimeout time.Duration,
 	run func(context.Context, func()) error,
 	serve func(context.Context, func(http.Handler) http.Handler) error,
 ) error {
-	var idleTimeout time.Duration
-
-	if value := os.Getenv("DOGMA_EXAMPLE_IDLE_TIMEOUT"); value != "" {
-		var err error
-
-		idleTimeout, err = time.ParseDuration(value)
-		if err != nil || idleTimeout <= 0 {
-			return fmt.Errorf("DOGMA_EXAMPLE_IDLE_TIMEOUT must be a positive duration, got %q", value)
-		}
-	}
-
 	group, ctx := errgroup.WithContext(ctx)
 	controller := &controller{
 		ctx:   ctx,
