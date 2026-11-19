@@ -17,3 +17,6 @@ RAILWAY_IMAGE_TAG=v0.2.1 railway config plan
 Authenticate with `railway login` and link the intended project/environment, or
 provide its `RAILWAY_TOKEN`. Review the plan before applying; CI does not permit
 destructive changes automatically.
+
+The public domain is attached only in the `production` environment. An isolated
+test environment can deploy the same configuration without claiming that domain.

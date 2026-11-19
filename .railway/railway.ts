@@ -39,7 +39,9 @@ export default defineRailway((ctx) => {
       DOGMA_EXAMPLE_LISTEN_ADDRESS: "[::]:8080",
       PORT: "8080",
     },
-    domains: [{ domain: "example.dogmatiq.io", port: 8080 }],
+    domains: ctx.isEnvironment("production")
+      ? [{ domain: "example.dogmatiq.io", port: 8080 }]
+      : [],
   });
 
   // The environment-scoped deployment token selects the project.
