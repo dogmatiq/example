@@ -11,5 +11,6 @@
 // Database pools and the UI handler remain owned by the caller. Expiring idle
 // connections prevents their TCP traffic from keeping the platform awake.
 // Platform sleeping must be enabled separately. Scheduled work waits until
-// the engine wakes; HTTP health checks and other probes also keep it awake.
+// the engine wakes. The HTTP server handles liveness probes separately from
+// the UI requests that keep the engine awake.
 package idletimeout

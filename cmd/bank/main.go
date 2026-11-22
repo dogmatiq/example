@@ -135,6 +135,17 @@ func run(logger *slog.Logger) (err error) {
 		}
 	}
 
+	// Serve process liveness independently of the UI and its engine.
+	mux := http.NewServeMux()
+	mux.HandleFunc(
+		"GET /_internal/healthz",
+		func(w http.ResponseWriter, _ *http.Request) {
+			w.Header().Set("Content-Type", "text/plain")
+			w.Write([]byte("ok\n"))
+		},
+	)
+	mux.Handle("/", handler)
+
 	// Configure the HTTP server that hosts the bank's UI.
 	listenAddress := os.Getenv("DOGMA_EXAMPLE_LISTEN_ADDRESS")
 	if listenAddress == "" {
@@ -157,7 +168,7 @@ func run(logger *slog.Logger) (err error) {
 			)
 			defer cancel()
 
-			handler.ServeHTTP(w, request.WithContext(ctx))
+			mux.ServeHTTP(w, request.WithContext(ctx))
 		}),
 	}
 	defer server.Close()
