@@ -138,7 +138,7 @@ func run(logger *slog.Logger) (err error) {
 	// Serve process liveness independently of the UI and its engine.
 	mux := http.NewServeMux()
 	mux.HandleFunc(
-		"GET /_internal/healthz",
+		"GET /x/healthz",
 		func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Type", "text/plain")
 			w.Write([]byte("ok\n"))
